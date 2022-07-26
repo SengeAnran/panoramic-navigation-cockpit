@@ -2,27 +2,34 @@
   <div class="left-content">
     <div class="title">
       <h3 class="theme-font-style">业务导览</h3>
-      <div class="eglish-name">Business Guide</div>
+      <div class="eglish-name">BUSINESS GUIDE</div>
       <div class="list-btn">
         <div class="icon"></div>
       </div>
     </div>
     <div class="list">
-      <div class="list-item">
-        <img src="" alt="" />
+      <div class="list-item" v-for="(item, index) in dataList" :key="index">
+        <img :src="item.imgUrl" alt="" />
         <div class="name">
-          <div class="name-text"></div>
-          <div class="name-eglish"></div>
+          <div class="name-text theme-font-style">{{ item.name }}</div>
+          <div class="name-eglish">{{ item.eglishName }}</div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'index',
-};
+<script setup>
+import { ref } from 'vue';
+
+const dataList = ref([
+  {
+    name: '教育',
+    eglishName: 'education'.toUpperCase(),
+    imgUrl: require('./img/icon_jy_active.png'),
+    activeImgUrl: require('./img/icon_jy_active.png'),
+  },
+]);
 </script>
 
 <style lang="scss" scoped>
@@ -74,7 +81,29 @@ export default {
     position: absolute;
     top: 250px;
     .list-item {
+      width: 340px;
+      height: 134px;
       display: flex;
+      justify-content: space-between;
+      background: url('./img/bottom_icon.png') no-repeat center 190%;
+      background-size: 100%;
+      img {
+        width: 81px;
+        height: 79px;
+      }
+      .name {
+        .name-text {
+          font-size: 44px;
+          float: right;
+        }
+        .name-eglish {
+          font-size: 18px;
+          font-family: DIN-BoldItalicAlt;
+          font-weight: 400;
+          color: #7987c1;
+          line-height: 58px;
+        }
+      }
     }
   }
 }
