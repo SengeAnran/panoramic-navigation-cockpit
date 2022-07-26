@@ -7,7 +7,7 @@ const prodConfig = {
   apiHost: '/apiProxyCockpit', // 接口代理
   mapHost: 'https://xfsqxcx.deqing.gov.cn/arcgis',
   userHost: '/userProxy', // 用户模块代理
-  width: 1920,
+  width: 3840,
   height: 1080,
   isLogin: true,
   tdtUrl: 'https://t{s}.tianditu.gov.cn/',
@@ -25,7 +25,7 @@ const devConfig = {
   apiHost: '/apiProxy', // 接口代理
   userHost: 'http://172.16.24.139:7000/',
   mapHost: 'https://xfsqxcx.deqing.gov.cn/arcgis',
-  width: 1920, // 大屏分辨率-宽
+  width: 3840, // 大屏分辨率-宽
   height: 1080, // 大屏分辨率-高
   isLogin: false, // 是否需要验证登录
   tdtUrl: 'https://t{s}.tianditu.gov.cn/',
