@@ -1,6 +1,7 @@
 <template>
   <div class="center-content">
     <div class="mask"></div>
+    <div class="search"></div>
     <AppBottom />
   </div>
 </template>

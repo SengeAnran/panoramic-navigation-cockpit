@@ -1,17 +1,31 @@
 <template>
   <div class="left-content">
+    <div class="mask"></div>
     <div class="title">
-      <h3 class="theme-font-style">业务导览</h3>
-      <div class="eglish-name">BUSINESS GUIDE</div>
-      <div class="list-btn">
+      <h3 class="theme-font-style">{{ seletType.name }}</h3>
+      <div class="eglish-name">{{ seletType.eglishName }}</div>
+      <div class="list-btn" @click="showOption = !showOption">
         <div class="icon"></div>
       </div>
+      <div class="option-list" v-if="showOption">
+        <div class="option-item" v-for="(item, index) in optionType" :key="index" @click="changeType(index)">
+          {{ item.name }}
+        </div>
+      </div>
     </div>
-    <div class="list">
-      <div class="list-item" v-for="(item, index) in dataList" :key="index">
-        <img :src="item.imgUrl" alt="" />
+    <div class="list" ref="list">
+      <div
+        class="list-item"
+        v-for="(item, index) in dataList"
+        :key="index"
+        ref="listItem"
+        :class="{ active: activeIndex === index }"
+        @click="activeIndex = index"
+      >
+        <img v-if="activeIndex === index" :src="item.activeImgUrl" alt="" />
+        <img v-else :src="item.imgUrl" alt="" />
         <div class="name">
-          <div class="name-text theme-font-style">{{ item.name }}</div>
+          <div class="name-text">{{ item.name }}</div>
           <div class="name-eglish">{{ item.eglishName }}</div>
         </div>
       </div>
@@ -20,16 +34,163 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
+// import * as d3 from 'd3';
+import { ref, reactive, onMounted } from 'vue';
+const seletType = reactive({
+  name: '业务导览',
+  eglishName: 'BUSINESS GUIDE',
+});
+const showOption = ref(false);
+const optionType = ref([
+  {
+    name: '业务导览',
+    eglishName: 'BUSINESS GUIDE',
+  },
+  {
+    name: '技术导览',
+    eglishName: 'technology GUIDE'.toUpperCase(),
+  },
+  {
+    name: '地域导览',
+    eglishName: 'region GUIDE'.toUpperCase(),
+  },
+]);
+// 改变导览类型
+function changeType(index) {
+  seletType.name = optionType.value[index].name;
+  seletType.eglishName = optionType.value[index].eglishName;
+  showOption.value = false;
+}
+const activeIndex = ref(1);
 const dataList = ref([
   {
     name: '教育',
     eglishName: 'education'.toUpperCase(),
-    imgUrl: require('./img/icon_jy_active.png'),
+    imgUrl: require('./img/icon_jy.png'),
+    activeImgUrl: require('./img/icon_jy_active.png'),
+  },
+  {
+    name: '医疗',
+    eglishName: 'medical care'.toUpperCase(),
+    imgUrl: require('./img/icon_yl.png'),
+    activeImgUrl: require('./img/icon_yl_active.png'),
+  },
+  {
+    name: '交通',
+    eglishName: 'traffic'.toUpperCase(),
+    imgUrl: require('./img/icon_jt.png'),
+    activeImgUrl: require('./img/icon_jt_active.png'),
+  },
+  {
+    name: '养老',
+    eglishName: 'Providing for the aged'.toUpperCase(),
+    imgUrl: require('./img/icon_yliao.png'),
+    activeImgUrl: require('./img/icon_yliao_active.png'),
+  },
+  {
+    name: '治安',
+    eglishName: 'public security'.toUpperCase(),
+    imgUrl: require('./img/icon_za.png'),
+    activeImgUrl: require('./img/icon_za_active.png'),
+  },
+  {
+    name: '人社',
+    eglishName: 'Human society'.toUpperCase(),
+    imgUrl: require('./img/icon_rs.png'),
+    activeImgUrl: require('./img/icon_jy_active.png'),
+  },
+  {
+    name: '教育',
+    eglishName: 'education'.toUpperCase(),
+    imgUrl: require('./img/icon_jy.png'),
+    activeImgUrl: require('./img/icon_jy_active.png'),
+  },
+  {
+    name: '医疗',
+    eglishName: 'medical care'.toUpperCase(),
+    imgUrl: require('./img/icon_yl.png'),
+    activeImgUrl: require('./img/icon_yl_active.png'),
+  },
+  {
+    name: '交通',
+    eglishName: 'traffic'.toUpperCase(),
+    imgUrl: require('./img/icon_jt.png'),
+    activeImgUrl: require('./img/icon_jt_active.png'),
+  },
+  {
+    name: '养老',
+    eglishName: 'Providing for the aged'.toUpperCase(),
+    imgUrl: require('./img/icon_yliao.png'),
+    activeImgUrl: require('./img/icon_yliao_active.png'),
+  },
+  {
+    name: '治安',
+    eglishName: 'public security'.toUpperCase(),
+    imgUrl: require('./img/icon_za.png'),
+    activeImgUrl: require('./img/icon_za_active.png'),
+  },
+  {
+    name: '人社',
+    eglishName: 'Human society'.toUpperCase(),
+    imgUrl: require('./img/icon_rs.png'),
     activeImgUrl: require('./img/icon_jy_active.png'),
   },
 ]);
+
+// function posStyle(i) {
+//   const position = [
+//     {
+//       marginLeft: '117px',
+//       // top: '0',
+//     },
+//     {
+//       marginLeft: '89px',
+//       // top: '122px',
+//     },
+//     {
+//       marginLeft: '78px',
+//       // top: '244px',
+//     },
+//     {
+//       marginLeft: '83px',
+//       // top: '366px',
+//     },
+//     {
+//       marginLeft: '104px',
+//       // top: '488px',
+//     },
+//     {
+//       marginLeft: '142px',
+//       // top: '610px',
+//     },
+//   ];
+//   const len = position.length;
+//   let resPos = {
+//     marginLeft: '143px',
+//   };
+//   if (i < len) {
+//     resPos = position[i];
+//   }
+//
+//   return resPos;
+// }
+const list = ref('');
+const itemHeight = 122;
+onMounted(() => {
+  setPosition();
+  list.value.addEventListener('scroll', function () {
+    setPosition();
+  });
+});
+function setPosition() {
+  // 设置元素滚动时的动态的位置
+  const listItem = list.value.children;
+  for (let i = 0; i < listItem.length; i++) {
+    const x = i * itemHeight - list.value.scrollTop;
+    const marginLeft = Math.abs(Math.pow(947 * 947 - Math.pow(x - 268.97, 2), 0.5) - 1025);
+    listItem[i].style.marginLeft = marginLeft + 'px';
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -40,6 +201,13 @@ const dataList = ref([
   left: 280px;
   width: 640px;
   height: 100%;
+  //.mask {
+  //  position: absolute;
+  //  width: 100%;
+  //  height: 100%;
+  //  pointer-events: none;
+  //  background: url('./img/bg_img_left.png') no-repeat;
+  //}
   .title {
     position: absolute;
     left: 145px;
@@ -52,6 +220,7 @@ const dataList = ref([
     .eglish-name {
       font-size: 15px;
       font-family: DIN-BlackItalic;
+      font-style: italic;
       font-weight: 400;
       color: #7684be;
     }
@@ -76,32 +245,111 @@ const dataList = ref([
         border-right: 6.5px solid rgba(255, 255, 255, 0);
       }
     }
+    .option-list {
+      z-index: 3;
+      position: absolute;
+      top: 61px;
+      width: 230px;
+      background: #0f203c;
+      border: 1px solid #6c99c7;
+      box-shadow: 0px 0px 24px 0px rgba(64, 87, 125, 0.78);
+      opacity: 0.8;
+      border-radius: 10px;
+      //border-image: linear-gradient(-49deg, #6c99c7, #ffffff) 10 10;
+      .option-item {
+        cursor: pointer;
+        position: relative;
+        height: 54px;
+        text-align: center;
+        line-height: 54px;
+        font-size: 24px;
+        font-family: Source Han Sans CN;
+        font-weight: 400;
+        color: #ffffff;
+        opacity: 0.8;
+      }
+      .option-item:nth-child(n + 1)::before {
+        position: absolute;
+        left: 0;
+        display: inline-block;
+        content: '';
+        height: 1px;
+        width: 228px;
+        background: linear-gradient(
+          -90deg,
+          rgba(31, 57, 86, 0.1) 0%,
+          rgba(122, 191, 255, 0.97) 49%,
+          rgba(34, 61, 93, 0.1) 100%
+        );
+      }
+    }
   }
   .list {
     position: absolute;
     top: 250px;
+    height: 736px;
+    width: 550px;
+    //overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
     .list-item {
+      cursor: pointer;
+      position: relative;
+      //position: absolute;
+      padding-right: 10px;
       width: 340px;
-      height: 134px;
+      height: 122px;
       display: flex;
       justify-content: space-between;
-      background: url('./img/bottom_icon.png') no-repeat center 190%;
-      background-size: 100%;
+
+      //transition: all linear 500ms;
       img {
         width: 81px;
         height: 79px;
       }
       .name {
         .name-text {
+          font-family: YouSheBiaoTiHei;
+          color: #7987c1;
+          font-weight: 400;
           font-size: 44px;
-          float: right;
+          text-align: right;
         }
         .name-eglish {
           font-size: 18px;
           font-family: DIN-BoldItalicAlt;
           font-weight: 400;
           color: #7987c1;
-          line-height: 58px;
+          font-style: italic;
+          //line-height: 58px;
+        }
+      }
+
+      &.active {
+        background: url('./img/bottom_icon.png') no-repeat center 235%;
+        background-size: 100%;
+        .name {
+          .name-text {
+            color: #f9f9f9;
+            background: linear-gradient(0deg, #b2d2ff 0%, #f9f9f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+          }
+          .name-eglish {
+          }
+        }
+        &::after {
+          content: '';
+          display: inline-block;
+          position: absolute;
+          right: -27px;
+          top: 18px;
+          width: 8px;
+          height: 8px;
+          background: #4be8f5;
+          border-radius: 8px;
+          border: 3px solid #1b2131;
+          box-shadow: 0 0 5px 5px #3b76b1;
         }
       }
     }
