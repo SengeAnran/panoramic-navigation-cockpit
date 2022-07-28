@@ -11,7 +11,7 @@
         :key="index"
         ref="listItem"
         :class="{ active: activeIndex === index }"
-        @click="activeIndex = index"
+        @click="selectKey(item, index)"
       >
         <div class="name">
           <div class="name-text">{{ item.name }}</div>
@@ -22,12 +22,31 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
+import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
+const state = useStore();
 const activeIndex = ref(1);
 const dataList = ref([
   {
-    name: '教育',
+    name: '养育一件事',
+  },
+  {
+    name: '健康码',
+  },
+  {
+    name: '一网通办',
+  },
+  {
+    name: '出生一件事',
+  },
+  {
+    name: '掌上通',
+  },
+  {
+    name: '线上办理绿色通道',
+  },
+  {
+    name: '养老金领取',
   },
   {
     name: '医疗',
@@ -44,8 +63,12 @@ const dataList = ref([
   {
     name: '人社',
   },
+
   {
-    name: '教育',
+    name: '线上办理绿色通道',
+  },
+  {
+    name: '养老金领取',
   },
   {
     name: '医疗',
@@ -63,61 +86,35 @@ const dataList = ref([
     name: '人社',
   },
 ]);
-
-// function posStyle(i) {
-//   const position = [
-//     {
-//       marginLeft: '117px',
-//       // top: '0',
-//     },
-//     {
-//       marginLeft: '89px',
-//       // top: '122px',
-//     },
-//     {
-//       marginLeft: '78px',
-//       // top: '244px',
-//     },
-//     {
-//       marginLeft: '83px',
-//       // top: '366px',
-//     },
-//     {
-//       marginLeft: '104px',
-//       // top: '488px',
-//     },
-//     {
-//       marginLeft: '142px',
-//       // top: '610px',
-//     },
-//   ];
-//   const len = position.length;
-//   let resPos = {
-//     marginLeft: '143px',
-//   };
-//   if (i < len) {
-//     resPos = position[i];
-//   }
-//
-//   return resPos;
-// }
+// 选中导览词
+function selectKey(item, index) {
+  activeIndex.value = index;
+  state.commit('ADD_QUERY', item.name);
+}
 const list = ref('');
-// const itemHeight = 122;
-// onMounted(() => {
-//   setPosition();
-//   list.value.addEventListener('scroll', function () {
-//     setPosition();
-//   });
-// });
-// function setPosition() {
-//   // 设置元素滚动时的动态的位置
-//   const listItem = list.value.children;
-//   for (let i = 0; i < listItem.length; i++) {
-//     const x = i * itemHeight - list.value.scrollTop;
-//     const marginLeft = Math.abs(Math.pow(947 * 947 - Math.pow(x - 268.97, 2), 0.5) - 1025);
-//     listItem[i].style.marginLeft = marginLeft + 'px';
-//   }
-// }
+const itemHeight = 99.5;
+onMounted(() => {
+  setPosition();
+  list.value.addEventListener('scroll', function () {
+    setPosition();
+  });
+});
+function setPosition() {
+  // 设置元素滚动时的动态的位置
+  const listItem = list.value.children;
+  for (let i = 0; i < listItem.length; i++) {
+    // 圆的方程式：（x-240.97）^(2)+(y+856)^(2) = 947^(2)
+    const x = i * itemHeight - list.value.scrollTop;
+    if (x < -122) {
+      continue;
+    } else if (x > 832) {
+      break;
+    }
+    let marginLeft = Math.abs(Math.pow(947 * 947 - Math.pow(x - 240.97, 2), 0.5) - 854);
+    marginLeft = x > 652.309 ? -marginLeft : marginLeft;
+    listItem[i].style.marginLeft = marginLeft + 'px';
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -129,6 +126,7 @@ const list = ref('');
   right: 280px;
   width: 641px;
   height: 100%;
+  z-index: 13;
   .title {
     position: absolute;
     left: 227px;
@@ -208,47 +206,49 @@ const list = ref('');
   .list {
     position: absolute;
     top: 250px;
-    height: 736px;
-    width: 550px;
-    //overflow: hidden;
+    height: 756px;
+    //width: 550px;
+    margin-left: 72px;
+    padding-left: 40px;
     overflow-y: scroll;
     overflow-x: hidden;
     .list-item {
+      //background-color: pink;
+      box-sizing: border-box;
       cursor: pointer;
       position: relative;
-      //position: absolute;
-      padding-right: 10px;
-      width: 340px;
-      height: 122px;
-      display: flex;
-      justify-content: space-between;
-
-      //transition: all linear 500ms;
-      img {
-        width: 81px;
-        height: 79px;
+      //min-width: 242px;
+      width: max-content;
+      padding-right: 29px;
+      height: 56px;
+      line-height: 56px;
+      margin-bottom: 43.5px;
+      padding-left: 44px;
+      &::before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        left: 3px;
+        top: 29px;
+        width: 35px;
+        height: 1px;
+        background: url('./img/line_icon.png') no-repeat;
       }
+      //transition: all linear 500ms;
       .name {
         .name-text {
           font-family: YouSheBiaoTiHei;
-          color: #7987c1;
+          color: #4f79a0;
           font-weight: 400;
-          font-size: 44px;
-          text-align: right;
-        }
-        .name-eglish {
-          font-size: 18px;
-          font-family: DIN-BoldItalicAlt;
-          font-weight: 400;
-          color: #7987c1;
-          font-style: italic;
-          //line-height: 58px;
+          font-size: 36px;
+          //text-align: center;
+          //text-indent: 44px;
         }
       }
 
       &.active {
-        //background: url('./img/bottom_icon.png') no-repeat center 235%;
-        //background-size: 100%;
+        background: url('./img/bottom_icon.png') no-repeat center;
+        background-size: 100% 56px;
         .name {
           .name-text {
             color: #f9f9f9;
@@ -256,21 +256,16 @@ const list = ref('');
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
           }
-          .name-eglish {
-          }
         }
         &::before {
           content: '';
           display: inline-block;
           position: absolute;
-          left: -27px;
-          top: 18px;
-          width: 8px;
-          height: 8px;
-          background: #4be8f5;
-          border-radius: 8px;
-          border: 3px solid #1b2131;
-          box-shadow: 0 0 5px 5px #3b76b1;
+          left: -26px;
+          top: 29px;
+          width: 55px;
+          height: 55px;
+          background: url('./img/point_icon.png') no-repeat;
         }
       }
     }

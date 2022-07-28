@@ -20,13 +20,13 @@
         :key="index"
         ref="listItem"
         :class="{ active: activeIndex === index }"
-        @click="activeIndex = index"
+        @click="selectKey(item, index)"
       >
         <img v-if="activeIndex === index" :src="item.activeImgUrl" alt="" />
         <img v-else :src="item.imgUrl" alt="" />
         <div class="name">
           <div class="name-text">{{ item.name }}</div>
-          <div class="name-eglish">{{ item.eglishName }}</div>
+          <div class="name-eglish" v-text="item.eglishName.toUpperCase()"></div>
         </div>
       </div>
     </div>
@@ -36,6 +36,8 @@
 <script setup>
 // import * as d3 from 'd3';
 import { ref, reactive, onMounted } from 'vue';
+import { useStore } from 'vuex';
+const state = useStore();
 const seletType = reactive({
   name: '业务导览',
   eglishName: 'BUSINESS GUIDE',
@@ -136,44 +138,11 @@ const dataList = ref([
     activeImgUrl: require('./img/icon_jy_active.png'),
   },
 ]);
-
-// function posStyle(i) {
-//   const position = [
-//     {
-//       marginLeft: '117px',
-//       // top: '0',
-//     },
-//     {
-//       marginLeft: '89px',
-//       // top: '122px',
-//     },
-//     {
-//       marginLeft: '78px',
-//       // top: '244px',
-//     },
-//     {
-//       marginLeft: '83px',
-//       // top: '366px',
-//     },
-//     {
-//       marginLeft: '104px',
-//       // top: '488px',
-//     },
-//     {
-//       marginLeft: '142px',
-//       // top: '610px',
-//     },
-//   ];
-//   const len = position.length;
-//   let resPos = {
-//     marginLeft: '143px',
-//   };
-//   if (i < len) {
-//     resPos = position[i];
-//   }
-//
-//   return resPos;
-// }
+// 选中导览词
+function selectKey(item, index) {
+  activeIndex.value = index;
+  state.commit('ADD_QUERY', item.name);
+}
 const list = ref('');
 const itemHeight = 122;
 onMounted(() => {
@@ -184,9 +153,16 @@ onMounted(() => {
 });
 function setPosition() {
   // 设置元素滚动时的动态的位置
+  // 圆的方程式：（x-268.97）^(2)+(y-1025)^(2) = 947^(2)
   const listItem = list.value.children;
   for (let i = 0; i < listItem.length; i++) {
     const x = i * itemHeight - list.value.scrollTop;
+    // 优化视野外的list不用设置计算
+    if (x < -122) {
+      continue;
+    } else if (x > 732) {
+      break;
+    }
     const marginLeft = Math.abs(Math.pow(947 * 947 - Math.pow(x - 268.97, 2), 0.5) - 1025);
     listItem[i].style.marginLeft = marginLeft + 'px';
   }
@@ -201,13 +177,6 @@ function setPosition() {
   left: 280px;
   width: 640px;
   height: 100%;
-  //.mask {
-  //  position: absolute;
-  //  width: 100%;
-  //  height: 100%;
-  //  pointer-events: none;
-  //  background: url('./img/bg_img_left.png') no-repeat;
-  //}
   .title {
     position: absolute;
     left: 145px;
@@ -287,8 +256,8 @@ function setPosition() {
   .list {
     position: absolute;
     top: 250px;
-    height: 736px;
-    width: 550px;
+    height: 752px;
+    width: 569px;
     //overflow: hidden;
     overflow-y: scroll;
     overflow-x: hidden;

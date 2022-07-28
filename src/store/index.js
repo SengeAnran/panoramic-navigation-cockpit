@@ -7,6 +7,7 @@ import map from './modules/map';
 
 export default createStore({
   state: {
+    query: [], // 检索词
     intervalId: 0, // 定时器 id
     interval: 0,
     intervalTime: 5000, // 自动切换间隔时间
@@ -31,6 +32,23 @@ export default createStore({
       storage.setOrgId(payload);
       state.orgId = payload;
     },
+    // 添加检索词
+    ADD_QUERY(state, data) {
+      if (state.query.findIndex((i) => i === data) === -1) {
+        state.query.push(data);
+      }
+    },
+    // 删除其中一个检索词
+    DELETE_ONE_QUERY(state, data) {
+      const index = state.query.findIndex((i) => i === data);
+      if (index !== -1) {
+        state.query.splice(index, 1);
+      }
+    },
+    // 清空检索词
+    DELETE_ALL_QUERY(state) {
+      state.query = [];
+    },
   },
   actions: {
     getUserInfo({ commit }) {
@@ -46,5 +64,6 @@ export default createStore({
   plugins: process.env.NODE_ENV === 'development' ? [createLogger()] : [],
   getters: {
     intervalTime: (state) => state.intervalTime,
+    query: (state) => state.query,
   },
 });
