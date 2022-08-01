@@ -16,11 +16,14 @@
       </div>
       <img v-show="!showSearch" src="./img/search_icon.png" alt="" />
     </div>
-    <AppBottom />
+    <!--    图谱-->
+    <Atlas />
+    <AppBottom v-if="showBottom" />
   </div>
 </template>
 
 <script setup>
+import Atlas from './components/Atlas/index';
 import * as d3 from 'd3';
 import { onMounted, ref, computed } from 'vue';
 import { useStore } from 'vuex';
@@ -28,6 +31,7 @@ const state = useStore();
 const searchKeys = computed(() => {
   return state.getters.query;
 });
+const showBottom = ref(true);
 const showSearch = ref(false);
 const searchkey = ref('');
 onMounted(() => {
@@ -65,6 +69,7 @@ function deleteKey(item) {
     //background-size: 100% 100%;
   }
   .search-keys {
+    z-index: 13;
     position: absolute;
     top: 142px;
     left: 50%;
