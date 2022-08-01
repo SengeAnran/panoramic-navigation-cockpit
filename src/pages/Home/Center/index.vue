@@ -18,7 +18,7 @@
     </div>
     <!--    图谱-->
     <Atlas />
-    <AppBottom v-if="showBottom" />
+    <AppBottom :class="{ opacity: bottomOpacity }" />
   </div>
 </template>
 
@@ -31,9 +31,11 @@ const state = useStore();
 const searchKeys = computed(() => {
   return state.getters.query;
 });
-const showBottom = ref(true);
 const showSearch = ref(false);
 const searchkey = ref('');
+const bottomOpacity = computed(() => {
+  return state.getters.bottomOpacity;
+});
 onMounted(() => {
   const searchForm = d3.select('#searchForm');
   searchForm.on('submit', (e) => {
@@ -214,6 +216,9 @@ function deleteKey(item) {
       //border: 1px solid #77bbf9;
       //border-radius: 4px;
     }
+  }
+  .opacity {
+    opacity: 0.1;
   }
 }
 </style>

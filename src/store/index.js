@@ -13,6 +13,7 @@ export default createStore({
     intervalTime: 5000, // 自动切换间隔时间
     userInfo: {},
     orgId: storage.getOrgId() || '', // 数据权限id
+    bottomOpacity: false, // 底部透明设置
   },
   mutations: {
     [Types.SET_INTERVAL_ID](state, msg) {
@@ -25,12 +26,16 @@ export default createStore({
         clearInterval(state.intervalId);
       }
     },
+    // 底部透明设置
     SET_USER_INFO(state, payload) {
       state.userInfo = payload || {};
     },
     SET_ORG_ID(state, payload) {
       storage.setOrgId(payload);
       state.orgId = payload;
+    },
+    SET_BOTTOM_OPACITY(state, payload) {
+      state.bottomOpacity = payload;
     },
     // 添加检索词
     ADD_QUERY(state, data) {
@@ -64,6 +69,7 @@ export default createStore({
   plugins: process.env.NODE_ENV === 'development' ? [createLogger()] : [],
   getters: {
     intervalTime: (state) => state.intervalTime,
+    bottomOpacity: (state) => state.bottomOpacity,
     query: (state) => state.query,
   },
 });
