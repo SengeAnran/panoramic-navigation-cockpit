@@ -13,8 +13,8 @@
         <div class="atlas-items">
           <div class="box">
             <div class="atlas-item" v-for="(item, index) in systemList" :key="index">
-              <svg class="svg-box"></svg>
-              <div class="system-name theme-font-style">{{ item.system }}</div>
+              <SvgBox :data="item" />
+              <div class="system-name theme-font-style">{{ item.name }}</div>
               <input type="checkbox" />
             </div>
           </div>
@@ -27,6 +27,7 @@
 <script setup>
 import AtlasBall from './components/AtlasBall/index';
 import AtlasMap from './components/AtlasMap/index';
+import SvgBox from './components/SvgBox/index';
 import { ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { getRelationGraph } from '@/api/atlas';
@@ -39,7 +40,95 @@ watch(
   },
 );
 const atlasType = ref('关系图谱');
-const systemList = ref([]);
+const systemList = ref([
+  {
+    name: '系统名称1',
+    children: [
+      {
+        name: '节点名称1',
+        children: [
+          {
+            name: '节点名称21',
+          },
+          {
+            name: '节点名称22',
+          },
+          {
+            name: '节点名称23',
+            children: [
+              {
+                name: '节点名称31',
+                children: [
+                  {
+                    name: '节点名称42',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: '系统名称2',
+    children: [
+      {
+        name: '节点名称1',
+        children: [
+          {
+            name: '节点名称21',
+          },
+          {
+            name: '节点名称22',
+          },
+          {
+            name: '节点名称23',
+            children: [
+              {
+                name: '节点名称31',
+                children: [
+                  {
+                    name: '节点名称42',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: '系统名称3',
+    children: [
+      {
+        name: '节点名称1',
+        children: [
+          {
+            name: '节点名称21',
+          },
+          {
+            name: '节点名称22',
+          },
+          {
+            name: '节点名称23',
+            children: [
+              {
+                name: '节点名称31',
+                children: [
+                  {
+                    name: '节点名称42',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]);
 function changeAtlas(typeName) {
   atlasType.value = typeName;
 }
@@ -47,8 +136,7 @@ async function showRes() {
   showSearchRes.value = !showSearchRes.value;
   if (showSearchRes.value) {
     const res = await getRelationGraph();
-    systemList.value = res;
-
+    // systemList.value = res;
     console.log(res);
   }
 }
