@@ -1,6 +1,6 @@
 import { createStore, createLogger } from 'vuex';
 import * as Types from './actionTypes';
-import { getUserInfo } from '@/api/user';
+import { getUserInfo, userLogin } from '@/api/user';
 import storage from '@/utils/storage';
 import theme from './modules/theme';
 import map from './modules/map';
@@ -26,7 +26,7 @@ export default createStore({
         clearInterval(state.intervalId);
       }
     },
-    // 底部透明设置
+    // 用户信息
     SET_USER_INFO(state, payload) {
       state.userInfo = payload || {};
     },
@@ -34,6 +34,7 @@ export default createStore({
       storage.setOrgId(payload);
       state.orgId = payload;
     },
+    // 底部透明设置
     SET_BOTTOM_OPACITY(state, payload) {
       state.bottomOpacity = payload;
     },
@@ -62,6 +63,14 @@ export default createStore({
           commit('SET_USER_INFO', res || {});
           resolve();
         });
+      });
+    },
+    login(data) {
+      return new Promise((resolve) => {
+        userLogin(data).then((res) => {
+          storage.setToken(res.token);
+        });
+        resolve();
       });
     },
   },

@@ -1,6 +1,8 @@
 <template>
   <div class="center-content">
     <div class="mask"></div>
+    <!--    图谱-->
+    <Atlas />
     <div v-if="searchKeys && searchKeys.length > 0" class="search-keys">
       <div class="key-item" v-for="(item, index) in searchKeys" :key="index">
         <div class="key-name theme-font-style">{{ item }}</div>
@@ -16,8 +18,6 @@
       </div>
       <img v-show="!showSearch" src="./img/search_icon.png" alt="" />
     </div>
-    <!--    图谱-->
-    <Atlas />
     <AppBottom :class="{ opacity: bottomOpacity }" />
   </div>
 </template>

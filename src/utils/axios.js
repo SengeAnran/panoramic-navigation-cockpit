@@ -21,11 +21,12 @@ service.interceptors.request.use(
     // 全局设置token
     const token = storage.getToken();
     if (token) {
-      config.headers.Authorization = token;
+      config.headers.token = token;
     }
     // 全局设置orgId参数
     const orgId = storage.getOrgId();
     const method = config.method.toLocaleLowerCase();
+    console.log(method);
     if (method === 'get') {
       const params = { ...(config.params || {}), orgId };
       // const params = { ...(config.params || {}), orgId, area: '330521003208' };

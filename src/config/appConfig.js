@@ -27,7 +27,7 @@ const devConfig = {
   mapHost: 'https://xfsqxcx.deqing.gov.cn/arcgis',
   width: 3840, // 大屏分辨率-宽
   height: 1080, // 大屏分辨率-高
-  isLogin: false, // 是否需要验证登录
+  isLogin: true, // 是否需要验证登录
   tdtUrl: 'https://t{s}.tianditu.gov.cn/',
   tdtSubdomains: ['0', '1', '2', '3', '4', '5', '6', '7'],
   tdtToken: '46b650cc309be209b6bed442e8bc443a',

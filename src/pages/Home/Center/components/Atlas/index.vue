@@ -3,7 +3,7 @@
     <AtlasBall />
     <AtlasMap />
     <div class="search-results">
-      <div class="btn" @click="showSearchRes = !showSearchRes"></div>
+      <div class="btn" @click="showRes()"></div>
       <div class="search-results-box" v-if="showSearchRes">
         <div class="atlas-switch">
           <div class="type-name theme-font-style">{{ atlasType }}</div>
@@ -13,7 +13,8 @@
         <div class="atlas-items">
           <div class="box">
             <div class="atlas-item" v-for="(item, index) in systemList" :key="index">
-              <div class="system-name theme-font-style">{{ item.name }}</div>
+              <svg class="svg-box"></svg>
+              <div class="system-name theme-font-style">{{ item.system }}</div>
               <input type="checkbox" />
             </div>
           </div>
@@ -28,6 +29,7 @@ import AtlasBall from './components/AtlasBall/index';
 import AtlasMap from './components/AtlasMap/index';
 import { ref, watch } from 'vue';
 import { useStore } from 'vuex';
+import { getRelationGraph } from '@/api/atlas';
 const state = useStore();
 const showSearchRes = ref(false);
 watch(
@@ -37,25 +39,18 @@ watch(
   },
 );
 const atlasType = ref('关系图谱');
-const systemList = ref([
-  {
-    name: '系统名称1',
-  },
-  {
-    name: '系统名称2',
-  },
-  {
-    name: '系统名称3',
-  },
-  {
-    name: '系统名称4',
-  },
-  {
-    name: '系统名称5',
-  },
-]);
+const systemList = ref([]);
 function changeAtlas(typeName) {
   atlasType.value = typeName;
+}
+async function showRes() {
+  showSearchRes.value = !showSearchRes.value;
+  if (showSearchRes.value) {
+    const res = await getRelationGraph();
+    systemList.value = res;
+
+    console.log(res);
+  }
 }
 </script>
 
