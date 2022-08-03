@@ -75,7 +75,7 @@ function init() {
     .attr(
       'd',
       d3
-        .linkVertical()
+        .linkHorizontal()
         .x((d) => d.x)
         .y((d) => d.y),
     );
