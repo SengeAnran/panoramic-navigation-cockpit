@@ -4,13 +4,23 @@
       <div class="btn">全部展开</div>
       <div class="btn">全部收起</div>
     </div>
+    <ContrastSvgBox :data="props.data" :index="9999" />
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import ContrastSvgBox from './ContrastSvgBox';
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => {},
+  },
+});
+</script>
 
 <style lang="scss" scoped>
 .atlas-map {
+  cursor: pointer;
   position: absolute;
   top: 146px;
   //background-color: gold;

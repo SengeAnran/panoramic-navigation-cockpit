@@ -1,7 +1,7 @@
 <template>
   <div class="atlas">
-    <AtlasBall />
-    <AtlasMap />
+    <AtlasBall v-if="atlasType === '关系图谱'" />
+    <AtlasMap v-else :data="contrastData" />
     <div class="search-results">
       <div class="btn" @click="showRes()"></div>
       <div class="search-results-box" v-if="showSearchRes">
@@ -13,9 +13,9 @@
         <div class="atlas-items">
           <div class="box">
             <div class="atlas-item" v-for="(item, index) in systemList" :key="index">
-              <SvgBox :data="item" />
+              <SvgBox :data="item" :index="index" />
               <div class="system-name theme-font-style">{{ item.name }}</div>
-              <input type="checkbox" />
+              <input type="checkbox" v-model="item.check" @change="checkOne(item, index)" />
             </div>
           </div>
         </div>
@@ -28,7 +28,7 @@
 import AtlasBall from './components/AtlasBall/index';
 import AtlasMap from './components/AtlasMap/index';
 import SvgBox from './components/SvgBox/index';
-import { ref, watch } from 'vue';
+import { ref, watch, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { getRelationGraph } from '@/api/atlas';
 const state = useStore();
@@ -43,28 +43,38 @@ const atlasType = ref('关系图谱');
 const systemList = ref([
   {
     name: '系统名称1',
+    check: false,
     children: [
       {
         name: '节点名称1',
         children: [
           {
+            same: true,
             name: '节点名称21',
           },
           {
+            same: false,
             name: '节点名称22',
           },
           {
+            same: true,
             name: '节点名称23',
             children: [
               {
+                same: false,
                 name: '节点名称31',
                 children: [
                   {
+                    same: false,
                     name: '节点名称42',
                   },
                 ],
               },
             ],
+          },
+          {
+            same: false,
+            name: '节点名称24',
           },
         ],
       },
@@ -72,26 +82,27 @@ const systemList = ref([
   },
   {
     name: '系统名称2',
+    check: false,
     children: [
       {
+        same: true,
         name: '节点名称1',
         children: [
           {
+            same: false,
             name: '节点名称21',
           },
           {
+            same: true,
             name: '节点名称22',
           },
           {
+            same: false,
             name: '节点名称23',
             children: [
               {
+                same: true,
                 name: '节点名称31',
-                children: [
-                  {
-                    name: '节点名称42',
-                  },
-                ],
               },
             ],
           },
@@ -101,6 +112,7 @@ const systemList = ref([
   },
   {
     name: '系统名称3',
+    check: false,
     children: [
       {
         name: '节点名称1',
@@ -129,6 +141,10 @@ const systemList = ref([
     ],
   },
 ]);
+const contrastData = reactive({
+  name: '公积金',
+  children: [],
+});
 function changeAtlas(typeName) {
   atlasType.value = typeName;
 }
@@ -138,6 +154,19 @@ async function showRes() {
     const res = await getRelationGraph();
     // systemList.value = res;
     console.log(res);
+  }
+}
+function checkOne(item, index) {
+  // 控制对比图谱只能选择两个进行对比
+  if (atlasType.value === '对比图谱' && systemList.value.filter((i) => i.check).length > 2) {
+    systemList.value[index].check = false;
+    return;
+  }
+  if (atlasType.value === '对比图谱') {
+    contrastData.children = [];
+    contrastData.children = systemList.value.filter((i) => i.check);
+  } else {
+    console.log('关系图谱处理');
   }
 }
 </script>
@@ -212,7 +241,7 @@ async function showRes() {
         //background-color: pink;
         width: 1416px;
         overflow-x: scroll;
-        overflow-y: scroll;
+        overflow-y: hidden;
         margin-left: 112px;
         .box {
           width: fit-content;

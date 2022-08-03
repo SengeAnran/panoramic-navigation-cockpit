@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { defineProps, nextTick, onMounted, ref } from 'vue';
+import { defineProps, nextTick, onMounted, ref, watch } from 'vue';
 import * as d3 from 'd3';
 const props = defineProps({
   data: {
@@ -19,14 +19,28 @@ const g = ref('');
 const svgClass = ref('');
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
-  nextTick(() => {
-    if (props.data && props.data.children) {
-      init();
-    }
-  });
 });
+watch(
+  () => props.data,
+  (val) => {
+    console.log('变啦');
+    console.log(val);
+    if (val.children && val.children.length > 0) {
+      console.log('可以画啦');
+      nextTick(() => {
+        init();
+      });
+    }
+    // init();
+  },
+  { immediate: true, deep: true },
+);
 function init() {
+  console.log('画啦');
   const svg = d3.select(`.svg-${props.index}`);
+  if (svg.select('g')) {
+    svg.select('g').remove();
+  }
   const margin = {
     top: 40,
     right: 30,
@@ -36,9 +50,9 @@ function init() {
   const nodeOption = {
     width: (name) => {
       // 动态设置文本框宽度
-      return name.length * 12;
+      return name.length * 18 + 15;
     },
-    height: 23,
+    height: 32,
   };
   const width = parseInt(svg.style('width'), 10);
   const height = parseInt(svg.style('height'), 10);
@@ -65,7 +79,11 @@ function init() {
         .x((d) => d.x)
         .y((d) => d.y),
     );
-  const imgUrl = require('../../img/bottom_icon.png');
+  // 节点背景颜色
+  function rectColor(d) {
+    console.log(d);
+    return d.data.same ? '#3B78F2' : '#142847';
+  }
   // 画节点方块
   g.value
     .selectAll('rect')
@@ -73,10 +91,9 @@ function init() {
     .join('rect')
     .attr('width', (d) => nodeOption.width(d.data.name))
     .attr('height', nodeOption.height)
-    .attr('fill', '#142847')
-    .attr('background-img', `url(${imgUrl})`)
-    .attr('stroke', '#7CA3EF')
-    .attr('stroke-width', 1)
+    .attr('fill', (d) => rectColor(d))
+    .attr('stroke', '#3B78F2')
+    .attr('stroke-width', 2)
     .attr('x', (d) => d.x - nodeOption.width(d.data.name) / 2)
     .attr('y', (d) => d.y)
     .attr('class', 'rect');
@@ -86,11 +103,18 @@ function init() {
     .selectAll('text')
     .data(node)
     .join('text')
+    .on('click', (d) => {
+      console.log(d.target.__data__); // 点击的节点
+      console.log('点击了,深度为：' + d.target.__data__.depth);
+      if (d.target.__data__.depth) {
+        console.log('需要展示啦！');
+      }
+    })
     .attr('text-anchor', 'middle') // 位置
     .attr('x', (d) => d.x)
-    .attr('y', (d) => d.y + 16)
+    .attr('y', (d) => d.y + 23)
     .text((d) => d.data.name)
-    .style('font-size', '11px')
+    .style('font-size', '18px')
     .attr('fill', 'white');
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
   // .attr('text-orientation', 'upright');
