@@ -23,8 +23,6 @@ onMounted(() => {
 watch(
   () => props.data,
   (val) => {
-    console.log('变啦');
-    console.log(val);
     if (val.children) {
       nextTick(() => {
         init();
@@ -96,12 +94,14 @@ function init() {
   }
 }
 function render(data, position) {
-  const g = svg.append('g').attr('transform', `translate(${margin.top},${margin.left})`);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
   let root = d3.hierarchy(data);
   root = d3.tree().size([innerHeight / 2, innerWidth / 3])(root);
-  const node = root.descendants();
+  root.x = 181.75;
+  root.y = 0;
+  const node = root.descendants(); // x: 181.75 y: 0
   const path = root.links();
-  console.log(node, path);
+  // console.log(node, path);
   // 画线
   g.selectAll('path')
     .data(path)
@@ -155,15 +155,16 @@ function render(data, position) {
     .attr('fill', 'white');
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
   // .attr('text-orientation', 'upright');
-  console.log(g);
 }
 function renderAll(data) {
-  const g = svg.append('g').attr('transform', `translate(${margin.top},${margin.left})`);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
   let root = d3.hierarchy(data);
+  // x:242.375 y: 0
+  // (x: 80.79166666666667 y: 181.75)  (x: 242.375 y: 181.75) ( 403.95833333333337 y: 181.75)
   root = d3.tree().size([innerWidth / 4, innerHeight / 4])(root);
   const node = root.descendants();
   const path = root.links();
-  console.log(node, path);
+  // console.log(node, path);
   // 画线
   g.selectAll('path')
     .data(path)
@@ -209,15 +210,17 @@ function renderAll(data) {
     .attr('fill', 'white');
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
   // .attr('text-orientation', 'upright');
-  console.log(g);
 }
 function renderSame(data) {
-  const g = svg.append('g').attr('transform', `translate(${margin.top},${margin.left})`);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
   let root = d3.hierarchy(data);
   root = d3.tree().size([innerWidth / 3, (innerHeight * 3) / 4])(root);
+  // x: 323.1666666666667 y: 0
+  root.x = 323.1666666666667;
+  root.y = 0;
   const node = root.descendants();
   const path = root.links();
-  console.log(node, path);
+  // console.log(node, path);
   // 画线
   g.selectAll('path')
     .data(path)
@@ -265,7 +268,6 @@ function renderSame(data) {
     .attr('fill', 'white');
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
   // .attr('text-orientation', 'upright');
-  console.log(g);
 }
 </script>
 

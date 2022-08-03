@@ -147,6 +147,9 @@ const contrastData = reactive({
 });
 function changeAtlas(typeName) {
   atlasType.value = typeName;
+  systemList.value.forEach((i) => {
+    i.check = false;
+  });
 }
 async function showRes() {
   showSearchRes.value = !showSearchRes.value;
