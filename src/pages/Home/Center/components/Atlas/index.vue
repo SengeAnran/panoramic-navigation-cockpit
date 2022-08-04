@@ -131,6 +131,11 @@ const systemList = ref([
                 children: [
                   {
                     name: '节点名称42',
+                    children: [
+                      {
+                        name: '节点名称52',
+                      },
+                    ],
                   },
                 ],
               },

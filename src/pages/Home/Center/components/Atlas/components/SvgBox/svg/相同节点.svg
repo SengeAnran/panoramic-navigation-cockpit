@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 74.73">
+  <defs>
+    <style>.cls-21{fill:#b8d9f6;}.cls-22{fill:#5ca8ea;}.cls-23{fill:#99c9f2;}.cls-24{fill:#e0effb;}</style>
+  </defs>
+  <g data-name="图层 2">
+    <g data-name="图层 1">
+      <path class="cls-21" d="M0,37.24,42.75,62.16V74.73L0,49.83V37.24Z"/>
+      <path class="cls-22"
+            d="M3.67,43,31.08,59.07v2L3.67,45Zm0,4.21L31.08,63.27v2L3.67,49.24ZM33.62,60.39l5,3v5.66l-5-3V60.39Z"/>
+      <path class="cls-23" d="M80,40.58,42.75,62.16V74.73L80,53Z"/>
+      <path class="cls-24" d="M80,40.58,37,16,0,37.25,42.75,62.1Z"/>
+      <path class="cls-21" d="M0,21.23,42.75,46.15V58.72L0,33.8V21.23Z"/>
+      <path class="cls-22"
+            d="M3.67,27,31.08,43.05v2L3.67,29V27Zm0,4.21L31.08,47.25v2L3.67,33.22v-2ZM33.62,44.37l5,3v5.68l-5-3V44.37Z"/>
+      <path class="cls-23" d="M80,24.56,42.75,46.15V58.72L80,37Z"/>
+      <path class="cls-24" d="M80,24.56,37,0,0,21.23,42.75,46.1Z"/>
+    </g>
+  </g>
+</svg>
