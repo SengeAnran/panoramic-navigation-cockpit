@@ -1,11 +1,24 @@
 <template>
-  <svg class="svg-box" :class="svgClass"></svg>
+  <div class="svg-show-box">
+    <svg class="svg-box" :class="svgClass"></svg>
+  </div>
 </template>
 
 <script setup>
-import { mathMidPoints, svgAddReduce, svgLogo } from './constant';
+import {
+  animateY,
+  animateX,
+  hideAllChildren,
+  hideChildrenNode,
+  hideChildrenOnFirst,
+  mathMidPoints,
+  showChildrenNode,
+  svgAddReduce,
+  svgLogo,
+} from './constant';
 import { defineProps, nextTick, onMounted, ref, watch } from 'vue';
 import * as d3 from 'd3';
+import { useStore } from 'vuex';
 const props = defineProps({
   data: {
     type: Object,
@@ -14,13 +27,19 @@ const props = defineProps({
   index: {
     type: Number,
   },
+  hideAll: {
+    type: Boolean,
+    default: false,
+  },
 });
 const inWidVal = ref(0);
 const inHeiVal = ref(0);
-// const rootX = ref(0);
-// const rootY = ref(0);
-let innerWidth, innerHeight, svg;
-// const g = ref('');
+let innerWidth, // 内宽
+  innerHeight, // 内高
+  svg,
+  treeHeight, // 树高
+  defaultWidth = 1999, // 默认展示宽度
+  defaultHeight = 800; // 默认展示高度
 const svgClass = ref('');
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
@@ -33,10 +52,27 @@ watch(
         init();
       });
     }
-    // init();
   },
   { immediate: true, deep: true },
 );
+watch(
+  () => props.hideAll,
+  (val) => {
+    console.log(val);
+    if (val) {
+      nextTick(() => {
+        showMain();
+        init();
+      });
+    }
+  },
+  { immediate: true, deep: true },
+);
+function showMain() {
+  for (let i = 0; i < props.data.children.length; i++) {
+    hideAllChildren(props.data.children[i]);
+  }
+}
 // 节点背景颜色
 function rectColor(d) {
   return d.data.same ? '#3B78F2' : '#142847';
@@ -50,7 +86,7 @@ const nodeOption = {
 };
 const nodeOption2 = {
   width: (name) => {
-    // 动态设置文本框宽度
+    // 动态设置文本框宽度（用于横向树设置）
     return name.length * 18 + 15;
   },
   height: 32,
@@ -61,24 +97,74 @@ const margin = {
   bottom: 33,
   left: 30,
 };
-const midValue = 300;
+const midValue = 300; // left 和right 相距距离
+let sameData = {
+  name: '相同节点',
+  children: [],
+};
+const state = useStore();
+// 初始化
 function init() {
+  let multiple = 1; // 屏宽系数
+  treeHeight = d3.hierarchy(props.data).height;
+  // console.log('treeHeight', treeHeight);
+  if (treeHeight > 5) {
+    multiple = treeHeight / 6 + 2 / 6;
+  }
   svg = d3.select(`.svg-${props.index}`);
   if (svg.select('.chart-g')) {
     svg.selectAll('.chart-g').remove();
   }
-  const width = parseInt(svg.style('width'), 10);
-  const height = parseInt(svg.style('height'), 10);
+  let width = defaultWidth;
+  let height = defaultHeight;
+  // console.log('multiple', multiple);
+  if (multiple !== 1) {
+    width = width * multiple;
+    height = height * multiple;
+  }
+  svg.attr('width', width + 'px').attr('height', height + 'px');
   innerWidth = width - margin.left - margin.right;
   innerHeight = height - margin.top - margin.bottom;
   inWidVal.value = innerWidth;
   inHeiVal.value = innerHeight;
   // rootX.value = innerWidth / 2 - 10;
+
+  if (state.getters.showFirstTime) {
+    // 第一次展示最多展示七层
+    const fristRoot = d3.hierarchy(props.data);
+    hideChildrenOnFirst(fristRoot, 5);
+    if (multiple !== 1) {
+      // 设置窗口展示位置
+      const left = ((multiple - 1) / 2) * (defaultWidth - margin.left - margin.right);
+      const top = multiple > 1 ? (multiple * innerHeight) / 16 : 0;
+      document.querySelector('.svg-show-box').scrollTop = top; //通过scrollTop设置滚动到100位置
+      document.querySelector('.svg-show-box').scrollLeft = left; //通过scrollTop设置滚动到200位置
+    }
+    state.commit('atlasMap/SET_SHOW_FIRST_TIME', false);
+  }
   if (props.data.children[0]) {
-    render(props.data.children[0], 'left');
+    const option = {
+      data: props.data.children[0], // 树状图数据，
+      position: 'left', //  位置：left、right、bottom
+      rootNode: {
+        // 根节点固定初始坐标
+        x: innerHeight / 4,
+        y: 0,
+      },
+    };
+    render(option);
   }
   if (props.data.children[1]) {
-    render(props.data.children[1], 'right');
+    const option = {
+      data: props.data.children[1],
+      position: 'right',
+      rootNode: {
+        x: innerHeight / 4 - 0,
+        y: 0,
+      },
+    };
+    // console.log('right');
+    render(option);
     let data = {
       name: props.data.name,
       children: [
@@ -93,29 +179,57 @@ function init() {
         },
       ],
     };
-    let sameData = {
-      name: '相同节点',
-      children: props.data.children[1].children,
+    sameData.children = props.data.children[1].children;
+    const optionSame = {
+      data: sameData,
+      position: 'center',
+      rootNode: {
+        x: innerWidth / 6,
+        y: 0,
+      },
     };
-    renderSame(sameData);
-    renderAll(data);
+    render(optionSame);
+    // renderSame(sameData);
+    const optionRoot = {
+      data: data,
+      rootNode: {
+        x: midValue / 2,
+        y: multiple > 1 ? 30 + (multiple * innerHeight) / 16 : 30,
+      },
+    };
+    renderRoot(optionRoot);
   }
 }
+
 // 画左右两边树状图
-function render(data, position) {
+/**
+ * 画左右两边树状图
+ * @param {Object} option {
+ *   data: 树状图数据，
+ *   position： 位置：left、right、bottom
+ *   rootNode: { 根节点固定初始坐标
+ *     x:
+ *     y:
+ *   }
+ * }
+ * @returns {Object}
+ */
+function render(option) {
+  const { data, position, rootNode } = option;
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
   let root = d3.hierarchy(data);
-  root = d3.tree().size([innerHeight / 2, innerWidth / 3])(root);
-  root.x = 181.75;
-  root.y = 0;
+  const regionSize = {
+    left: [innerHeight / 2, innerWidth / 3], // f(w/2 - y, x)
+    right: [innerHeight / 2, innerWidth / 3], // f(w/2 + y, x)
+    center: [innerWidth / 3, (innerHeight * 3) / 4], // f(x + w/3, y + h/4)
+  };
+  root = d3.tree().size(regionSize[position])(root);
+  root.x = rootNode.x; // 设置根节点初始位置
+  root.y = rootNode.y;
   const node = root.descendants(); // x: 181.75 y: 0
   const path = root.links();
   // console.log(node, path);
   const newCircles = []; // 连线两端点坐标列表
-  function mathX(y) {
-    // 计算点的x的实际坐标
-    return position === 'right' ? innerWidth / 2 + y + midValue / 2 : innerWidth / 2 - y - midValue / 2;
-  }
   // 画线
   g.selectAll('path')
     .data(path)
@@ -123,39 +237,60 @@ function render(data, position) {
     .attr('fill', 'none')
     .attr('stroke', '#7CA3EF')
     .attr('stroke-width', 1)
-    // .attr( // 曲线链接
-    //   'd',
-    //   d3
-    //     .linkVertical()
-    //     .x((d) => (position === 'right' ? innerWidth / 2 + d.y + midValue / 2 : innerWidth / 2 - d.y - midValue / 2))
-    //     .y((d) => d.x),
-    // )
     .attr('d', (d) => {
-      const x1 = mathX(d.source.y);
-      const y1 = d.source.x;
-      const x2 = mathX(d.target.y);
-      const y2 = d.target.x;
-      console.log(d);
-      const { x3, y3, x4, y4 } = mathMidPoints(
-        x2,
-        y2,
-        x1,
-        y1,
-        16,
-        nodeOption2.width(d.source.data.name),
-        nodeOption2.width(d.target.data.name),
-      ); // 计算短路径
-      newCircles.push({
-        x: x4,
-        y: y4,
-      });
-      newCircles.push({
-        x: x3,
-        y: y3,
-      });
+      function mathX(y) {
+        // 左右会左右旋转
+        // 计算点的x的实际坐标
+        return position === 'center'
+          ? y + innerWidth / 3
+          : position === 'right'
+          ? innerWidth / 2 + y + midValue / 2
+          : innerWidth / 2 - y - midValue / 2;
+      }
+      function mathY(x) {
+        // 计算点的x的实际坐标
+        return position === 'center' ? x + innerHeight / 4 : x;
+      }
+      let x1, x2, y1, y2;
+      if (position !== 'center') {
+        x1 = mathX(d.source.y);
+        y1 = mathY(d.source.x);
+        x2 = mathX(d.target.y);
+        y2 = mathY(d.target.x);
+      } else {
+        x1 = mathX(d.source.x);
+        y1 = mathY(d.source.y);
+        x2 = mathX(d.target.x);
+        y2 = mathY(d.target.y);
+      }
+      const { x3, y3, x4, y4 } =
+        position === 'center'
+          ? mathMidPoints(x2, y2, x1, y1, 16)
+          : mathMidPoints(
+              x2,
+              y2,
+              x1,
+              y1,
+              16,
+              nodeOption2.width(d.source.data.name),
+              nodeOption2.width(d.target.data.name),
+            ); // 计算短路径
+      if (d.target.data.hide !== true) {
+        newCircles.push({
+          x: x4,
+          y: y4,
+        });
+        newCircles.push({
+          x: x3,
+          y: y3,
+        });
+      }
       return `
         M${x3},${y3}
         ${x4},${y4}`;
+    })
+    .attr('opacity', (d) => {
+      return d.target.data.hide === true ? 0 : 1;
     });
   // 画节点方块
   g.selectAll('rect')
@@ -167,13 +302,22 @@ function render(data, position) {
     .attr('stroke', '#3B78F2')
     .attr('stroke-width', 2)
     .attr('rx', 4)
-    .attr('x', (d) =>
-      position === 'right'
-        ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
-        : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2,
+    .attr('x', (d) => {
+      return position === 'center'
+        ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3
+        : position === 'right'
+        ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2 //
+        : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
+    })
+    .attr('y', (d) =>
+      position === 'center' ? d.y - nodeOption2.height / 2 + innerHeight / 4 : d.x - nodeOption.width / 2,
     )
-    .attr('y', (d) => d.x - nodeOption.width / 2)
-    .attr('opacity', (d) => (d.depth === 0 && props.data.children.length === 2 ? 0 : 1))
+    .attr('opacity', (d) => {
+      return d.data.hide === true ||
+        (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length === 2)
+        ? 0
+        : 1;
+    })
     .attr('class', 'rect');
   // 文字
   g.selectAll('text')
@@ -188,13 +332,22 @@ function render(data, position) {
     })
     .attr('text-anchor', 'middle') // 位置
     .attr('x', (d) =>
-      position === 'right' ? innerWidth / 2 + d.y + midValue / 2 : innerWidth / 2 - d.y - midValue / 2,
+      position === 'center'
+        ? d.x + innerWidth / 3
+        : position === 'right'
+        ? innerWidth / 2 + d.y + midValue / 2
+        : innerWidth / 2 - d.y - midValue / 2,
     )
-    .attr('y', (d) => d.x + 6)
+    .attr('y', (d) => (position === 'center' ? d.y + 6 + innerHeight / 4 : d.x + 6))
     .text((d) => d.data.name)
     .style('font-size', '18px')
     .style('font-family', 'YouSheBiaoTiHei')
-    .attr('opacity', (d) => (d.depth === 0 && props.data.children.length === 2 ? 0 : 1))
+    .attr('opacity', (d) => {
+      return d.data.hide === true ||
+        (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length === 2)
+        ? 0
+        : 1;
+    })
     .attr('fill', 'white');
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
   // .attr('text-orientation', 'upright');
@@ -217,17 +370,38 @@ function render(data, position) {
     .join('g')
     .html(svgAddReduce.add)
     .attr('transform', (d) => {
-      function mathX(d, position) {
-        return position === 'right'
+      function mathX() {
+        return position === 'center'
+          ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3
+          : position === 'right'
           ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
           : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
       }
-      return `translate(${mathX(d, position)}, ${d.x - nodeOption.width / 2 - 16})`;
+      function mathY() {
+        return position === 'center'
+          ? d.y - nodeOption2.height / 2 + innerHeight / 4 - 16
+          : d.x - nodeOption.width / 2 - 16;
+      }
+      return `translate(${mathX()}, ${mathY()})`;
     })
-    .attr('opacity', (d) => (d.depth === 0 && props.data.children.length === 2 ? 0 : 1))
-    .on('click', (e) => {
-      console.log('加');
-      console.log(e);
+    .on('click', (e, d) => {
+      // console.log(e.offsetX, e.offsetY);
+      const top = e.offsetY - defaultHeight / 2;
+      const left = e.offsetX - defaultWidth / 2;
+      const obj = document.querySelector('.svg-show-box');
+      if (e.offsetY - defaultHeight / 2 - top > 5) {
+        animateY(obj, top > 0 ? Math.ceil(top) : 0);
+      }
+      if (e.offsetX - defaultWidth / 2 - top > 5) {
+        animateX(obj, left > 0 ? Math.ceil(left) : 0);
+      }
+      // .scrollTop = top > 0 ? top : 0; //通过scrollTop设置滚动到100位置
+      // document.querySelector('.svg-show-box').scrollLeft = left > 0 ? left : 0; //通过scrollTop设置滚动到200位置
+      showChildrenNode(d);
+      init();
+    })
+    .attr('opacity', (d) => {
+      return d.data.hide === true || (d.depth === 0 && props.data.children.length === 2) || !d.data.children ? 0 : 1;
     });
   // 画减按钮
   g.append('g')
@@ -237,31 +411,48 @@ function render(data, position) {
     .join('g')
     .html(svgAddReduce.reduce)
     .attr('transform', (d) => {
-      function mathX(d, position) {
-        return position === 'right'
+      function mathX() {
+        return position === 'center'
+          ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3
+          : position === 'right'
           ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
           : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
       }
-      return `translate(${mathX(d, position) + 16}, ${d.x - nodeOption.width / 2 - 16})`;
+      function mathY() {
+        return position === 'center'
+          ? d.y - nodeOption2.height / 2 + innerHeight / 4 - 16
+          : d.x - nodeOption.width / 2 - 16;
+      }
+      return `translate(${mathX() + 16}, ${mathY()})`;
     })
-    .attr('opacity', (d) => (d.depth === 0 && props.data.children.length === 2 ? 0 : 1))
-    .on('click', (e) => {
-      console.log('减');
-      console.log(e);
+    .on('click', (e, d) => {
+      const top = e.offsetY - defaultHeight / 2;
+      const left = e.offsetX - defaultWidth / 2;
+      const obj = document.querySelector('.svg-show-box');
+      if (e.offsetY - defaultHeight / 2 - top > 5) {
+        animateY(obj, top > 0 ? Math.ceil(top) : 0);
+      }
+      if (e.offsetX - defaultWidth / 2 - top > 5) {
+        animateX(obj, left > 0 ? Math.ceil(left) : 0);
+      }
+      hideChildrenNode(d);
+      init();
+    })
+    .attr('opacity', (d) => {
+      return d.data.hide === true || (d.depth === 0 && props.data.children.length === 2) || !d.data.children ? 0 : 1;
     });
 }
 // 画根树状图
-function renderAll(data) {
+function renderRoot(option) {
+  const { data, rootNode } = option;
+  const formula = innerWidth / 2 - (midValue * 1.6) / 2;
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
   let root = d3.hierarchy(data);
   // x:242.375 y: 0
   // (x: 80.79166666666667 y: 181.75)  (x: 242.375 y: 181.75) ( 403.95833333333337 y: 181.75)
-  root = d3.tree().size([innerWidth / 4, innerHeight / 4])(root);
-  root.x = 242.375;
-  root.y = 30;
-  // root.children[0].x = 80.79166666666667;
-  // root.children[0].y = 181.75;
-  console.log(root, 'ddddd');
+  root = d3.tree().size([midValue * 1.6, innerHeight / 4])(root);
+  root.x = rootNode.x * 1.6; // 242.375;
+  root.y = rootNode.y;
   const node = root.descendants();
   const path = root.links();
   // console.log(node, path);
@@ -272,28 +463,20 @@ function renderAll(data) {
     .attr('fill', 'none')
     .attr('stroke', '#7CA3EF')
     .attr('stroke-width', 1)
-    .attr(
-      'd',
-      // d3
-      //   .linkVertical()
-      //   .x((d) => d.x + (innerWidth * 3) / 8)
-      //   .y((d) => d.y),
-      (d) => {
-        function mathX(x) {
-          // 计算点的x的实际坐标
-          return x + (innerWidth * 3) / 8;
-        }
-        const x1 = mathX(d.source.x);
-        const y1 = d.source.y;
-        const x2 = mathX(d.target.x);
-        const y2 = d.target.y;
-        return `
+    .attr('d', (d) => {
+      function mathX(x) {
+        // 计算点的x的实际坐标
+        return x + formula;
+      }
+      const x1 = mathX(d.source.x);
+      const y1 = d.source.y;
+      const x2 = mathX(d.target.x);
+      const y2 = d.target.y;
+      return `
         M${x1},${y1}
         ${x2},${y2}`;
-      },
-    );
+    });
   // 画节点图标
-  // console.log(svgLogo(1));
   g.append('g')
     .attr('class', 'logo-svg')
     .selectAll('g')
@@ -302,24 +485,10 @@ function renderAll(data) {
     .html((d) => svgLogo(d))
     .attr('transform', (d) => {
       if (d.x === 403.95833333333337) {
-        return `translate(${d.x + (innerWidth * 3) / 8}, ${d.y - nodeOption2.height})`;
+        return `translate(${d.x + formula}, ${d.y - nodeOption2.height})`;
       }
-      return `translate(${d.x - nodeOption2.width(d.data.name) / 2 + (innerWidth * 3) / 8}, ${
-        d.y - nodeOption2.height
-      })`;
+      return `translate(${d.x - nodeOption2.width(d.data.name) / 2 + formula}, ${d.y - nodeOption2.height})`;
     });
-  // // 画节点方块
-  // g.selectAll('rect')
-  //   .data(node)
-  //   .join('rect')
-  //   .attr('width', (d) => nodeOption.height(d.data.name))
-  //   .attr('height', nodeOption.width)
-  //   .attr('fill', (d) => rectColor(d))
-  //   .attr('stroke', '#3B78F2')
-  //   .attr('stroke-width', 2)
-  //   .attr('x', (d) => d.x - nodeOption2.width(d.data.name) / 2 + (innerWidth * 3) / 8)
-  //   .attr('y', (d) => d.y - nodeOption2.height / 2)
-  //   .attr('class', 'rect');
   // 文字
   g.selectAll('text')
     .data(node)
@@ -333,7 +502,7 @@ function renderAll(data) {
     })
     // .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
     .attr('text-anchor', 'middle') // 位置
-    .attr('x', (d) => d.x + (innerWidth * 3) / 8)
+    .attr('x', (d) => d.x + formula)
     .attr('y', (d) => (d.children ? d.y - 40 : d.y + 66))
     .text((d) => d.data.name)
     .style('font-size', (d) => (d.children ? '24px' : '18px'))
@@ -342,147 +511,17 @@ function renderAll(data) {
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
   // .attr('text-orientation', 'upright');
 }
-
-// 画相同节点树状图
-function renderSame(data) {
-  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
-  let root = d3.hierarchy(data);
-  root = d3.tree().size([innerWidth / 3, (innerHeight * 3) / 4])(root);
-  // x: 323.1666666666667 y: 0
-  root.x = 323.1666666666667;
-  root.y = 0;
-  const node = root.descendants();
-  const path = root.links();
-  // console.log(node, path);
-  const newCircles = []; // 连线两端点坐标列表
-  // 画线
-  g.selectAll('path')
-    .data(path)
-    .join('path')
-    .attr('fill', 'none')
-    .attr('stroke', '#7CA3EF')
-    .attr('stroke-width', 1)
-    .attr(
-      'd',
-      // d3
-      //   .linkVertical()
-      //   .x((d) => d.x + innerWidth / 3)
-      //   .y((d) => d.y + innerHeight / 4),
-      (d) => {
-        function mathX(x) {
-          // 计算点的x的实际坐标
-          return x + innerWidth / 3;
-        }
-        function mathY(y) {
-          // 计算点的x的实际坐标
-          return y + innerHeight / 4;
-        }
-        const x1 = mathX(d.source.x);
-        const y1 = mathY(d.source.y);
-        const x2 = mathX(d.target.x);
-        const y2 = mathY(d.target.y);
-        const { x3, y3, x4, y4 } = mathMidPoints(x2, y2, x1, y1, 16); // 计算短路径
-        newCircles.push({
-          x: x4,
-          y: y4,
-        });
-        newCircles.push({
-          x: x3,
-          y: y3,
-        });
-        return `
-        M${x3},${y3}
-        ${x4},${y4}`;
-      },
-    );
-
-  // 画节点方块
-  g.selectAll('rect')
-    .data(node)
-    .join('rect')
-    .attr('width', (d) => nodeOption.height(d.data.name))
-    .attr('height', nodeOption.width)
-    .attr('fill', (d) => rectColor(d))
-    .attr('stroke', '#3B78F2')
-    .attr('stroke-width', 2)
-    .attr('x', (d) => d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3)
-    .attr('y', (d) => d.y - nodeOption2.height / 2 + innerHeight / 4)
-    .attr('rx', 4)
-    // .attr('ry', 4)
-    .attr('class', 'rect')
-    .attr('opacity', (d) => (d.depth === 0 ? 0 : 1));
-  // 文字
-  console.log(node);
-  g.selectAll('text')
-    .data(node)
-    .join('text')
-    .on('click', (d) => {
-      console.log(d.target.__data__); // 点击的节点
-      console.log('点击了,深度为：' + d.target.__data__.depth);
-      if (d.target.__data__.depth) {
-        console.log('需要展示啦！');
-      }
-    })
-    .attr('text-anchor', 'middle') // 位置
-    .attr('x', (d) => d.x + innerWidth / 3)
-    .attr('y', (d) => d.y + 6 + innerHeight / 4)
-    .text((d) => d.data.name)
-    .style('font-size', '18px')
-    .style('font-family', 'YouSheBiaoTiHei')
-    .attr('opacity', (d) => (d.depth === 0 ? 0 : 1))
-    .attr('fill', 'white');
-  // .attr('writing-mode', 'vertical-rl') // 文本竖过来
-  // .attr('text-orientation', 'upright');
-  // 画圈
-  g.selectAll('circle')
-    .data(newCircles)
-    .join('circle')
-    .attr('cx', (d) => d.x)
-    .attr('cy', (d) => d.y)
-    .attr('r', 5)
-    .attr('stroke', '#3B78F2')
-    .attr('stroke-width', 1);
-  // 画加按钮
-  g.append('g')
-    .attr('class', 'add')
-    .selectAll('g')
-    .data(node)
-    .join('g')
-    .html(svgAddReduce.add)
-    .attr('transform', (d) => {
-      return `translate(${d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3}, ${
-        d.y - nodeOption2.height / 2 + innerHeight / 4 - 16
-      })`;
-    })
-    .attr('opacity', (d) => (d.depth === 0 && props.data.children.length === 2 ? 0 : 1))
-    .on('click', (e) => {
-      console.log('加');
-      console.log(e);
-    });
-  // 画减按钮
-  g.append('g')
-    .attr('class', 'reduce')
-    .selectAll('g')
-    .data(node)
-    .join('g')
-    .html(svgAddReduce.reduce)
-    .attr('transform', (d) => {
-      return `translate(${d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3 + 16}, ${
-        d.y - nodeOption2.height / 2 + innerHeight / 4 - 16
-      })`;
-    })
-    .attr('opacity', (d) => (d.depth === 0 && props.data.children.length === 2 ? 0 : 1))
-    .on('click', (e) => {
-      console.log('减');
-      console.log(e);
-    });
-}
 </script>
 
 <style lang="scss" scoped>
-.svg-box {
+.svg-show-box {
   width: 100%;
   height: 100%;
+  overflow: scroll;
+  .svg-box {
+    min-width: 100%;
+    min-height: 100%;
+  }
 }
 </style>
 <style lang="scss">

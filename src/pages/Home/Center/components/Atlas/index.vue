@@ -1,7 +1,7 @@
 <template>
   <div class="atlas">
     <AtlasBall v-if="atlasType === '关系图谱'" />
-    <AtlasMap v-else :data="contrastData" />
+    <AtlasMap v-else @showAll="showAll" :data="contrastData" />
     <div class="search-results">
       <div class="btn" @click="showRes()"></div>
       <div class="search-results-box" v-if="showSearchRes">
@@ -15,7 +15,7 @@
             <div class="atlas-item" v-for="(item, index) in systemList" :key="index">
               <SvgBox :data="item" :index="index" />
               <div class="system-name theme-font-style">{{ item.name }}</div>
-              <input type="checkbox" v-model="item.check" @change="checkOne(item, index)" />
+              <input type="checkbox" v-model="item.check" @change="checkOne(item, index, true)" />
             </div>
           </div>
         </div>
@@ -31,6 +31,7 @@ import SvgBox from './components/SvgBox/index';
 import { ref, watch, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { getRelationGraph } from '@/api/atlas';
+import { deepClone } from '@/utils';
 const state = useStore();
 const showSearchRes = ref(false);
 watch(
@@ -134,12 +135,43 @@ const systemList = ref([
                     children: [
                       {
                         name: '节点名称52',
+                        children: [
+                          {
+                            name: '节点名称52',
+                            children: [
+                              {
+                                name: '节点名称52',
+                                children: [
+                                  {
+                                    name: '节点名称52',
+                                    children: [
+                                      {
+                                        name: '节点名称52',
+                                        children: [
+                                          {
+                                            name: '节点名称52',
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
                       },
                     ],
                   },
                 ],
               },
             ],
+          },
+          {
+            name: '节点名称24',
+          },
+          {
+            name: '节点名称25',
           },
         ],
       },
@@ -150,6 +182,14 @@ const contrastData = reactive({
   name: '公积金',
   children: [],
 });
+// const contrastDataClone = reactive({
+//   name: '公积金',
+//   children: [],
+// });
+function showAll() {
+  console.log('展示全部');
+  checkOne();
+}
 function changeAtlas(typeName) {
   atlasType.value = typeName;
   systemList.value.forEach((i) => {
@@ -164,15 +204,18 @@ async function showRes() {
     console.log(res);
   }
 }
-function checkOne(item, index) {
+function checkOne(item, index, click) {
   // 控制对比图谱只能选择两个进行对比
-  if (atlasType.value === '对比图谱' && systemList.value.filter((i) => i.check).length > 2) {
+  if (atlasType.value === '对比图谱' && systemList.value.filter((i) => i.check).length > 2 && (index || index === 0)) {
     systemList.value[index].check = false;
     return;
   }
   if (atlasType.value === '对比图谱') {
     contrastData.children = [];
-    contrastData.children = systemList.value.filter((i) => i.check);
+    contrastData.children = deepClone(systemList.value.filter((i) => i.check));
+    if (click) {
+      state.commit('atlasMap/SET_SHOW_FIRST_TIME', true);
+    }
   } else {
     console.log('关系图谱处理');
   }

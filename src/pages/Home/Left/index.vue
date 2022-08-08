@@ -37,6 +37,7 @@
 // import * as d3 from 'd3';
 import { ref, reactive, onMounted } from 'vue';
 import { useStore } from 'vuex';
+import { getBusinessDirectory } from '@/api/search';
 const state = useStore();
 const seletType = reactive({
   name: '业务导览',
@@ -63,6 +64,11 @@ function changeType(index) {
   seletType.eglishName = optionType.value[index].eglishName;
   showOption.value = false;
 }
+onMounted(() => {
+  getBusinessDirectory().then((res) => {
+    console.log(res);
+  });
+});
 const activeIndex = ref(1);
 const dataList = ref([
   {

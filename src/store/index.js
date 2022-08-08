@@ -4,6 +4,7 @@ import { getUserInfo, userLogin } from '@/api/user';
 import storage from '@/utils/storage';
 import theme from './modules/theme';
 import map from './modules/map';
+import atlasMap from './modules/atlasMap';
 
 export default createStore({
   state: {
@@ -74,11 +75,12 @@ export default createStore({
       });
     },
   },
-  modules: { theme, map },
+  modules: { theme, map, atlasMap },
   plugins: process.env.NODE_ENV === 'development' ? [createLogger()] : [],
   getters: {
     intervalTime: (state) => state.intervalTime,
     bottomOpacity: (state) => state.bottomOpacity,
     query: (state) => state.query,
+    showFirstTime: (state) => state.atlasMap.showFirstTime,
   },
 });
