@@ -5,6 +5,7 @@
 <script setup>
 import { defineProps, nextTick, onMounted, ref } from 'vue';
 import * as d3 from 'd3';
+import { rootSvg } from './constant';
 const props = defineProps({
   data: {
     type: Object,
@@ -28,9 +29,9 @@ onMounted(() => {
 function init() {
   const svg = d3.select(`.svg-${props.index}`);
   const margin = {
-    top: 40,
+    top: 50,
     right: 30,
-    bottom: 33,
+    bottom: 50,
     left: 30,
   };
   const nodeOption = {
@@ -44,7 +45,7 @@ function init() {
   const height = parseInt(svg.style('height'), 10);
   innerWidth = width - margin.left - margin.right;
   innerHeight = height - margin.top - margin.bottom;
-  g.value = svg.append('g').attr('transform', `translate(${margin.top},${margin.left})`);
+  g.value = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
   root = d3.hierarchy(props.data);
   root = d3.tree().size([innerWidth, innerHeight])(root);
   const node = root.descendants();
@@ -79,8 +80,19 @@ function init() {
     .attr('stroke-width', 1)
     .attr('x', (d) => d.x - nodeOption.width(d.data.name) / 2)
     .attr('y', (d) => d.y)
+    .attr('opacity', (d) => (d.depth === 0 ? 0 : 1))
     .attr('class', 'rect');
-
+  // 画节点图标
+  g.value
+    .append('g')
+    .attr('class', 'logo-svg')
+    .selectAll('g')
+    .data([node[0]])
+    .join('g')
+    .html(rootSvg)
+    .attr('transform', (d) => {
+      return `translate(${d.x - 10}, ${d.y - 10})`;
+    });
   // 文字
   g.value
     .selectAll('text')
@@ -88,7 +100,7 @@ function init() {
     .join('text')
     .attr('text-anchor', 'middle') // 位置
     .attr('x', (d) => d.x)
-    .attr('y', (d) => d.y + 16)
+    .attr('y', (d) => (d.depth === 0 ? d.y + 33 : d.y + 16))
     .text((d) => d.data.name)
     .style('font-size', '11px')
     .attr('fill', 'white');
@@ -107,5 +119,22 @@ function init() {
 .rect {
   position: relative;
   //fill: pink !important;
+}
+</style>
+<style>
+.cls-m1 {
+  opacity: 0.8;
+}
+.cls-m2 {
+  fill: #99c9f2;
+}
+.cls-m3 {
+  fill: #b8d9f6;
+}
+.cls-m4 {
+  fill: #5ca8ea;
+}
+.cls-m5 {
+  fill: #e0effb;
 }
 </style>

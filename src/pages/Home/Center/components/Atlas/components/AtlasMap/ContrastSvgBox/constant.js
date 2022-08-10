@@ -1,3 +1,4 @@
+// 根树的svg图标
 export function svgLogo(d) {
   const root = `
     <g data-name="图层 2">
@@ -77,7 +78,7 @@ export const svgAddReduce = {
 <path fill-rule="evenodd"  fill="rgb(59, 120, 242)"
  d="M4.000,6.000 L9.000,6.000 C9.276,6.000 9.500,6.224 9.500,6.500 C9.500,6.776 9.276,7.000 9.000,7.000 L4.000,7.000 C3.724,7.000 3.500,6.776 3.500,6.500 C3.500,6.224 3.724,6.000 4.000,6.000 Z"/>`,
 };
-
+// 计算节点间链接线点位
 export function mathMidPoints(x1, y1, x2, y2, h, sw, tw) {
   let x3, y3, x4, y4;
   if (y2 === y1 || Math.abs(y2 - y1) < 0.001) {
@@ -110,7 +111,7 @@ export function mathMidPoints(x1, y1, x2, y2, h, sw, tw) {
   }
   return { x3, y3, x4, y4 };
 }
-
+// 隐藏所有节点
 export function hideAllChildren(node) {
   if (node.children) {
     for (let i = 0; i < node.children.length; i++) {
@@ -120,6 +121,7 @@ export function hideAllChildren(node) {
   }
   return;
 }
+// 隐藏所有后代节点
 export function hideChildrenNode(node) {
   if (node.children) {
     for (let i = 0; i < node.children.length; i++) {
@@ -129,7 +131,7 @@ export function hideChildrenNode(node) {
   }
   return;
 }
-
+// 展示所有子节点
 export function showChildrenNode(node) {
   if (node.children) {
     for (let i = 0; i < node.children.length; i++) {
@@ -138,6 +140,7 @@ export function showChildrenNode(node) {
   }
   return;
 }
+// 第一次加载树形图时最多展示depth层（多的隐藏）
 export function hideChildrenOnFirst(node, depth) {
   if (node.children) {
     for (let i = 0; i < node.children.length; i++) {
@@ -148,6 +151,26 @@ export function hideChildrenOnFirst(node, depth) {
     }
   }
   return;
+}
+// 展示列表树的初始化，只显示5层多的去除
+// 第一次加载树形图时最多展示depth层（多的隐藏）
+export function delChildrenOnFirst(node, depth) {
+  const height = 0;
+  function goChildren(node, height) {
+    height++;
+    if (node.children) {
+      for (let i = 0; i < node.children.length; i++) {
+        if (height === depth) {
+          node.children = [];
+          return;
+        }
+        goChildren(node.children[i], height);
+      }
+    }
+    return;
+  }
+  goChildren(node, height);
+  return node;
 }
 export const mainTreeLocation = {
   root: {
@@ -191,7 +214,7 @@ export function animateX(obj, target, recall) {
         clearInterval(obj.timer); // 停止动画，
       }
       proValue = obj.scrollLeft;
-      console.log(obj.scrollLeft, target);
+      // console.log(obj.scrollLeft, target);
     }, 30);
   }
 }
@@ -219,7 +242,7 @@ export function animateY(obj, target, recall) {
         clearInterval(obj.timer); // 停止动画，
       }
       proValue = obj.scrollTop;
-      console.log(obj.scrollTop, target);
+      // console.log(obj.scrollTop, target);
       // console.log()
     }, 30);
   }

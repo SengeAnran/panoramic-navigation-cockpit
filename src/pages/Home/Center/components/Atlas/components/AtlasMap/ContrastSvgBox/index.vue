@@ -263,7 +263,7 @@ function render(option) {
         x2 = mathX(d.target.x);
         y2 = mathY(d.target.y);
       }
-      const { x3, y3, x4, y4 } =
+      let { x3, y3, x4, y4 } =
         position === 'center'
           ? mathMidPoints(x2, y2, x1, y1, 16)
           : mathMidPoints(
@@ -275,6 +275,9 @@ function render(option) {
               nodeOption2.width(d.source.data.name),
               nodeOption2.width(d.target.data.name),
             ); // 计算短路径
+      if (position === 'right' && !d.source.parent) {
+        x3 = x1;
+      }
       if (d.target.data.hide !== true) {
         newCircles.push({
           x: x4,
@@ -386,17 +389,7 @@ function render(option) {
     })
     .on('click', (e, d) => {
       // console.log(e.offsetX, e.offsetY);
-      const top = e.offsetY - defaultHeight / 2;
-      const left = e.offsetX - defaultWidth / 2;
-      const obj = document.querySelector('.svg-show-box');
-      if (e.offsetY - defaultHeight / 2 - top > 5) {
-        animateY(obj, top > 0 ? Math.ceil(top) : 0);
-      }
-      if (e.offsetX - defaultWidth / 2 - top > 5) {
-        animateX(obj, left > 0 ? Math.ceil(left) : 0);
-      }
-      // .scrollTop = top > 0 ? top : 0; //通过scrollTop设置滚动到100位置
-      // document.querySelector('.svg-show-box').scrollLeft = left > 0 ? left : 0; //通过scrollTop设置滚动到200位置
+      moveTo(e);
       showChildrenNode(d);
       init();
     })
@@ -426,21 +419,25 @@ function render(option) {
       return `translate(${mathX() + 16}, ${mathY()})`;
     })
     .on('click', (e, d) => {
-      const top = e.offsetY - defaultHeight / 2;
-      const left = e.offsetX - defaultWidth / 2;
-      const obj = document.querySelector('.svg-show-box');
-      if (e.offsetY - defaultHeight / 2 - top > 5) {
-        animateY(obj, top > 0 ? Math.ceil(top) : 0);
-      }
-      if (e.offsetX - defaultWidth / 2 - top > 5) {
-        animateX(obj, left > 0 ? Math.ceil(left) : 0);
-      }
+      moveTo(e);
       hideChildrenNode(d);
       init();
     })
     .attr('opacity', (d) => {
       return d.data.hide === true || (d.depth === 0 && props.data.children.length === 2) || !d.data.children ? 0 : 1;
     });
+}
+// 画布移动到某一位置
+function moveTo(e) {
+  const top = e.offsetY - defaultHeight / 2;
+  const left = e.offsetX - defaultWidth / 2;
+  const obj = document.querySelector('.svg-show-box');
+  if (e.offsetY - defaultHeight / 2 - e.target.scrollTop > 5) {
+    animateY(obj, top > 0 ? Math.ceil(top) : 0);
+  }
+  if (e.offsetX - defaultWidth / 2 - e.target.scrollLeft > 5) {
+    animateX(obj, left > 0 ? Math.ceil(left) : 0);
+  }
 }
 // 画根树状图
 function renderRoot(option) {

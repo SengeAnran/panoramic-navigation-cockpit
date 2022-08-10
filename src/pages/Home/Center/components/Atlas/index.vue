@@ -12,7 +12,7 @@
         </div>
         <div class="atlas-items">
           <div class="box">
-            <div class="atlas-item" v-for="(item, index) in systemList" :key="index">
+            <div class="atlas-item" v-for="(item, index) in systemListSmall" :key="index">
               <SvgBox :data="item" :index="index" />
               <div class="system-name theme-font-style">{{ item.name }}</div>
               <input type="checkbox" v-model="item.check" @change="checkOne(item, index, true)" />
@@ -28,10 +28,11 @@
 import AtlasBall from './components/AtlasBall/index';
 import AtlasMap from './components/AtlasMap/index';
 import SvgBox from './components/SvgBox/index';
-import { ref, watch, reactive } from 'vue';
+import { ref, watch, reactive, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { getRelationGraph } from '@/api/atlas';
 import { deepClone } from '@/utils';
+import { delChildrenOnFirst } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 const state = useStore();
 const showSearchRes = ref(false);
 watch(
@@ -114,52 +115,60 @@ const systemList = ref([
   {
     name: '系统名称3',
     check: false,
+    same: true,
     children: [
       {
         name: '节点名称1',
+        same: true,
         children: [
           {
             name: '节点名称21',
+            same: true,
           },
           {
             name: '节点名称22',
+            same: true,
           },
           {
             name: '节点名称23',
+            same: true,
             children: [
               {
                 name: '节点名称31',
+                same: true,
                 children: [
                   {
                     name: '节点名称42',
+                    same: true,
                     children: [
                       {
                         name: '节点名称52',
-                        children: [
-                          {
-                            name: '节点名称52',
-                            children: [
-                              {
-                                name: '节点名称52',
-                                children: [
-                                  {
-                                    name: '节点名称52',
-                                    children: [
-                                      {
-                                        name: '节点名称52',
-                                        children: [
-                                          {
-                                            name: '节点名称52',
-                                          },
-                                        ],
-                                      },
-                                    ],
-                                  },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
+                        same: true,
+                        // children: [
+                        //   {
+                        //     name: '节点名称52',
+                        //     children: [
+                        //       {
+                        //         name: '节点名称52',
+                        //         // children: [
+                        //         //   {
+                        //         //     name: '节点名称52',
+                        //         //     children: [
+                        //         //       {
+                        //         //         name: '节点名称52',
+                        //         //         children: [
+                        //         //           {
+                        //         //             name: '节点名称52',
+                        //         //           },
+                        //         //         ],
+                        //         //       },
+                        //         //     ],
+                        //         //   },
+                        //         // ],
+                        //       },
+                        //     ],
+                        //   },
+                        // ],
                       },
                     ],
                   },
@@ -169,15 +178,14 @@ const systemList = ref([
           },
           {
             name: '节点名称24',
-          },
-          {
-            name: '节点名称25',
+            same: true,
           },
         ],
       },
     ],
   },
 ]);
+const systemListSmall = ref([]);
 const contrastData = reactive({
   name: '公积金',
   children: [],
@@ -186,13 +194,24 @@ const contrastData = reactive({
 //   name: '公积金',
 //   children: [],
 // });
+onMounted(() => {
+  getSystemListSmall();
+});
+function getSystemListSmall() {
+  for (let i = 0; i < systemList.value.length; i++) {
+    const tree = deepClone(systemList.value[i]);
+    delChildrenOnFirst(tree, 5);
+    systemListSmall.value.push(tree);
+  }
+  console.log(systemListSmall.value);
+}
 function showAll() {
   console.log('展示全部');
   checkOne();
 }
 function changeAtlas(typeName) {
   atlasType.value = typeName;
-  systemList.value.forEach((i) => {
+  systemListSmall.value.forEach((i) => {
     i.check = false;
   });
 }
@@ -206,13 +225,21 @@ async function showRes() {
 }
 function checkOne(item, index, click) {
   // 控制对比图谱只能选择两个进行对比
-  if (atlasType.value === '对比图谱' && systemList.value.filter((i) => i.check).length > 2 && (index || index === 0)) {
-    systemList.value[index].check = false;
+  if (
+    atlasType.value === '对比图谱' &&
+    systemListSmall.value.filter((i) => i.check).length > 2 &&
+    (index || index === 0)
+  ) {
+    systemListSmall.value[index].check = false;
     return;
   }
   if (atlasType.value === '对比图谱') {
     contrastData.children = [];
-    contrastData.children = deepClone(systemList.value.filter((i) => i.check));
+    systemListSmall.value.forEach((item, index) => {
+      if (item.check) {
+        contrastData.children.push(deepClone(systemList.value[index]));
+      }
+    });
     if (click) {
       state.commit('atlasMap/SET_SHOW_FIRST_TIME', true);
     }
