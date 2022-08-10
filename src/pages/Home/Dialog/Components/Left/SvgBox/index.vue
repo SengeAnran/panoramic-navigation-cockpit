@@ -8,16 +8,14 @@
 import {
   animateY,
   animateX,
-  hideAllChildren,
   hideChildrenNode,
   hideChildrenOnFirst,
   mathMidPoints,
   showChildrenNode,
   svgAddReduce,
-  svgLogo,
   getRootInfo,
 } from './constant';
-import { defineProps, nextTick, onMounted, ref, watch } from 'vue';
+import { defineProps, nextTick, onMounted, ref } from 'vue';
 import * as d3 from 'd3';
 import { useStore } from 'vuex';
 const props = defineProps({
@@ -39,41 +37,27 @@ let innerWidth, // 内宽
   innerHeight, // 内高
   svg,
   treeHeight, // 树高
-  defaultWidth = 1999, // 默认展示宽度
-  defaultHeight = 800; // 默认展示高度
+  defaultWidth = 979, // 默认展示宽度
+  defaultHeight = 748; // 默认展示高度
 const svgClass = ref('');
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
+  nextTick(() => {
+    console.log(props.data);
+    init();
+  });
 });
-watch(
-  () => props.data,
-  (val) => {
-    if (val.children) {
-      nextTick(() => {
-        init();
-      });
-    }
-  },
-  { immediate: true, deep: true },
-);
-watch(
-  () => props.hideAll,
-  (val) => {
-    console.log(val);
-    if (val) {
-      nextTick(() => {
-        showMain();
-        init();
-      });
-    }
-  },
-  { immediate: true, deep: true },
-);
-function showMain() {
-  for (let i = 0; i < props.data.children.length; i++) {
-    hideAllChildren(props.data.children[i]);
-  }
-}
+// watch(
+//   () => props.data,
+//   (val) => {
+//     if (val.children) {
+//       nextTick(() => {
+//         init();
+//       });
+//     }
+//   },
+//   { immediate: true, deep: true },
+// );
 // 节点背景颜色
 function rectColor(d) {
   return d.data.same ? '#3B78F2' : '#142847';
@@ -93,16 +77,12 @@ const nodeOption2 = {
   height: 32,
 };
 const margin = {
-  top: 40,
+  top: 180,
   right: 30,
   bottom: 33,
   left: 30,
 };
 const midValue = 300; // left 和right 相距距离
-let sameData = {
-  name: '相同节点',
-  children: [],
-};
 const state = useStore();
 // 初始化
 function init() {
@@ -131,7 +111,7 @@ function init() {
   // rootX.value = innerWidth / 2 - 10;
 
   if (state.getters.showFirstTime) {
-    // 第一次展示最多展示七层
+    // 第一次展示最多展示5层
     const fristRoot = d3.hierarchy(props.data);
     hideChildrenOnFirst(fristRoot, 5);
     if (multiple !== 1) {
@@ -143,63 +123,15 @@ function init() {
     }
     state.commit('atlasMap/SET_SHOW_FIRST_TIME', false);
   }
-  if (props.data.children[0]) {
-    const option = {
-      data: props.data.children[0], // 树状图数据，
-      position: 'left', //  位置：left、right、bottom
-      rootNode: {
-        // 根节点固定初始坐标
-        x: innerHeight / 4,
-        y: 0,
-      },
-    };
-    render(option);
-  }
-  if (props.data.children[1]) {
-    const option = {
-      data: props.data.children[1],
-      position: 'right',
-      rootNode: {
-        x: innerHeight / 4 - 0,
-        y: 0,
-      },
-    };
-    // console.log('right');
-    render(option);
-    let data = {
-      name: props.data.name,
-      children: [
-        {
-          name: props.data.children[0].name,
-        },
-        {
-          name: '相同节点',
-        },
-        {
-          name: props.data.children[1].name,
-        },
-      ],
-    };
-    sameData.children = props.data.children[1].children;
-    const optionSame = {
-      data: sameData,
-      position: 'center',
-      rootNode: {
-        x: innerWidth / 6,
-        y: 0,
-      },
-    };
-    render(optionSame);
-    // renderSame(sameData);
-    const optionRoot = {
-      data: data,
-      rootNode: {
-        x: midValue / 2,
-        y: multiple > 1 ? 30 + (multiple * innerHeight) / 16 : 30,
-      },
-    };
-    renderRoot(optionRoot);
-  }
+  const optionSame = {
+    data: props.data,
+    position: 'center',
+    rootNode: {
+      x: innerWidth / 6,
+      y: 0,
+    },
+  };
+  render(optionSame);
 }
 
 // 画左右两边树状图
@@ -216,17 +148,18 @@ function init() {
  * @returns {Object}
  */
 function render(option) {
-  const { data, position, rootNode } = option;
+  const { data, position } = option;
+  console.log(data);
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
   let root = d3.hierarchy(data);
   const regionSize = {
     left: [innerHeight / 2, innerWidth / 3], // f(w/2 - y, x)
     right: [innerHeight / 2, innerWidth / 3], // f(w/2 + y, x)
-    center: [innerWidth / 3, (innerHeight * 3) / 4], // f(x + w/3, y + h/4)
+    center: [innerWidth, innerHeight], // f(x + w/3, y + h/4)
   };
   root = d3.tree().size(regionSize[position])(root);
-  root.x = rootNode.x; // 设置根节点初始位置
-  root.y = rootNode.y;
+  // root.x = rootNode.x; // 设置根节点初始位置
+  // root.y = rootNode.y;
   const node = root.descendants(); // x: 181.75 y: 0
   const path = root.links();
   // console.log(node, path);
@@ -243,14 +176,14 @@ function render(option) {
         // 左右会左右旋转
         // 计算点的x的实际坐标
         return position === 'center'
-          ? y + innerWidth / 3
+          ? y
           : position === 'right'
           ? innerWidth / 2 + y + midValue / 2
           : innerWidth / 2 - y - midValue / 2;
       }
       function mathY(x) {
         // 计算点的x的实际坐标
-        return position === 'center' ? x + innerHeight / 4 : x;
+        return position === 'center' ? x : x;
       }
       let x1, x2, y1, y2;
       if (position !== 'center') {
@@ -309,14 +242,12 @@ function render(option) {
     .attr('rx', 4)
     .attr('x', (d) => {
       return position === 'center'
-        ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3
+        ? d.x - nodeOption2.width(d.data.name) / 2
         : position === 'right'
         ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2 //
         : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
     })
-    .attr('y', (d) =>
-      position === 'center' ? d.y - nodeOption2.height / 2 + innerHeight / 4 : d.x - nodeOption.width / 2,
-    )
+    .attr('y', (d) => (position === 'center' ? d.y - nodeOption2.height / 2 : d.x - nodeOption.width / 2))
     .attr('opacity', (d) => {
       return d.data.hide === true ||
         (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length === 2)
@@ -341,12 +272,12 @@ function render(option) {
     .attr('text-anchor', 'middle') // 位置
     .attr('x', (d) =>
       position === 'center'
-        ? d.x + innerWidth / 3
+        ? d.x
         : position === 'right'
         ? innerWidth / 2 + d.y + midValue / 2
         : innerWidth / 2 - d.y - midValue / 2,
     )
-    .attr('y', (d) => (position === 'center' ? d.y + 6 + innerHeight / 4 : d.x + 6))
+    .attr('y', (d) => (position === 'center' ? d.y + 6 : d.x + 6))
     .text((d) => d.data.name)
     .style('font-size', '18px')
     .style('font-family', 'YouSheBiaoTiHei')
@@ -380,15 +311,13 @@ function render(option) {
     .attr('transform', (d) => {
       function mathX() {
         return position === 'center'
-          ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3
+          ? d.x - nodeOption2.width(d.data.name) / 2
           : position === 'right'
           ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
           : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
       }
       function mathY() {
-        return position === 'center'
-          ? d.y - nodeOption2.height / 2 + innerHeight / 4 - 16
-          : d.x - nodeOption.width / 2 - 16;
+        return position === 'center' ? d.y - nodeOption2.height / 2 - 16 : d.x - nodeOption.width / 2 - 16;
       }
       return `translate(${mathX()}, ${mathY()})`;
     })
@@ -411,15 +340,13 @@ function render(option) {
     .attr('transform', (d) => {
       function mathX() {
         return position === 'center'
-          ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3
+          ? d.x - nodeOption2.width(d.data.name) / 2
           : position === 'right'
           ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
           : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
       }
       function mathY() {
-        return position === 'center'
-          ? d.y - nodeOption2.height / 2 + innerHeight / 4 - 16
-          : d.x - nodeOption.width / 2 - 16;
+        return position === 'center' ? d.y - nodeOption2.height / 2 - 16 : d.x - nodeOption.width / 2 - 16;
       }
       return `translate(${mathX() + 16}, ${mathY()})`;
     })
@@ -444,75 +371,75 @@ function moveTo(e) {
     animateX(obj, left > 0 ? Math.ceil(left) : 0);
   }
 }
-// 画根树状图
-function renderRoot(option) {
-  const { data, rootNode } = option;
-  const formula = innerWidth / 2 - (midValue * 1.6) / 2;
-  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
-  let root = d3.hierarchy(data);
-  // x:242.375 y: 0
-  // (x: 80.79166666666667 y: 181.75)  (x: 242.375 y: 181.75) ( 403.95833333333337 y: 181.75)
-  root = d3.tree().size([midValue * 1.6, innerHeight / 4])(root);
-  root.x = rootNode.x * 1.6; // 242.375;
-  root.y = rootNode.y;
-  const node = root.descendants();
-  const path = root.links();
-  // console.log(node, path);
-  // 画线
-  g.selectAll('path')
-    .data(path)
-    .join('path')
-    .attr('fill', 'none')
-    .attr('stroke', '#7CA3EF')
-    .attr('stroke-width', 1)
-    .attr('d', (d) => {
-      function mathX(x) {
-        // 计算点的x的实际坐标
-        return x + formula;
-      }
-      const x1 = mathX(d.source.x);
-      const y1 = d.source.y;
-      const x2 = mathX(d.target.x);
-      const y2 = d.target.y;
-      return `
-        M${x1},${y1}
-        ${x2},${y2}`;
-    });
-  // 画节点图标
-  g.append('g')
-    .attr('class', 'logo-svg')
-    .selectAll('g')
-    .data(node)
-    .join('g')
-    .html((d) => svgLogo(d))
-    .attr('transform', (d) => {
-      if (d.x === 403.95833333333337) {
-        return `translate(${d.x + formula}, ${d.y - nodeOption2.height})`;
-      }
-      return `translate(${d.x - nodeOption2.width(d.data.name) / 2 + formula}, ${d.y - nodeOption2.height})`;
-    });
-  // 文字
-  g.selectAll('text')
-    .data(node)
-    .join('text')
-    .on('click', (d) => {
-      console.log(d.target.__data__); // 点击的节点
-      console.log('点击了,深度为：' + d.target.__data__.depth);
-      if (d.target.__data__.depth) {
-        console.log('需要展示啦！');
-      }
-    })
-    // .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
-    .attr('text-anchor', 'middle') // 位置
-    .attr('x', (d) => d.x + formula)
-    .attr('y', (d) => (d.children ? d.y - 40 : d.y + 66))
-    .text((d) => d.data.name)
-    .style('font-size', (d) => (d.children ? '24px' : '18px'))
-    .style('font-weight', (d) => (d.children ? '800' : '400'))
-    .attr('fill', 'white');
-  // .attr('writing-mode', 'vertical-rl') // 文本竖过来
-  // .attr('text-orientation', 'upright');
-}
+// // 画根树状图
+// function renderRoot(option) {
+//   const { data, rootNode } = option;
+//   const formula = innerWidth / 2 - (midValue * 1.6) / 2;
+//   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
+//   let root = d3.hierarchy(data);
+//   // x:242.375 y: 0
+//   // (x: 80.79166666666667 y: 181.75)  (x: 242.375 y: 181.75) ( 403.95833333333337 y: 181.75)
+//   root = d3.tree().size([midValue * 1.6, innerHeight / 4])(root);
+//   root.x = rootNode.x * 1.6; // 242.375;
+//   root.y = rootNode.y;
+//   const node = root.descendants();
+//   const path = root.links();
+//   // console.log(node, path);
+//   // 画线
+//   g.selectAll('path')
+//     .data(path)
+//     .join('path')
+//     .attr('fill', 'none')
+//     .attr('stroke', '#7CA3EF')
+//     .attr('stroke-width', 1)
+//     .attr('d', (d) => {
+//       function mathX(x) {
+//         // 计算点的x的实际坐标
+//         return x + formula;
+//       }
+//       const x1 = mathX(d.source.x);
+//       const y1 = d.source.y;
+//       const x2 = mathX(d.target.x);
+//       const y2 = d.target.y;
+//       return `
+//         M${x1},${y1}
+//         ${x2},${y2}`;
+//     });
+//   // 画节点图标
+//   g.append('g')
+//     .attr('class', 'logo-svg')
+//     .selectAll('g')
+//     .data(node)
+//     .join('g')
+//     .html((d) => svgLogo(d))
+//     .attr('transform', (d) => {
+//       if (d.x === 403.95833333333337) {
+//         return `translate(${d.x + formula}, ${d.y - nodeOption2.height})`;
+//       }
+//       return `translate(${d.x - nodeOption2.width(d.data.name) / 2 + formula}, ${d.y - nodeOption2.height})`;
+//     });
+//   // 文字
+//   g.selectAll('text')
+//     .data(node)
+//     .join('text')
+//     .on('click', (d) => {
+//       console.log(d.target.__data__); // 点击的节点
+//       console.log('点击了,深度为：' + d.target.__data__.depth);
+//       if (d.target.__data__.depth) {
+//         console.log('需要展示啦！');
+//       }
+//     })
+//     // .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
+//     .attr('text-anchor', 'middle') // 位置
+//     .attr('x', (d) => d.x + formula)
+//     .attr('y', (d) => (d.children ? d.y - 40 : d.y + 66))
+//     .text((d) => d.data.name)
+//     .style('font-size', (d) => (d.children ? '24px' : '18px'))
+//     .style('font-weight', (d) => (d.children ? '800' : '400'))
+//     .attr('fill', 'white');
+//   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
+//   // .attr('text-orientation', 'upright');
+// }
 </script>
 
 <style lang="scss" scoped>
@@ -527,58 +454,54 @@ function renderRoot(option) {
 }
 </style>
 <style lang="scss">
-.rect {
-  position: relative;
-  //fill: pink !important;
-}
 .rect-box:hover {
-  box-shadow: 0px 0px 20px 0px #1d4d8d;
+  //box-shadow: 0px 0px 20px 0px #1d4d8d;
 }
 </style>
-<style>
-.cls-1 {
-  fill: #b8d9f6;
-}
-.cls-2 {
-  fill: #99c9f2;
-}
-.cls-3 {
-  fill: #e0effb;
-}
-.cls-4 {
-  fill: #5ca8ea;
-}
-.cls-5 {
-  fill: #fff;
-}
-</style>
-<!--相同节点-->
-<style>
-.cls-21 {
-  fill: #b8d9f6;
-}
-.cls-22 {
-  fill: #5ca8ea;
-}
-.cls-23 {
-  fill: #99c9f2;
-}
-.cls-24 {
-  fill: #e0effb;
-}
-</style>
-<!--系统-->
-<style>
-.cls-31 {
-  fill: #99c9f2;
-}
-.cls-32 {
-  fill: #b8d9f6;
-}
-.cls-33 {
-  fill: #5ca8ea;
-}
-.cls-34 {
-  fill: #e0effb;
-}
-</style>
+<!--<style>-->
+<!--.cls-1 {-->
+<!--  fill: #b8d9f6;-->
+<!--}-->
+<!--.cls-2 {-->
+<!--  fill: #99c9f2;-->
+<!--}-->
+<!--.cls-3 {-->
+<!--  fill: #e0effb;-->
+<!--}-->
+<!--.cls-4 {-->
+<!--  fill: #5ca8ea;-->
+<!--}-->
+<!--.cls-5 {-->
+<!--  fill: #fff;-->
+<!--}-->
+<!--</style>-->
+<!--&lt;!&ndash;相同节点&ndash;&gt;-->
+<!--<style>-->
+<!--.cls-21 {-->
+<!--  fill: #b8d9f6;-->
+<!--}-->
+<!--.cls-22 {-->
+<!--  fill: #5ca8ea;-->
+<!--}-->
+<!--.cls-23 {-->
+<!--  fill: #99c9f2;-->
+<!--}-->
+<!--.cls-24 {-->
+<!--  fill: #e0effb;-->
+<!--}-->
+<!--</style>-->
+<!--&lt;!&ndash;系统&ndash;&gt;-->
+<!--<style>-->
+<!--.cls-31 {-->
+<!--  fill: #99c9f2;-->
+<!--}-->
+<!--.cls-32 {-->
+<!--  fill: #b8d9f6;-->
+<!--}-->
+<!--.cls-33 {-->
+<!--  fill: #5ca8ea;-->
+<!--}-->
+<!--.cls-34 {-->
+<!--  fill: #e0effb;-->
+<!--}-->
+<!--</style>-->

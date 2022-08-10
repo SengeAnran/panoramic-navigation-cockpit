@@ -5,7 +5,7 @@ import storage from '@/utils/storage';
 import theme from './modules/theme';
 import map from './modules/map';
 import atlasMap from './modules/atlasMap';
-
+const defaultMainTitle = '全景导览驾驶舱';
 export default createStore({
   state: {
     query: [], // 检索词
@@ -15,6 +15,8 @@ export default createStore({
     userInfo: {},
     orgId: storage.getOrgId() || '', // 数据权限id
     bottomOpacity: false, // 底部透明设置
+    contentOpacity: false, // 主体内容透明设置
+    mainTitle: defaultMainTitle, // 页面标题
   },
   mutations: {
     [Types.SET_INTERVAL_ID](state, msg) {
@@ -27,6 +29,14 @@ export default createStore({
         clearInterval(state.intervalId);
       }
     },
+    // 设置页面标题
+    SET_MAIN_TITLE(state, payload) {
+      state.mainTitle = payload || {};
+    },
+    // 重置页面标题
+    RESET_MAIN_TITLE(state) {
+      state.mainTitle = defaultMainTitle;
+    },
     // 用户信息
     SET_USER_INFO(state, payload) {
       state.userInfo = payload || {};
@@ -38,6 +48,10 @@ export default createStore({
     // 底部透明设置
     SET_BOTTOM_OPACITY(state, payload) {
       state.bottomOpacity = payload;
+    },
+    // 底部透明设置
+    SET_CONTENT_OPACITY(state, payload) {
+      state.contentOpacity = payload;
     },
     // 添加检索词
     ADD_QUERY(state, data) {
@@ -80,7 +94,10 @@ export default createStore({
   getters: {
     intervalTime: (state) => state.intervalTime,
     bottomOpacity: (state) => state.bottomOpacity,
+    contentOpacity: (state) => state.contentOpacity,
     query: (state) => state.query,
     showFirstTime: (state) => state.atlasMap.showFirstTime,
+    dialogInfo: (state) => state.atlasMap.dialogInfo,
+    mainTitle: (state) => state.mainTitle,
   },
 });

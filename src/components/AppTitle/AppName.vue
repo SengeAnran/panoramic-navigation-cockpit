@@ -8,9 +8,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
-const firstName = ref('全景导览驾驶舱');
+import { computed } from 'vue';
+import { useStore } from 'vuex';
+const state = useStore();
+const firstName = computed(() => {
+  return state.getters.mainTitle;
+});
 </script>
 
 <style lang="scss" scoped>

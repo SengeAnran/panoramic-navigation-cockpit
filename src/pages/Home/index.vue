@@ -1,15 +1,27 @@
 <template>
-  <div class="content">
+  <div class="content" :class="{ opacity: contentOpacity }">
     <Left />
     <CenterContent />
     <Right />
   </div>
+  <Dialog v-if="contentOpacity" />
 </template>
 
 <script setup>
 import Left from './Left/index';
 import Right from './Right/index';
 import CenterContent from './Center/index';
+import Dialog from './Dialog/index';
+import { computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+const state = useStore();
+const contentOpacity = computed(() => {
+  console.log(state.getters.contentOpacity);
+  return state.getters.contentOpacity;
+});
+onMounted(() => {
+  console.log(contentOpacity.value);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -18,5 +30,9 @@ import CenterContent from './Center/index';
   width: 100%;
   height: 100%;
   //background: url('./page_bg.jpg') left top no-repeat;
+}
+.opacity {
+  opacity: 0.5;
+  filter: blur(5px); // 模糊
 }
 </style>

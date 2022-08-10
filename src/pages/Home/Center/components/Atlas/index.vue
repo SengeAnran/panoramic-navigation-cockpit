@@ -211,6 +211,7 @@ function showAll() {
 }
 function changeAtlas(typeName) {
   atlasType.value = typeName;
+  contrastData.children = [];
   systemListSmall.value.forEach((i) => {
     i.check = false;
   });
@@ -256,14 +257,17 @@ function checkOne(item, index, click) {
   top: 0;
   left: 920px;
   width: 1999px;
-  height: 100%;
+  //height: 100%;
+  height: 961px;
   //background: pink;
   .search-results {
     position: absolute;
-    bottom: 43px;
+    bottom: -70px;
     left: 93px;
     .btn {
-      margin-bottom: 25px;
+      position: absolute;
+      top: -78px;
+      //margin-bottom: 25px;
       cursor: pointer;
       width: 106px;
       height: 43px;
