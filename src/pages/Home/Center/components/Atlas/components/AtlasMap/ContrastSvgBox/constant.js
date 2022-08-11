@@ -79,9 +79,11 @@ export const svgAddReduce = {
  d="M4.000,6.000 L9.000,6.000 C9.276,6.000 9.500,6.224 9.500,6.500 C9.500,6.776 9.276,7.000 9.000,7.000 L4.000,7.000 C3.724,7.000 3.500,6.776 3.500,6.500 C3.500,6.224 3.724,6.000 4.000,6.000 Z"/>`,
 };
 // 计算节点间链接线点位
-export function mathMidPoints(x1, y1, x2, y2, h, sw, tw) {
+export function mathMidPoints(x1, y1, x2, y2, h, sw, tw, position) {
+  console.log(position);
   let x3, y3, x4, y4;
   if (y2 === y1 || Math.abs(y2 - y1) < 0.001) {
+    // 水平
     y3 = y1;
     y4 = y1;
     const min = Math.min(x1, x2);
@@ -97,6 +99,21 @@ export function mathMidPoints(x1, y1, x2, y2, h, sw, tw) {
     // y3 = y1 - h;
     // x4 = x2 - x3 + x1;
     // y4 = y2 + h;
+    // if (y2 - y1 <= 0) {
+    //   y3 = y1 - h;
+    //   // x4 = x2 - x3 + x1;
+    //   // x3 = ((x2 - x1) * h) / (y1 - y2) + x1;
+    //   x4 = x2;
+    //   x3 = x1;
+    //   y4 = y2 + h;
+    // } else {
+    //   y3 = y1 + h;
+    //   // x4 = x2 - (h * (x2 - x1)) / (y2 - y1);
+    //   x4 = x2;
+    //   // x3 = x1 + (x2 - x4);
+    //   x3 = x1;
+    //   y4 = y2 - h;
+    // }
     if (y2 - y1 <= 0) {
       x3 = ((x2 - x1) * h) / (y1 - y2) + x1;
       y3 = y1 - h;

@@ -17,56 +17,56 @@ const systemList = reactive({
   children: [
     {
       name: '节点名称1',
-      same: true,
+      same: false,
       children: [
         {
           name: '节点名称21',
-          same: true,
+          same: false,
         },
         {
           name: '节点名称22',
-          same: true,
+          same: false,
         },
         {
           name: '节点名称23',
-          same: true,
+          same: false,
           children: [
             {
               name: '节点名称31',
-              same: true,
+              same: false,
               children: [
                 {
                   name: '节点名称42',
-                  same: true,
+                  same: false,
                   children: [
                     {
                       name: '节点名称52',
-                      same: true,
-                      // children: [
-                      //   {
-                      //     name: '节点名称52',
-                      //     children: [
-                      //       {
-                      //         name: '节点名称52',
-                      //         // children: [
-                      //         //   {
-                      //         //     name: '节点名称52',
-                      //         //     children: [
-                      //         //       {
-                      //         //         name: '节点名称52',
-                      //         //         children: [
-                      //         //           {
-                      //         //             name: '节点名称52',
-                      //         //           },
-                      //         //         ],
-                      //         //       },
-                      //         //     ],
-                      //         //   },
-                      //         // ],
-                      //       },
-                      //     ],
-                      //   },
-                      // ],
+                      same: false,
+                      children: [
+                        {
+                          name: '节点名称52',
+                          // children: [
+                          //   // {
+                          //   //   name: '节点名称52',
+                          //   //   children: [
+                          //   //     {
+                          //   //       name: '节点名称52',
+                          //   //       children: [
+                          //   //         {
+                          //   //           name: '节点名称52',
+                          //   //           children: [
+                          //   //             {
+                          //   //               name: '节点名称52',
+                          //   //             },
+                          //   //           ],
+                          //   //         },
+                          //   //       ],
+                          //   //     },
+                          //   //   ],
+                          //   // },
+                          // ],
+                        },
+                      ],
                     },
                   ],
                 },
@@ -76,7 +76,7 @@ const systemList = reactive({
         },
         {
           name: '节点名称24',
-          same: true,
+          same: false,
         },
       ],
     },
@@ -93,6 +93,7 @@ const systemList = reactive({
     margin-bottom: 46px;
   }
   .show-box {
+    cursor: pointer;
     width: 979px;
     height: 749px;
     border-radius: 20px;

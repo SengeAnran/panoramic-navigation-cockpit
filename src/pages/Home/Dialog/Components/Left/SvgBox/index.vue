@@ -1,5 +1,5 @@
 <template>
-  <div class="svg-show-box">
+  <div class="svg-show-box-dialog">
     <svg class="svg-box" :class="svgClass"></svg>
   </div>
 </template>
@@ -14,6 +14,7 @@ import {
   showChildrenNode,
   svgAddReduce,
   getRootInfo,
+  svgLogo,
 } from './constant';
 import { defineProps, nextTick, onMounted, ref } from 'vue';
 import * as d3 from 'd3';
@@ -43,7 +44,6 @@ const svgClass = ref('');
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
   nextTick(() => {
-    console.log(props.data);
     init();
   });
 });
@@ -89,8 +89,9 @@ function init() {
   let multiple = 1; // 屏宽系数
   treeHeight = d3.hierarchy(props.data).height;
   // console.log('treeHeight', treeHeight);
-  if (treeHeight > 5) {
-    multiple = treeHeight / 6 + 2 / 6;
+  console.log(treeHeight);
+  if (treeHeight > 4) {
+    multiple = treeHeight / 5;
   }
   svg = d3.select(`.svg-${props.index}`);
   if (svg.select('.chart-g')) {
@@ -110,18 +111,19 @@ function init() {
   inHeiVal.value = innerHeight;
   // rootX.value = innerWidth / 2 - 10;
 
-  if (state.getters.showFirstTime) {
+  if (state.getters.dialogShowFirstTime) {
     // 第一次展示最多展示5层
     const fristRoot = d3.hierarchy(props.data);
     hideChildrenOnFirst(fristRoot, 5);
     if (multiple !== 1) {
       // 设置窗口展示位置
-      const left = ((multiple - 1) / 2) * (defaultWidth - margin.left - margin.right);
+      const left = ((multiple - 1) / 2) * defaultWidth;
       const top = multiple > 1 ? (multiple * innerHeight) / 16 : 0;
-      document.querySelector('.svg-show-box').scrollTop = top; //通过scrollTop设置滚动到100位置
-      document.querySelector('.svg-show-box').scrollLeft = left; //通过scrollTop设置滚动到200位置
+      console.log(multiple, left, top);
+      // document.querySelector('.svg-show-box-dialog').scrollTop = top; //通过scrollTop设置滚动到100位置
+      document.querySelector('.svg-show-box-dialog').scrollLeft = left; //通过scrollTop设置滚动到200位置
     }
-    state.commit('atlasMap/SET_SHOW_FIRST_TIME', false);
+    state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', false);
   }
   const optionSame = {
     data: props.data,
@@ -149,7 +151,6 @@ function init() {
  */
 function render(option) {
   const { data, position } = option;
-  console.log(data);
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
   let root = d3.hierarchy(data);
   const regionSize = {
@@ -277,15 +278,12 @@ function render(option) {
         ? innerWidth / 2 + d.y + midValue / 2
         : innerWidth / 2 - d.y - midValue / 2,
     )
-    .attr('y', (d) => (position === 'center' ? d.y + 6 : d.x + 6))
+    .attr('y', (d) => (position === 'center' ? (d.depth === 0 ? d.y + 70 : d.y + 6) : d.x + 6))
     .text((d) => d.data.name)
-    .style('font-size', '18px')
-    .style('font-family', 'YouSheBiaoTiHei')
+    .style('font-size', (d) => (d.depth === 0 ? '20px' : '18px'))
+    .style('font-family', (d) => (d.depth === 0 ? 'Source Han Sans CN' : 'YouSheBiaoTiHei'))
     .attr('opacity', (d) => {
-      return d.data.hide === true ||
-        (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length === 2)
-        ? 0
-        : 1;
+      return d.data.hide === true;
     })
     .attr('fill', 'white');
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
@@ -357,6 +355,16 @@ function render(option) {
     })
     .attr('opacity', (d) => {
       return d.data.hide === true || (d.depth === 0 && props.data.children.length === 2) || !d.data.children ? 0 : 1;
+    });
+  // 画节点图标
+  g.append('g')
+    .attr('class', 'logo-svg-dialog')
+    .selectAll('g')
+    .data([node[0]])
+    .join('g')
+    .html(svgLogo)
+    .attr('transform', (d) => {
+      return `translate(${d.x - 30}, ${d.y - 30})`;
     });
 }
 // 画布移动到某一位置
@@ -443,7 +451,7 @@ function moveTo(e) {
 </script>
 
 <style lang="scss" scoped>
-.svg-show-box {
+.svg-show-box-dialog {
   width: 100%;
   height: 100%;
   overflow: scroll;

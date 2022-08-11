@@ -160,7 +160,7 @@ function init() {
       data: props.data.children[1],
       position: 'right',
       rootNode: {
-        x: innerHeight / 4 - 0,
+        x: innerHeight / 4,
         y: 0,
       },
     };
@@ -275,6 +275,7 @@ function render(option) {
               16,
               nodeOption2.width(d.source.data.name),
               nodeOption2.width(d.target.data.name),
+              position,
             ); // 计算短路径
       if (position === 'right' && !d.source.parent) {
         x3 = x1;
@@ -335,6 +336,7 @@ function render(option) {
         console.log('需要单展示啦！');
         state.commit('SET_CONTENT_OPACITY', true);
         state.commit('atlasMap/SET_DIALOG_INFO', d.data);
+        state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
         state.commit('SET_MAIN_TITLE', getRootInfo(d).name);
       }
     })

@@ -97,6 +97,7 @@ export default createStore({
     contentOpacity: (state) => state.contentOpacity,
     query: (state) => state.query,
     showFirstTime: (state) => state.atlasMap.showFirstTime,
+    dialogShowFirstTime: (state) => state.atlasMap.dialogShowFirstTime,
     dialogInfo: (state) => state.atlasMap.dialogInfo,
     mainTitle: (state) => state.mainTitle,
   },
