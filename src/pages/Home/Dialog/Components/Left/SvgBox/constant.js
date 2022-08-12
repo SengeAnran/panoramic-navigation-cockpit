@@ -206,7 +206,7 @@ export function animateY(obj, target, recall) {
       obj.scrollTop = obj.scrollTop + step;
       if (obj.scrollTop === proValue) {
         recall && recall(); // 有回调则执行
-        clearInterval(obj.timer); // 停止动画，
+        clearInterval(obj.timer2); // 停止动画，
       }
       proValue = obj.scrollTop;
       // console.log(obj.scrollTop, target);

@@ -33,6 +33,7 @@ import { useStore } from 'vuex';
 import { getRelationGraph } from '@/api/atlas';
 import { deepClone } from '@/utils';
 import { delChildrenOnFirst } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
+import { getInitTree } from './constants';
 const state = useStore();
 const showSearchRes = ref(false);
 watch(
@@ -42,6 +43,7 @@ watch(
   },
 );
 const atlasType = ref('关系图谱');
+// const systemList = ref([]);
 const systemList = ref([
   {
     name: '系统名称1',
@@ -197,6 +199,18 @@ const contrastData = reactive({
 onMounted(() => {
   getSystemListSmall();
 });
+// watch(
+//   () => systemList.value,
+//   (val) => {
+//     if (val.length > 0) {
+//       getSystemListSmall();
+//     }
+//   },
+//   {
+//     deep: true,
+//     immediate: true,
+//   },
+// );
 function getSystemListSmall() {
   for (let i = 0; i < systemList.value.length; i++) {
     const tree = deepClone(systemList.value[i]);
@@ -206,7 +220,6 @@ function getSystemListSmall() {
   console.log(systemListSmall.value);
 }
 function showAll() {
-  console.log('展示全部');
   checkOne();
 }
 function changeAtlas(typeName) {
@@ -221,7 +234,9 @@ async function showRes() {
   if (showSearchRes.value) {
     const res = await getRelationGraph();
     // systemList.value = res;
-    console.log(res);
+    const resData = getInitTree(res);
+    // systemList.value = resData;
+    console.log(resData);
   }
 }
 function checkOne(item, index, click) {

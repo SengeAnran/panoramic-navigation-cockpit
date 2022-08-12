@@ -79,8 +79,7 @@ export const svgAddReduce = {
  d="M4.000,6.000 L9.000,6.000 C9.276,6.000 9.500,6.224 9.500,6.500 C9.500,6.776 9.276,7.000 9.000,7.000 L4.000,7.000 C3.724,7.000 3.500,6.776 3.500,6.500 C3.500,6.224 3.724,6.000 4.000,6.000 Z"/>`,
 };
 // 计算节点间链接线点位
-export function mathMidPoints(x1, y1, x2, y2, h, sw, tw, position) {
-  console.log(position);
+export function mathMidPoints(x1, y1, x2, y2, h, sw, tw) {
   let x3, y3, x4, y4;
   if (y2 === y1 || Math.abs(y2 - y1) < 0.001) {
     // 水平
@@ -172,13 +171,15 @@ export function hideChildrenOnFirst(node, depth) {
 // 展示列表树的初始化，只显示5层多的去除
 // 第一次加载树形图时最多展示depth层（多的隐藏）
 export function delChildrenOnFirst(node, depth) {
+  console.log(node, depth);
   const height = 0;
   function goChildren(node, height) {
     height++;
     if (node.children) {
       for (let i = 0; i < node.children.length; i++) {
         if (height === depth) {
-          node.children = [];
+          node.children = null;
+          // node.remove
           return;
         }
         goChildren(node.children[i], height);
@@ -263,8 +264,9 @@ export function animateY(obj, target, recall) {
       // 兼容正走倒走
       obj.scrollTop = obj.scrollTop + step;
       if (obj.scrollTop === proValue) {
+        // 不能移动了
         recall && recall(); // 有回调则执行
-        clearInterval(obj.timer); // 停止动画，
+        clearInterval(obj.timer2); // 停止动画，
       }
       proValue = obj.scrollTop;
       // console.log(obj.scrollTop, target);

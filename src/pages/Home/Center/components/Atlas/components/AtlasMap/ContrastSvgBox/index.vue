@@ -202,9 +202,8 @@ function init() {
   }
 }
 
-// 画左右两边树状图
 /**
- * 画左右两边树状图
+ * 画左右下树状图
  * @param {Object} option {
  *   data: 树状图数据，
  *   position： 位置：left、right、bottom

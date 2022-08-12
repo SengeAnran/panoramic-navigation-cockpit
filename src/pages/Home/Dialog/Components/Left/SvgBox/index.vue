@@ -283,7 +283,7 @@ function render(option) {
     .style('font-size', (d) => (d.depth === 0 ? '20px' : '18px'))
     .style('font-family', (d) => (d.depth === 0 ? 'Source Han Sans CN' : 'YouSheBiaoTiHei'))
     .attr('opacity', (d) => {
-      return d.data.hide === true;
+      return d.data.hide === true ? 0 : 1;
     })
     .attr('fill', 'white');
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来

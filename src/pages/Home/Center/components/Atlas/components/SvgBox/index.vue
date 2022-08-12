@@ -47,6 +47,7 @@ function init() {
   innerHeight = height - margin.top - margin.bottom;
   g.value = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
   root = d3.hierarchy(props.data);
+  console.log(root);
   root = d3.tree().size([innerWidth, innerHeight])(root);
   const node = root.descendants();
   const path = root.links();
