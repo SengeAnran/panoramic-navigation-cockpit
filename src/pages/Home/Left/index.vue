@@ -35,9 +35,9 @@
 
 <script setup>
 // import * as d3 from 'd3';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, nextTick } from 'vue';
 import { useStore } from 'vuex';
-import { getBusinessDirectory } from '@/api/search';
+import { getAreaDirectory, getBusinessDirectory, getTechnicalDirectory } from '@/api/search';
 const state = useStore();
 const seletType = reactive({
   name: '业务导览',
@@ -63,87 +63,119 @@ function changeType(index) {
   seletType.name = optionType.value[index].name;
   seletType.eglishName = optionType.value[index].eglishName;
   showOption.value = false;
+  getDataList();
 }
 onMounted(() => {
-  getBusinessDirectory().then((res) => {
-    console.log(res);
+  getDataList();
+  list.value.addEventListener('scroll', function () {
+    setPosition();
   });
 });
+
 const activeIndex = ref(1);
 const dataList = ref([
-  {
-    name: '教育',
-    eglishName: 'education'.toUpperCase(),
-    imgUrl: require('./img/icon_jy.png'),
-    activeImgUrl: require('./img/icon_jy_active.png'),
-  },
-  {
-    name: '医疗',
-    eglishName: 'medical care'.toUpperCase(),
-    imgUrl: require('./img/icon_yl.png'),
-    activeImgUrl: require('./img/icon_yl_active.png'),
-  },
-  {
-    name: '交通',
-    eglishName: 'traffic'.toUpperCase(),
-    imgUrl: require('./img/icon_jt.png'),
-    activeImgUrl: require('./img/icon_jt_active.png'),
-  },
-  {
-    name: '养老',
-    eglishName: 'Providing for the aged'.toUpperCase(),
-    imgUrl: require('./img/icon_yliao.png'),
-    activeImgUrl: require('./img/icon_yliao_active.png'),
-  },
-  {
-    name: '治安',
-    eglishName: 'public security'.toUpperCase(),
-    imgUrl: require('./img/icon_za.png'),
-    activeImgUrl: require('./img/icon_za_active.png'),
-  },
-  {
-    name: '人社',
-    eglishName: 'Human society'.toUpperCase(),
-    imgUrl: require('./img/icon_rs.png'),
-    activeImgUrl: require('./img/icon_jy_active.png'),
-  },
-  {
-    name: '教育',
-    eglishName: 'education'.toUpperCase(),
-    imgUrl: require('./img/icon_jy.png'),
-    activeImgUrl: require('./img/icon_jy_active.png'),
-  },
-  {
-    name: '医疗',
-    eglishName: 'medical care'.toUpperCase(),
-    imgUrl: require('./img/icon_yl.png'),
-    activeImgUrl: require('./img/icon_yl_active.png'),
-  },
-  {
-    name: '交通',
-    eglishName: 'traffic'.toUpperCase(),
-    imgUrl: require('./img/icon_jt.png'),
-    activeImgUrl: require('./img/icon_jt_active.png'),
-  },
-  {
-    name: '养老',
-    eglishName: 'Providing for the aged'.toUpperCase(),
-    imgUrl: require('./img/icon_yliao.png'),
-    activeImgUrl: require('./img/icon_yliao_active.png'),
-  },
-  {
-    name: '治安',
-    eglishName: 'public security'.toUpperCase(),
-    imgUrl: require('./img/icon_za.png'),
-    activeImgUrl: require('./img/icon_za_active.png'),
-  },
-  {
-    name: '人社',
-    eglishName: 'Human society'.toUpperCase(),
-    imgUrl: require('./img/icon_rs.png'),
-    activeImgUrl: require('./img/icon_jy_active.png'),
-  },
+  // {
+  //   name: '教育',
+  //   eglishName: 'education'.toUpperCase(),
+  //   imgUrl: require('./img/icon_jy.png'),
+  //   activeImgUrl: require('./img/icon_jy_active.png'),
+  // },
+  // {
+  //   name: '医疗',
+  //   eglishName: 'medical care'.toUpperCase(),
+  //   imgUrl: require('./img/icon_yl.png'),
+  //   activeImgUrl: require('./img/icon_yl_active.png'),
+  // },
+  // {
+  //   name: '交通',
+  //   eglishName: 'traffic'.toUpperCase(),
+  //   imgUrl: require('./img/icon_jt.png'),
+  //   activeImgUrl: require('./img/icon_jt_active.png'),
+  // },
+  // {
+  //   name: '养老',
+  //   eglishName: 'Providing for the aged'.toUpperCase(),
+  //   imgUrl: require('./img/icon_yliao.png'),
+  //   activeImgUrl: require('./img/icon_yliao_active.png'),
+  // },
+  // {
+  //   name: '治安',
+  //   eglishName: 'public security'.toUpperCase(),
+  //   imgUrl: require('./img/icon_za.png'),
+  //   activeImgUrl: require('./img/icon_za_active.png'),
+  // },
+  // {
+  //   name: '人社',
+  //   eglishName: 'Human society'.toUpperCase(),
+  //   imgUrl: require('./img/icon_rs.png'),
+  //   activeImgUrl: require('./img/icon_jy_active.png'),
+  // },
+  // {
+  //   name: '教育',
+  //   eglishName: 'education'.toUpperCase(),
+  //   imgUrl: require('./img/icon_jy.png'),
+  //   activeImgUrl: require('./img/icon_jy_active.png'),
+  // },
+  // {
+  //   name: '医疗',
+  //   eglishName: 'medical care'.toUpperCase(),
+  //   imgUrl: require('./img/icon_yl.png'),
+  //   activeImgUrl: require('./img/icon_yl_active.png'),
+  // },
+  // {
+  //   name: '交通',
+  //   eglishName: 'traffic'.toUpperCase(),
+  //   imgUrl: require('./img/icon_jt.png'),
+  //   activeImgUrl: require('./img/icon_jt_active.png'),
+  // },
+  // {
+  //   name: '养老',
+  //   eglishName: 'Providing for the aged'.toUpperCase(),
+  //   imgUrl: require('./img/icon_yliao.png'),
+  //   activeImgUrl: require('./img/icon_yliao_active.png'),
+  // },
+  // {
+  //   name: '治安',
+  //   eglishName: 'public security'.toUpperCase(),
+  //   imgUrl: require('./img/icon_za.png'),
+  //   activeImgUrl: require('./img/icon_za_active.png'),
+  // },
+  // {
+  //   name: '人社',
+  //   eglishName: 'Human society'.toUpperCase(),
+  //   imgUrl: require('./img/icon_rs.png'),
+  //   activeImgUrl: require('./img/icon_jy_active.png'),
+  // },
 ]);
+// 获取列表数据
+async function getDataList() {
+  let res;
+  switch (seletType.name) {
+    case '业务导览':
+      res = await getBusinessDirectory();
+      break;
+    case '技术导览':
+      res = await getTechnicalDirectory();
+      break;
+    case '地域导览':
+      res = await getAreaDirectory();
+      break;
+    default:
+      res = [];
+  }
+
+  dataList.value = res.map((i) => {
+    return {
+      name: i,
+      eglishName: ''.toUpperCase(),
+      imgUrl: require('./img/icon_jy.png'),
+      activeImgUrl: require('./img/icon_jy_active.png'),
+    };
+  });
+  nextTick(() => {
+    setPosition();
+  });
+}
 // 选中导览词
 function selectKey(item, index) {
   activeIndex.value = index;
@@ -151,12 +183,6 @@ function selectKey(item, index) {
 }
 const list = ref('');
 const itemHeight = 122;
-onMounted(() => {
-  setPosition();
-  list.value.addEventListener('scroll', function () {
-    setPosition();
-  });
-});
 function setPosition() {
   // 设置元素滚动时的动态的位置
   // 圆的方程式：（x-268.97）^(2)+(y-1025)^(2) = 947^(2)
@@ -283,6 +309,7 @@ function setPosition() {
         height: 79px;
       }
       .name {
+        padding-top: 2px;
         .name-text {
           font-family: YouSheBiaoTiHei;
           color: #7987c1;
@@ -309,6 +336,7 @@ function setPosition() {
             background: linear-gradient(0deg, #b2d2ff 0%, #f9f9f9);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            font-size: 48px;
           }
           .name-eglish {
           }
