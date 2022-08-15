@@ -162,28 +162,27 @@ export function animateX(obj, target, recall) {
   //  当我们不断的点击按钮，这个元素的速度会越来越快，因为开启了太多定时器
   // 解决方案就是 让我们元素只有一个定时器执行
   clearInterval(obj.timer);
+  const targetValue = target > 0 ? target : 0; //  兼容实际距离中轴左右侧
   let proValue;
-  if (target > 0) {
-    obj.timer = setInterval(function () {
-      // 给不同的对象指定不同的定时器
-      if (obj.scrollLeft === target) {
-        recall && recall(); // 有回调则执行
-        clearInterval(obj.timer); // 停止动画，
-      }
-      const step =
-        target - obj.scrollLeft >= 0
-          ? Math.ceil((target - obj.scrollLeft) / 10)
-          : Math.floor((target - obj.scrollLeft) / 10);
-      // 兼容正走倒走
-      obj.scrollLeft = obj.scrollLeft + step;
-      if (obj.scrollLeft === proValue) {
-        recall && recall(); // 有回调则执行
-        clearInterval(obj.timer); // 停止动画，
-      }
-      proValue = obj.scrollLeft;
-      // console.log(obj.scrollLeft, target);
-    }, 30);
-  }
+  obj.timer = setInterval(function () {
+    // 给不同的对象指定不同的定时器
+    if (obj.scrollLeft === targetValue) {
+      recall && recall(); // 有回调则执行
+      clearInterval(obj.timer); // 停止动画，
+    }
+    const step =
+      targetValue - obj.scrollLeft >= 0
+        ? Math.ceil((targetValue - obj.scrollLeft) / 10)
+        : Math.floor((targetValue - obj.scrollLeft) / 10);
+    // 兼容正走倒走
+    obj.scrollLeft = obj.scrollLeft + step;
+    if (obj.scrollLeft === proValue) {
+      recall && recall(); // 有回调则执行
+      clearInterval(obj.timer); // 停止动画，
+    }
+    proValue = obj.scrollLeft;
+    // console.log(obj.scrollLeft, targetValue);
+  }, 30);
 }
 export function animateY(obj, target, recall) {
   // obj 对象 ，target目标位置， recall ？ 回调函数
@@ -191,26 +190,26 @@ export function animateY(obj, target, recall) {
   // 解决方案就是 让我们元素只有一个定时器执行
   clearInterval(obj.timer2);
   let proValue;
-  if (target > 0) {
-    obj.timer2 = setInterval(function () {
-      // 给不同的对象指定不同的定时器
-      if (obj.scrollTop === target) {
-        recall && recall(); // 有回调则执行
-        clearInterval(obj.timer2); // 停止动画，
-      }
-      const step =
-        target - obj.scrollTop >= 0
-          ? Math.ceil((target - obj.scrollTop) / 10)
-          : Math.floor((target - obj.scrollTop) / 10);
-      // 兼容正走倒走
-      obj.scrollTop = obj.scrollTop + step;
-      if (obj.scrollTop === proValue) {
-        recall && recall(); // 有回调则执行
-        clearInterval(obj.timer2); // 停止动画，
-      }
-      proValue = obj.scrollTop;
-      // console.log(obj.scrollTop, target);
-      // console.log()
-    }, 30);
-  }
+  const targetValue = target > 0 ? target : 0; //  兼容左右侧
+  obj.timer2 = setInterval(function () {
+    // 给不同的对象指定不同的定时器
+    if (obj.scrollTop === targetValue) {
+      recall && recall(); // 有回调则执行
+      clearInterval(obj.timer2); // 停止动画，
+    }
+    const step =
+      targetValue - obj.scrollTop >= 0
+        ? Math.ceil((targetValue - obj.scrollTop) / 10)
+        : Math.floor((targetValue - obj.scrollTop) / 10);
+    // 兼容正走倒走
+    obj.scrollTop = obj.scrollTop + step;
+    if (obj.scrollTop === proValue) {
+      // 不能移动了
+      recall && recall(); // 有回调则执行
+      clearInterval(obj.timer2); // 停止动画，
+    }
+    proValue = obj.scrollTop;
+    // console.log(obj.scrollTop, targetValue);
+    // console.log()
+  }, 30);
 }

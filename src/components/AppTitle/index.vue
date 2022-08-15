@@ -3,6 +3,7 @@
   <div class="AppTitle-root">
     <AppName />
     <!--    <TitleOther />-->
+    <!--    <Time />-->
   </div>
   <!--  <AppList />-->
 </template>
@@ -11,6 +12,7 @@
 // import AppList from './AppList';
 // import TitleOther from './TitleOther';
 import AppName from './AppName';
+// import Time from './Time';
 </script>
 
 <style lang="scss" scoped>

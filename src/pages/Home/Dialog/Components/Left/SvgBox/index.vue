@@ -371,12 +371,12 @@ function render(option) {
 function moveTo(e) {
   const top = e.offsetY - defaultHeight / 2;
   const left = e.offsetX - defaultWidth / 2;
-  const obj = document.querySelector('.svg-show-box');
-  if (e.offsetY - defaultHeight / 2 - e.target.scrollTop > 5) {
-    animateY(obj, top > 0 ? Math.ceil(top) : 0);
+  const obj = document.querySelector('.svg-show-box-dialog');
+  if (Math.abs(top) > 5) {
+    animateY(obj, Math.ceil(top));
   }
-  if (e.offsetX - defaultWidth / 2 - e.target.scrollLeft > 5) {
-    animateX(obj, left > 0 ? Math.ceil(left) : 0);
+  if (Math.abs(left) > 5) {
+    animateX(obj, Math.ceil(left));
   }
 }
 // // 画根树状图
