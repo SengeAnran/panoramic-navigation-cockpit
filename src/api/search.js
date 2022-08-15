@@ -39,3 +39,12 @@ export const getHighFrequencyWords = (data) => {
     data,
   });
 };
+
+// 根据关键词搜索所有相关系统
+export const getGraphSystems = (data) => {
+  return axios.request({
+    method: 'POST',
+    url: '/api/graph/systems',
+    data,
+  });
+};

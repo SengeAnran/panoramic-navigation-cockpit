@@ -22,70 +22,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { useStore } from 'vuex';
+import { getHighFrequencyWords } from '@/api/search';
 const state = useStore();
 const activeIndex = ref(1);
-const dataList = ref([
-  {
-    name: '养育一件事',
-  },
-  {
-    name: '健康码',
-  },
-  {
-    name: '一网通办',
-  },
-  {
-    name: '出生一件事',
-  },
-  {
-    name: '掌上通',
-  },
-  {
-    name: '线上办理绿色通道',
-  },
-  {
-    name: '养老金领取',
-  },
-  {
-    name: '医疗',
-  },
-  {
-    name: '交通',
-  },
-  {
-    name: '养老',
-  },
-  {
-    name: '治安',
-  },
-  {
-    name: '人社',
-  },
-
-  {
-    name: '线上办理绿色通道',
-  },
-  {
-    name: '养老金领取',
-  },
-  {
-    name: '医疗',
-  },
-  {
-    name: '交通',
-  },
-  {
-    name: '养老',
-  },
-  {
-    name: '治安',
-  },
-  {
-    name: '人社',
-  },
-]);
+const dataList = ref([]);
+async function getDataList() {
+  const res = await getHighFrequencyWords();
+  dataList.value = res.map((i) => {
+    return {
+      name: i.word,
+    };
+  });
+  nextTick(() => {
+    setPosition();
+  });
+}
 // 选中导览词
 function selectKey(item, index) {
   activeIndex.value = index;
@@ -94,7 +47,7 @@ function selectKey(item, index) {
 const list = ref('');
 const itemHeight = 99.5;
 onMounted(() => {
-  setPosition();
+  getDataList();
   list.value.addEventListener('scroll', function () {
     setPosition();
   });

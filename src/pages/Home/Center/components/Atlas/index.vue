@@ -55,6 +55,12 @@ const systemList = ref([
           {
             same: true,
             name: '节点名称21',
+            children: [
+              {
+                same: false,
+                name: '节点名称42',
+              },
+            ],
           },
           {
             same: false,
@@ -146,31 +152,31 @@ const systemList = ref([
                       {
                         name: '节点名称52',
                         same: true,
-                        // children: [
-                        //   {
-                        //     name: '节点名称52',
-                        //     children: [
-                        //       {
-                        //         name: '节点名称52',
-                        //         // children: [
-                        //         //   {
-                        //         //     name: '节点名称52',
-                        //         //     children: [
-                        //         //       {
-                        //         //         name: '节点名称52',
-                        //         //         children: [
-                        //         //           {
-                        //         //             name: '节点名称52',
-                        //         //           },
-                        //         //         ],
-                        //         //       },
-                        //         //     ],
-                        //         //   },
-                        //         // ],
-                        //       },
-                        //     ],
-                        //   },
-                        // ],
+                        children: [
+                          {
+                            name: '节点名称52',
+                            // children: [
+                            //   {
+                            //     name: '节点名称52',
+                            //     // children: [
+                            //     //   {
+                            //     //     name: '节点名称52',
+                            //     //     children: [
+                            //     //       {
+                            //     //         name: '节点名称52',
+                            //     //         children: [
+                            //     //           {
+                            //     //             name: '节点名称52',
+                            //     //           },
+                            //     //         ],
+                            //     //       },
+                            //     //     ],
+                            //     //   },
+                            //     // ],
+                            //   },
+                            // ],
+                          },
+                        ],
                       },
                     ],
                   },
