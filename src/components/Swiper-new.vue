@@ -27,7 +27,7 @@ const state = reactive({
   },
 });
 onMounted(() => {
-  nextTick(mount())
+  nextTick(mount());
 });
 const el = ref('');
 function mount() {
@@ -42,7 +42,7 @@ function mount() {
       // }
     }
 
-    const mountInstance = function() {
+    const mountInstance = function () {
       state.swiper = new Swiper(el, props.options);
     };
     setClassName ? nextTick(mountInstance) : mountInstance();

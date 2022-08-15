@@ -1,13 +1,21 @@
 <template>
-<div ref="title" :class="`secondary-title ${titleType}`">
-  <div class="titles">
-    <div class="title-item" v-for="(item, index) in props.titleNameList" :key="index" :class="{active: index === activeIndex}" @click="changeTitle(index)">{{item}}</div>
+  <div ref="title" :class="`secondary-title ${titleType}`">
+    <div class="titles">
+      <div
+        class="title-item"
+        v-for="(item, index) in props.titleNameList"
+        :key="index"
+        :class="{ active: index === activeIndex }"
+        @click="changeTitle(index)"
+      >
+        {{ item }}
+      </div>
+    </div>
+    <span>{{ props.titleName }}</span>
+    <div class="paging">
+      <slot></slot>
+    </div>
   </div>
-  <span>{{ props.titleName }}</span>
-  <div class="paging">
-    <slot></slot>
-  </div>
-</div>
 </template>
 
 <script setup>
@@ -23,11 +31,13 @@ const props = defineProps({
     type: String,
     default: 'common',
   },
-  autoChange: { // 自动切换 标题
+  autoChange: {
+    // 自动切换 标题
     type: Boolean,
     default: false,
   },
-  autoChangeTime: { // 自动切换 时间
+  autoChangeTime: {
+    // 自动切换 时间
     type: Number,
   },
   watchBox: {
@@ -45,7 +55,7 @@ const emit = defineEmits(['changeTitle']);
 
 function changeTitle(index) {
   activeIndex.value = index;
-  emit('changeTitle', index)
+  emit('changeTitle', index);
 }
 
 onMounted(() => {
@@ -58,17 +68,17 @@ onMounted(() => {
   }
 });
 function init() {
-  watchBox.value.addEventListener('mouseover', function() {
+  watchBox.value.addEventListener('mouseover', function () {
     clearInterval(inter.value);
   });
-  watchBox.value.addEventListener('mouseout', function() {
+  watchBox.value.addEventListener('mouseout', function () {
     changeData();
   });
 }
 const store = useStore();
 const changeData = () => {
-  inter.value = setInterval(function() {
-    changeTitle((activeIndex.value + 1) % props.titleNameList?.length)
+  inter.value = setInterval(function () {
+    changeTitle((activeIndex.value + 1) % props.titleNameList?.length);
   }, props.autoChangeTime || store.getters.intervalTime);
 };
 onBeforeUnmount(() => {
@@ -83,7 +93,7 @@ onBeforeUnmount(() => {
   position: relative;
   height: 37px;
   width: 509px;
-  background: url("./title_bg.png") no-repeat;
+  background: url('./title_bg.png') no-repeat;
   text-indent: 31px;
   .titles {
     display: flex;
@@ -94,22 +104,22 @@ onBeforeUnmount(() => {
       font-family: Microsoft YaHei;
       font-weight: bold;
       font-style: italic;
-      color: #B7FDFD;
+      color: #b7fdfd;
       line-height: 26px;
       padding-right: 5px;
-      background: linear-gradient(0deg, #79C0F6 1.513671875%, #FFFFFF 100%);
+      background: linear-gradient(0deg, #79c0f6 1.513671875%, #ffffff 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       opacity: 0.45;
       &::before {
-        content: "";
+        content: '';
         display: block;
         position: absolute;
         left: 0;
         top: -6px;
         width: 33px;
         height: 37px;
-        background: url("./icon_points.png") no-repeat;
+        background: url('./icon_points.png') no-repeat;
       }
 
       &.active {
@@ -125,7 +135,7 @@ onBeforeUnmount(() => {
   &.small {
     height: 23px;
     width: 235px;
-    background: url("./small_title_bg.png") no-repeat;
+    background: url('./small_title_bg.png') no-repeat;
     span {
       line-height: 23px;
       font-size: 16px;
@@ -134,7 +144,7 @@ onBeforeUnmount(() => {
   &.big {
     height: 23px;
     width: 753px;
-    background: url("./title_bg_big.png") no-repeat;
+    background: url('./title_bg_big.png') no-repeat;
     span {
       line-height: 23px;
       font-size: 16px;

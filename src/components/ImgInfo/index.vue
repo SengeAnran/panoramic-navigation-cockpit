@@ -1,7 +1,7 @@
 <template>
   <div class="ImgInfo_Root list-content">
     <div class="list-item" v-for="(item, index) in list" :key="index">
-<!--      <img class="img" :src="require(`@/assets/img/icons/icon-${item.icon}.png`)" alt="" />-->
+      <!--      <img class="img" :src="require(`@/assets/img/icons/icon-${item.icon}.png`)" alt="" />-->
       <div class="text-box" :style="{ fontSize: labelSize + 'px' }">
         {{ item.label }}
         <div class="num" :style="{ color: valueColor, fontSize: valueSize + 'px' }">

@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="!hideMore" class="more" @click="$emit('clickMore')">
-      <img src="./more.png" alt="">
+      <img src="./more.png" alt="" />
     </div>
   </div>
 </template>
@@ -46,10 +46,10 @@ const props = defineProps({
   font-weight: bold;
   color: #fefefe;
   text-indent: 21px;
-  background: url("./title_bg.png") no-repeat;
+  background: url('./title_bg.png') no-repeat;
   &.big {
     width: 770px;
-    background: url("./title_bg_big.png") no-repeat;
+    background: url('./title_bg_big.png') no-repeat;
     span {
       top: -2px;
       left: 27px;
@@ -64,27 +64,27 @@ const props = defineProps({
     font-size: 24px;
     font-family: YouSheBiaoTiHei;
     font-weight: 400;
-    color: #B7FDFD;
+    color: #b7fdfd;
     line-height: 32px;
 
-    background: linear-gradient(0deg, #79C0F6 1.513671875%, #FFFFFF 100%);
+    background: linear-gradient(0deg, #79c0f6 1.513671875%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     &::before {
-      content: "";
+      content: '';
       position: absolute;
       width: 47px;
       height: 47px;
-      background: url("./point.png") center no-repeat;
+      background: url('./point.png') center no-repeat;
       left: -38px;
       top: -8px;
     }
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       width: 47px;
       height: 47px;
-      background: url("./point.png") center no-repeat;
+      background: url('./point.png') center no-repeat;
       right: -38px;
       top: -8px;
     }
@@ -108,6 +108,5 @@ const props = defineProps({
       height: 100%;
     }
   }
-
 }
 </style>

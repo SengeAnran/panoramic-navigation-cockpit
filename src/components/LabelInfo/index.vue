@@ -23,12 +23,9 @@
       <div v-else>
         {{ value }}
       </div>
-      <div :class="`increase ${change}` " v-if="smallNum !== undefined && smallNum !== null">
+      <div :class="`increase ${change}`" v-if="smallNum !== undefined && smallNum !== null">
         <RollNum :number="smallNum" class="small-num" />
-        <span
-          class="small-unit"
-        >{{ smallUnit }}</span
-        >
+        <span class="small-unit">{{ smallUnit }}</span>
       </div>
     </div>
   </div>
@@ -80,7 +77,7 @@ const valueColor = computed(() => {
     font-size: 14px;
     font-family: 'MiSans-Normal';
     font-weight: 400;
-    color: #C0D8F5;
+    color: #c0d8f5;
     text-align: center;
   }
   .value {
@@ -100,18 +97,17 @@ const valueColor = computed(() => {
       font-size: 16px;
       font-family: DINPro;
       font-weight: 500;
-      color: #FFFEFE;
+      color: #fffefe;
       background: linear-gradient(0deg, rgba(232, 25, 25, 1) 0%, rgba(255, 255, 255, 0.9) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       .small-num {
         //font-size: 12px;
         //margin-left: 2px;
-        color: #FFFEFE;
+        color: #fffefe;
         background: linear-gradient(0deg, rgba(232, 25, 25, 1) 0%, rgba(255, 255, 255, 0.9) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-
       }
       &.add {
         position: relative;
@@ -121,21 +117,21 @@ const valueColor = computed(() => {
         .small-num {
           //font-size: 12px;
           //margin-left: 2px;
-          color: #FFFEFE;
+          color: #fffefe;
           background: linear-gradient(0deg, rgba(232, 25, 25, 1) 0%, rgba(255, 255, 255, 0.9) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
         position: relative;
         &::after {
-          content: "";
+          content: '';
           position: absolute;
           top: 0;
           right: -12px;
           display: block;
           width: 15px;
           height: 18px;
-          background: url("./icon_add.png") no-repeat;
+          background: url('./icon_add.png') no-repeat;
         }
       }
       &.reduce {
@@ -146,24 +142,23 @@ const valueColor = computed(() => {
         .small-num {
           //font-size: 12px;
           //margin-left: 2px;
-          color: #FFFEFE;
+          color: #fffefe;
           background: linear-gradient(0deg, rgba(30, 145, 63, 1) 0%, rgba(255, 255, 255, 0.9) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
         &::after {
-          content: "";
+          content: '';
           position: absolute;
           top: 0;
           right: -12px;
           display: block;
           width: 15px;
           height: 18px;
-          background: url("./icon_reduce.png") no-repeat;
+          background: url('./icon_reduce.png') no-repeat;
         }
       }
       .small-unit {
-
       }
     }
   }

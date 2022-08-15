@@ -18,7 +18,7 @@ const props = defineProps({
   autoChangeTime: {
     type: Number,
     default: 0,
-  }
+  },
 });
 
 onMounted(() => {
@@ -35,7 +35,7 @@ const rollMask = ref(null);
 const container = ref(undefined);
 const mask = ref(undefined);
 function initAuto() {
-  inter.value = setInterval(function() {
+  inter.value = setInterval(function () {
     update(props.number, 0);
   }, props.autoChangeTime);
 }

@@ -1,10 +1,10 @@
 <template>
-<div :class="`secondary-title ${titleType}`">
-  <span>{{ props.titleName }}</span>
-  <div class="paging">
-    <slot></slot>
+  <div :class="`secondary-title ${titleType}`">
+    <span>{{ props.titleName }}</span>
+    <div class="paging">
+      <slot></slot>
+    </div>
   </div>
-</div>
 </template>
 
 <script setup>
@@ -28,18 +28,18 @@ const props = defineProps({
   position: relative;
   height: 37px;
   width: 509px;
-  background: url("./title_bg.png") no-repeat;
+  background: url('./title_bg.png') no-repeat;
   text-indent: 31px;
   span {
     font-size: 16px;
     font-family: Microsoft YaHei;
     font-weight: bold;
     font-style: italic;
-    color: #B7FDFD;
+    color: #b7fdfd;
     line-height: 37px;
     padding-right: 5px;
 
-    background: linear-gradient(0deg, #79C0F6 1.513671875%, #FFFFFF 100%);
+    background: linear-gradient(0deg, #79c0f6 1.513671875%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -51,7 +51,7 @@ const props = defineProps({
   &.small {
     height: 23px;
     width: 235px;
-    background: url("./small_title_bg.png") no-repeat;
+    background: url('./small_title_bg.png') no-repeat;
     span {
       line-height: 23px;
       font-size: 16px;

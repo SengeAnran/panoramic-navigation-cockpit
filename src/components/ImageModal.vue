@@ -20,17 +20,17 @@ export default {
   props: {
     show: {
       type: Boolean,
-      default: true
+      default: true,
     },
     data: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   computed: {
     swiper() {
       return this.$refs.mySwiper.$swiper;
-    }
+    },
   },
   data() {
     return {
@@ -40,16 +40,16 @@ export default {
 
         navigation: {
           nextEl: '.img-model-next',
-          prevEl: '.img-model--prev'
-        }
-      }
+          prevEl: '.img-model--prev',
+        },
+      },
     };
   },
   methods: {
     hideModal() {
       this.$emit('update:show', false);
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -101,7 +101,7 @@ export default {
 
       &:after {
         display: block;
-        content: "";
+        content: '';
         width: 14px;
         height: 15px;
         border-right: 2px solid #fff;
