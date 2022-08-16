@@ -4,6 +4,7 @@
     <AtlasMap v-else @showAll="showAll" :data="contrastData" />
     <div class="search-results">
       <div class="btn" @click="showRes()"></div>
+      <div class="mask"></div>
       <div class="search-results-box" v-if="showSearchRes">
         <div class="atlas-switch">
           <div class="type-name theme-font-style">{{ atlasType }}</div>
@@ -342,6 +343,13 @@ function moveRight() {
       height: 43px;
       background: url('./img/btn_bg.png') no-repeat;
       background-size: 100%;
+    }
+    .mask {
+      position: absolute;
+      width: calc(100% + 54px);
+      height: 100%;
+      background-color: #0e1b28;
+      filter: blur(10px);
     }
     .search-results-box {
       z-index: 13;

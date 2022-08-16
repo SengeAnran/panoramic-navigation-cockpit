@@ -221,7 +221,7 @@ function init() {
       data: data,
       rootNode: {
         x: midValue / 2,
-        y: multiple > 1 ? 30 + (multiple * innerHeight) / 16 : 30,
+        y: multiple > 1 ? 30 + (multiple * innerHeight) / 25 : 30,
       },
     };
     renderRoot(optionRoot);
