@@ -45,24 +45,7 @@ let innerWidth, // 内宽
 const svgClass = ref('');
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
-  mouseMove();
 });
-function mouseMove() {
-  const showBox = document.querySelector('.svg-show-box');
-  showBox.addEventListener('mousedown', (e) => {
-    let x = e.pageX;
-    let y = e.pageY;
-    let ox = showBox.scrollLeft;
-    let oy = showBox.scrollTop;
-    showBox.onmousemove = (e) => {
-      showBox.scrollLeft = ox - (e.pageX - x);
-      showBox.scrollTop = oy - (e.pageY - y);
-    };
-    showBox.addEventListener('mouseup', () => {
-      showBox.onmousemove = null;
-    });
-  });
-}
 watch(
   () => props.data,
   (val) => {
@@ -136,7 +119,7 @@ function init() {
   if (treeWidth > 9) {
     widthMultiple = treeWidth / 10;
   }
-  // console.log(widthMultiple);
+  console.log(widthMultiple);
   multiple = Math.max(widthMultiple, heightMultiple);
   svg = d3.select(`.svg-${props.index}`);
   if (svg.select('.chart-g')) {
@@ -385,7 +368,10 @@ function render(option) {
         ? 0
         : 1;
     })
-    .attr('fill', 'white');
+    .attr('fill', 'white')
+    .on('mouseover', (e, d) => {
+      console.log(e, d);
+    });
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
   // .attr('text-orientation', 'upright');
 

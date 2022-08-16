@@ -16,12 +16,9 @@ import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 const state = useStore();
 const contentOpacity = computed(() => {
-  console.log(state.getters.contentOpacity);
   return state.getters.contentOpacity;
 });
-onMounted(() => {
-  console.log(contentOpacity.value);
-});
+onMounted(() => {});
 </script>
 
 <style lang="scss" scoped>

@@ -10,8 +10,8 @@
           <div v-if="atlasType !== '关系图谱'" @click="changeAtlas('关系图谱')" class="icon-top icon"></div>
           <div v-else class="icon-bottom icon" @click="changeAtlas('对比图谱')"></div>
         </div>
-        <div v-if="systemListSmall.length > 3" class="left-btn btn" @click="moveLeft()"></div>
-        <div v-if="systemListSmall.length > 3" class="right-btn btn" @click="moveRight()"></div>
+        <div v-if="systemListSmall.length > 3" class="left-btn btn" @click="moveRight()"></div>
+        <div v-if="systemListSmall.length > 3" class="right-btn btn" @click="moveLeft()"></div>
         <div class="atlas-items" ref="atlasItems">
           <div class="box">
             <div class="atlas-item" v-for="(item, index) in systemListSmall" :key="index">
@@ -32,13 +32,12 @@ import AtlasMap from './components/AtlasMap/index';
 import SvgBox from './components/SvgBox/index';
 import { ref, watch, reactive, onMounted } from 'vue';
 import { useStore } from 'vuex';
-import { getRelationGraph } from '@/api/atlas';
 import { deepClone } from '@/utils';
 import {
   animateX,
   delChildrenOnFirst,
 } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
-import { getInitTree } from './constants';
+import { initNodeTree } from './constants';
 import { getGraphSystems } from '@/api/search';
 const state = useStore();
 const showSearchRes = ref(false);
@@ -52,255 +51,165 @@ watch(
 const atlasType = ref('关系图谱');
 // const systemList = ref([]);
 const systemList = ref([
-  {
-    name: '系统名称1',
-    check: false,
-    children: [
-      {
-        name: '节点名称1',
-        children: [
-          {
-            same: true,
-            name: '节点名称21',
-            children: [
-              {
-                same: false,
-                name: '节点名称42',
-              },
-            ],
-          },
-          {
-            same: false,
-            name: '节点名称22',
-          },
-          {
-            same: true,
-            name: '节点名称23',
-            children: [
-              {
-                same: false,
-                name: '节点名称31',
-                children: [
-                  {
-                    same: false,
-                    name: '节点名称42',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            same: false,
-            name: '节点名称24',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: '系统名称2',
-    check: false,
-    children: [
-      {
-        same: true,
-        name: '节点名称1',
-        children: [
-          {
-            same: false,
-            name: '节点名称21',
-          },
-          {
-            same: true,
-            name: '节点名称22',
-          },
-          {
-            same: false,
-            name: '节点名称23',
-            children: [
-              {
-                same: true,
-                name: '节点名称31',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: '系统名称3',
-    check: false,
-    same: true,
-    children: [
-      {
-        name: '节点名称1',
-        same: true,
-        children: [
-          {
-            name: '节点名称21',
-            same: true,
-          },
-          {
-            name: '节点名称22',
-            same: true,
-          },
-          {
-            name: '节点名称23',
-            same: true,
-            children: [
-              {
-                name: '节点名称31',
-                same: true,
-                children: [
-                  {
-                    name: '节点名称42',
-                    same: true,
-                    children: [
-                      {
-                        name: '节点名称52',
-                        same: true,
-                        children: [
-                          {
-                            name: '节点名称52',
-                            // children: [
-                            //   {
-                            //     name: '节点名称52',
-                            //     // children: [
-                            //     //   {
-                            //     //     name: '节点名称52',
-                            //     //     children: [
-                            //     //       {
-                            //     //         name: '节点名称52',
-                            //     //         children: [
-                            //     //           {
-                            //     //             name: '节点名称52',
-                            //     //           },
-                            //     //         ],
-                            //     //       },
-                            //     //     ],
-                            //     //   },
-                            //     // ],
-                            //   },
-                            // ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            name: '节点名称24',
-            same: true,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: '系统名称2',
-    check: false,
-    children: [
-      {
-        same: true,
-        name: '节点名称1',
-        children: [
-          {
-            same: false,
-            name: '节点名称21',
-          },
-          {
-            same: true,
-            name: '节点名称22',
-          },
-          {
-            same: false,
-            name: '节点名称23',
-            children: [
-              {
-                same: true,
-                name: '节点名称31',
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: '系统名称3',
-    check: false,
-    same: true,
-    children: [
-      {
-        name: '节点名称1',
-        same: true,
-        children: [
-          {
-            name: '节点名称21',
-            same: true,
-          },
-          {
-            name: '节点名称22',
-            same: true,
-          },
-          {
-            name: '节点名称23',
-            same: true,
-            children: [
-              {
-                name: '节点名称31',
-                same: true,
-                children: [
-                  {
-                    name: '节点名称42',
-                    same: true,
-                    children: [
-                      {
-                        name: '节点名称52',
-                        same: true,
-                        children: [
-                          {
-                            name: '节点名称52',
-                            // children: [
-                            //   {
-                            //     name: '节点名称52',
-                            //     // children: [
-                            //     //   {
-                            //     //     name: '节点名称52',
-                            //     //     children: [
-                            //     //       {
-                            //     //         name: '节点名称52',
-                            //     //         children: [
-                            //     //           {
-                            //     //             name: '节点名称52',
-                            //     //           },
-                            //     //         ],
-                            //     //       },
-                            //     //     ],
-                            //     //   },
-                            //     // ],
-                            //   },
-                            // ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            name: '节点名称24',
-            same: true,
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   name: '系统名称1',
+  //   check: false,
+  //   children: [
+  //     {
+  //       name: '节点名',
+  //       children: [
+  //         {
+  //           same: true,
+  //           name: '节点反对复古风的观',
+  //           children: [
+  //             {
+  //               same: false,
+  //               name: '节点名称十多度',
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           same: false,
+  //           name: '节点名称对撒的',
+  //         },
+  //         {
+  //           same: true,
+  //           name: '节点名称',
+  //           children: [
+  //             {
+  //               same: false,
+  //               name: '节点名称31',
+  //               children: [
+  //                 {
+  //                   same: false,
+  //                   name: '节点名称42',
+  //                   // children: [
+  //                   //   {
+  //                   //     same: false,
+  //                   //     name: '节点名称42',
+  //                   //     children: [
+  //                   //       {
+  //                   //         same: false,
+  //                   //         name: '节点名称42',
+  //                   //       },
+  //                   //     ],
+  //                   //   },
+  //                   // ],
+  //                 },
+  //               ],
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           same: false,
+  //           name: '节点名称24',
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
+  // {
+  //   name: '系统名称2',
+  //   check: false,
+  //   children: [
+  //     {
+  //       same: true,
+  //       name: '节点名称1',
+  //       children: [
+  //         {
+  //           same: false,
+  //           name: '节点名称21',
+  //         },
+  //         {
+  //           same: true,
+  //           name: '节点名称22',
+  //         },
+  //         {
+  //           same: false,
+  //           name: '节点名称23',
+  //           children: [
+  //             {
+  //               same: true,
+  //               name: '节点名称31',
+  //             },
+  //           ],
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
+  // {
+  //   name: '系统名称3',
+  //   check: false,
+  //   same: true,
+  //   children: [
+  //     {
+  //       name: '节点名称1',
+  //       same: true,
+  //       children: [
+  //         {
+  //           name: '节点名称21',
+  //           same: true,
+  //         },
+  //         {
+  //           name: '节点名称22',
+  //           same: true,
+  //         },
+  //         {
+  //           name: '节点名称23',
+  //           same: true,
+  //           children: [
+  //             {
+  //               name: '节点名称31',
+  //               same: true,
+  //               children: [
+  //                 {
+  //                   name: '节点名称42',
+  //                   same: true,
+  //                   children: [
+  //                     {
+  //                       name: '节点名称52',
+  //                       same: true,
+  //                       children: [
+  //                         {
+  //                           name: '节点名称52',
+  //                           // children: [
+  //                           //   {
+  //                           //     name: '节点名称52',
+  //                           //     // children: [
+  //                           //     //   {
+  //                           //     //     name: '节点名称52',
+  //                           //     //     children: [
+  //                           //     //       {
+  //                           //     //         name: '节点名称52',
+  //                           //     //         children: [
+  //                           //     //           {
+  //                           //     //             name: '节点名称52',
+  //                           //     //           },
+  //                           //     //         ],
+  //                           //     //       },
+  //                           //     //     ],
+  //                           //     //   },
+  //                           //     // ],
+  //                           //   },
+  //                           // ],
+  //                         },
+  //                       ],
+  //                     },
+  //                   ],
+  //                 },
+  //               ],
+  //             },
+  //           ],
+  //         },
+  //         {
+  //           name: '节点名称24',
+  //           same: true,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
 ]);
 const systemListSmall = ref([]);
 const contrastData = reactive({
@@ -314,18 +223,18 @@ const contrastData = reactive({
 onMounted(() => {
   getSystemListSmall();
 });
-// watch(
-//   () => systemList.value,
-//   (val) => {
-//     if (val.length > 0) {
-//       getSystemListSmall();
-//     }
-//   },
-//   {
-//     deep: true,
-//     immediate: true,
-//   },
-// );
+watch(
+  () => systemList.value,
+  (val) => {
+    if (val.length > 0) {
+      getSystemListSmall();
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
 watch(
   () => state.getters.query,
   function () {
@@ -343,15 +252,15 @@ async function getDataList() {
     mode: 'specific',
   };
   const res = await getGraphSystems(data);
-  console.log(res);
+  initNodeTree(res);
+  systemList.value = res;
 }
 function getSystemListSmall() {
   for (let i = 0; i < systemList.value.length; i++) {
     const tree = deepClone(systemList.value[i]);
-    delChildrenOnFirst(tree, 5);
+    delChildrenOnFirst(tree, 3);
     systemListSmall.value.push(tree);
   }
-  console.log(systemListSmall.value);
 }
 function showAll() {
   checkOne();
@@ -363,15 +272,8 @@ function changeAtlas(typeName) {
     i.check = false;
   });
 }
-async function showRes() {
+function showRes() {
   showSearchRes.value = !showSearchRes.value;
-  if (showSearchRes.value) {
-    const res = await getRelationGraph();
-    // systemList.value = res;
-    const resData = getInitTree(res);
-    // systemList.value = resData;
-    console.log(resData);
-  }
 }
 function checkOne(item, index, click) {
   // 控制对比图谱只能选择两个进行对比
@@ -400,13 +302,18 @@ function checkOne(item, index, click) {
 const atlasItems = ref('');
 let itemIndex = 0;
 function moveLeft() {
-  itemIndex = (itemIndex + 1) / (systemListSmall.value.length - 3);
+  // itemIndex = (itemIndex + 1) % (systemListSmall.value.length - 2);
+  itemIndex = itemIndex + 1;
+  if (itemIndex === systemListSmall.value.length - 2) {
+    itemIndex = systemListSmall.value.length - 3;
+  }
   animateX(atlasItems.value, itemIndex * 400);
 }
 function moveRight() {
   itemIndex--;
   if (itemIndex < 0) {
-    itemIndex = systemListSmall.value.length - 3;
+    // itemIndex = systemListSmall.value.length - 3;
+    itemIndex = 0;
   }
   animateX(atlasItems.value, itemIndex * 400);
 }
