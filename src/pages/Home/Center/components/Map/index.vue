@@ -5,9 +5,9 @@
     <RaterLayer :tiles="tiles" :tileSize="256" :maxzoom="16" />
     <Polygon :data="outData" autoFitBound :fillPaint="fillPaint" :linePaint="linePaint" />
     <ThreeLayer>
-      <OdLine :data="odLines" v-if="false" />
+      <OdLine :data="odLines" />
     </ThreeLayer>
-    <Marker :position="[104.90022521913897, 33.46359626751]" :options="{ offset: [0, -27] }">
+    <Marker :position="[104, 33]" :options="{ offset: [0, -27] }">
       <template #icon>
         <MarkerIcon />
       </template>
@@ -32,8 +32,8 @@ import MarkerIcon from './MarkerIcon';
 import { odLines } from './mock';
 
 const options = [
-  { label: '系统点位', value: 'system', color: 'blue' },
-  { label: '公司点位', value: 'company', color: 'orange' },
+  { label: '系统点位', value: 'system' },
+  { label: '公司点位', value: 'company' },
 ];
 const selected = ref(['system', 'company']);
 

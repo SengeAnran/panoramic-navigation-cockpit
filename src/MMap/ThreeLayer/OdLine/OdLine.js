@@ -84,13 +84,13 @@ export default class OdLine extends BaseLayer {
     return new ShaderMaterial({
       uniforms: {
         uColor: {
-          value: new Vector3(1, 1, 0),
+          value: new Vector3(70 / 255, 233 / 255, 254 / 255),
         },
         uTrailLength: {
-          value: 0.5,
+          value: 0.3,
         },
         uTimeCounter: {
-          value: 1000,
+          value: 0,
         },
       },
       vertexShader: odVert,

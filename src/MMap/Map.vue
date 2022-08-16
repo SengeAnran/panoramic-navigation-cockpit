@@ -45,7 +45,7 @@ onUnmounted(async () => {
   position: absolute;
   top: 0;
   left: 50%;
-  width: 60%;
+  width: 100%;
   height: 100%;
   transform: translateX(-50%);
 }
