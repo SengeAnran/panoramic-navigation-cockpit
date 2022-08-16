@@ -65,8 +65,7 @@ onMounted(async () => {
     source: sourceId,
     paint: {
       'fill-color': '#000', // blue color fill
-      'fill-opacity': 1,
-      'fill-pattern': 'pattern',
+      'fill-opacity': 0.5,
       ...props.fillPaint,
     },
   });
