@@ -1,6 +1,7 @@
 <template>
   <teleport to="body">
     <div class="map-legend">
+      <slot />
       <div
         class="legend-item"
         v-for="item in options"

@@ -5,7 +5,7 @@
     <RaterLayer :tiles="tiles" :tileSize="256" :maxzoom="16" />
     <Polygon :data="outData" autoFitBound :fillPaint="fillPaint" :linePaint="linePaint" />
     <ThreeLayer>
-      <OdLine :data="odLines" />
+      <OdLine :data="odLines" v-if="show" />
     </ThreeLayer>
     <Marker :position="[104, 33]" :options="{ offset: [0, -27] }">
       <template #icon>
@@ -16,7 +16,9 @@
       </template>
     </Marker>
   </Map>
-  <Legend :options="options" v-model="selected" />
+  <Legend :options="options" v-model="selected">
+    <!-- <button @click="toggle">aaaa</button> -->
+  </Legend>
 </template>
 <script setup>
 import { shallowRef, onMounted, ref } from 'vue';
@@ -36,7 +38,10 @@ const options = [
   { label: '公司点位', value: 'company' },
 ];
 const selected = ref(['system', 'company']);
-
+const show = ref(true);
+// function toggle() {
+//   show.value = !show.value;
+// }
 const tiles = 'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}';
 // const tiles = [
 //   'https://a.tiles.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYWx0ZXJtYW4iLCJhIjoiY2pxZzl1d3lxMDhubDQ0cDJyMzN2YWJraiJ9.e1QzONvlILHn_zt1jsjnlw',
