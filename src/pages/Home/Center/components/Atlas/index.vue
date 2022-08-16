@@ -10,7 +10,9 @@
           <div v-if="atlasType !== '关系图谱'" @click="changeAtlas('关系图谱')" class="icon-top icon"></div>
           <div v-else class="icon-bottom icon" @click="changeAtlas('对比图谱')"></div>
         </div>
-        <div class="atlas-items">
+        <div v-if="systemListSmall.length > 3" class="left-btn btn" @click="moveLeft()"></div>
+        <div v-if="systemListSmall.length > 3" class="right-btn btn" @click="moveRight()"></div>
+        <div class="atlas-items" ref="atlasItems">
           <div class="box">
             <div class="atlas-item" v-for="(item, index) in systemListSmall" :key="index">
               <SvgBox :data="item" :index="index" />
@@ -32,8 +34,12 @@ import { ref, watch, reactive, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import { getRelationGraph } from '@/api/atlas';
 import { deepClone } from '@/utils';
-import { delChildrenOnFirst } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
+import {
+  animateX,
+  delChildrenOnFirst,
+} from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 import { getInitTree } from './constants';
+import { getGraphSystems } from '@/api/search';
 const state = useStore();
 const showSearchRes = ref(false);
 watch(
@@ -42,6 +48,7 @@ watch(
     state.commit('SET_BOTTOM_OPACITY', nVal);
   },
 );
+
 const atlasType = ref('关系图谱');
 // const systemList = ref([]);
 const systemList = ref([
@@ -192,6 +199,108 @@ const systemList = ref([
       },
     ],
   },
+  {
+    name: '系统名称2',
+    check: false,
+    children: [
+      {
+        same: true,
+        name: '节点名称1',
+        children: [
+          {
+            same: false,
+            name: '节点名称21',
+          },
+          {
+            same: true,
+            name: '节点名称22',
+          },
+          {
+            same: false,
+            name: '节点名称23',
+            children: [
+              {
+                same: true,
+                name: '节点名称31',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: '系统名称3',
+    check: false,
+    same: true,
+    children: [
+      {
+        name: '节点名称1',
+        same: true,
+        children: [
+          {
+            name: '节点名称21',
+            same: true,
+          },
+          {
+            name: '节点名称22',
+            same: true,
+          },
+          {
+            name: '节点名称23',
+            same: true,
+            children: [
+              {
+                name: '节点名称31',
+                same: true,
+                children: [
+                  {
+                    name: '节点名称42',
+                    same: true,
+                    children: [
+                      {
+                        name: '节点名称52',
+                        same: true,
+                        children: [
+                          {
+                            name: '节点名称52',
+                            // children: [
+                            //   {
+                            //     name: '节点名称52',
+                            //     // children: [
+                            //     //   {
+                            //     //     name: '节点名称52',
+                            //     //     children: [
+                            //     //       {
+                            //     //         name: '节点名称52',
+                            //     //         children: [
+                            //     //           {
+                            //     //             name: '节点名称52',
+                            //     //           },
+                            //     //         ],
+                            //     //       },
+                            //     //     ],
+                            //     //   },
+                            //     // ],
+                            //   },
+                            // ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            name: '节点名称24',
+            same: true,
+          },
+        ],
+      },
+    ],
+  },
 ]);
 const systemListSmall = ref([]);
 const contrastData = reactive({
@@ -217,6 +326,25 @@ onMounted(() => {
 //     immediate: true,
 //   },
 // );
+watch(
+  () => state.getters.query,
+  function () {
+    getDataList();
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
+// 获取检索结果
+async function getDataList() {
+  const data = {
+    keys: state.getters.query,
+    mode: 'specific',
+  };
+  const res = await getGraphSystems(data);
+  console.log(res);
+}
 function getSystemListSmall() {
   for (let i = 0; i < systemList.value.length; i++) {
     const tree = deepClone(systemList.value[i]);
@@ -268,6 +396,19 @@ function checkOne(item, index, click) {
   } else {
     console.log('关系图谱处理');
   }
+}
+const atlasItems = ref('');
+let itemIndex = 0;
+function moveLeft() {
+  itemIndex = (itemIndex + 1) / (systemListSmall.value.length - 3);
+  animateX(atlasItems.value, itemIndex * 400);
+}
+function moveRight() {
+  itemIndex--;
+  if (itemIndex < 0) {
+    itemIndex = systemListSmall.value.length - 3;
+  }
+  animateX(atlasItems.value, itemIndex * 400);
 }
 </script>
 
@@ -327,22 +468,37 @@ function checkOne(item, index, click) {
           bottom: 22px;
           transform: translateX(-50%);
         }
-        &::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          right: -53px;
-          display: inline-block;
-          width: 3px;
-          height: 86px;
-          background: #90e1fd;
-          opacity: 0.37;
-        }
+        //&::after {
+        //  content: '';
+        //  position: absolute;
+        //  top: 50%;
+        //  transform: translateY(-50%);
+        //  right: -53px;
+        //  display: inline-block;
+        //  width: 3px;
+        //  height: 86px;
+        //  background: #90e1fd;
+        //  opacity: 0.37;
+        //}
+      }
+      .btn {
+        position: absolute;
+        top: 6px;
+        width: 41px;
+        height: 248px;
+      }
+      .left-btn {
+        left: 435px;
+        background: url('./img/left_btn.png') no-repeat;
+      }
+      .right-btn {
+        right: -45px;
+        background: url('./img/right_btn.png') no-repeat;
       }
       .atlas-items {
         //background-color: pink;
-        width: 1416px;
+        position: relative;
+        width: 1184px;
         overflow-x: scroll;
         overflow-y: hidden;
         margin-left: 112px;

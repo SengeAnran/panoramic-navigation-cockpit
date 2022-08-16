@@ -40,7 +40,7 @@ let innerWidth, // 内宽
   svg,
   treeHeight, // 树高
   defaultWidth = 1999, // 默认展示宽度
-  defaultHeight = 800; // 默认展示高度
+  defaultHeight = 750; // 默认展示高度
 const svgClass = ref('');
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
@@ -520,6 +520,7 @@ function renderRoot(option) {
 .svg-show-box {
   width: 100%;
   height: 100%;
+  padding-top: 50px;
   overflow: scroll;
   .svg-box {
     min-width: 100%;

@@ -102,6 +102,7 @@ function deleteKey(item) {
     justify-content: space-around;
     font-family: YouSheBiaoTiHei;
     .change-item {
+      cursor: pointer;
       width: 92px;
       height: 30px;
       text-align: center;
