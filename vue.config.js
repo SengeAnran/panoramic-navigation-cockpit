@@ -17,6 +17,7 @@ module.exports = {
   configureWebpack: {
     module: {
       unknownContextCritical: false,
+      rules: [{ test: /\.vert|frag|glsl$/, loader: 'raw-loader' }],
     },
     plugins: [
       new webpack.ProvidePlugin({

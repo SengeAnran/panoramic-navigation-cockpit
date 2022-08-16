@@ -1,0 +1,52 @@
+<template>
+  <div class="map-container" ref="mapRef"><slot /></div>
+</template>
+<script setup>
+import { onMounted, shallowRef, provide, onUnmounted } from 'vue';
+import mapboxgl from 'mapbox-gl';
+import { defer } from '@/utils/promise';
+
+import 'mapbox-gl/dist/mapbox-gl.css';
+const mapDefer = defer();
+const mapRef = shallowRef();
+
+provide('mapPromise', mapDefer.promise);
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiYWx0ZXJtYW4iLCJhIjoiY2pxZzl1d3lxMDhubDQ0cDJyMzN2YWJraiJ9.e1QzONvlILHn_zt1jsjnlw';
+onMounted(() => {
+  const map = new mapboxgl.Map({
+    container: mapRef.value,
+    center: [104.90022521913897, 33.46359626751],
+    zoom: 4,
+    pitch: 45,
+    bearing: 0,
+    hash: false,
+    style: {
+      version: 8,
+      name: 'alterman.gl',
+      sources: {},
+      layers: [],
+    },
+  });
+  window.map = map;
+  map.on('load', () => {
+    mapDefer.resolve(map);
+    // new mapboxgl.Marker().setLngLat([118.327367586576, 29.2026987827415]).addTo(map);
+  });
+});
+
+onUnmounted(async () => {
+  const map = await mapDefer.promise;
+  map.remove();
+});
+</script>
+<style lang="scss" scoped>
+.map-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 60%;
+  height: 100%;
+  transform: translateX(-50%);
+}
+</style>
