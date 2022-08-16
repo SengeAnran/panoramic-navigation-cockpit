@@ -110,7 +110,7 @@ export default class OdLine extends BaseLayer {
   }
 
   remove(force = true) {
-    console.log('remove', force);
+    // console.log('remove', force);
     if (this.mesh) {
       this.mesh.geometry.dispose();
       this.geometry = null;

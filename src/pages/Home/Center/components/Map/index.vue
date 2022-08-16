@@ -12,7 +12,7 @@
         <MarkerIcon />
       </template>
       <template #popup>
-        <div class="marker-icon">hello popup</div>
+        <div style="color: #000">hello popup</div>
       </template>
     </Marker>
   </Map>

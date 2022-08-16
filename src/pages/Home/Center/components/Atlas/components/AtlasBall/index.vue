@@ -1,12 +1,11 @@
 <template>
-  <!--  图谱球-->
-  <div class="atlas-ball">图谱球</div>
+  <Globe>
+    <PointSphere />
+    <Force />
+  </Globe>
 </template>
-
-<script>
-export default {
-  name: 'AtlasBall',
-};
+<script setup>
+import Globe from './Globe';
+import PointSphere from './PointSphere';
+import Force from './Force';
 </script>
-
-<style lang="scss" scoped></style>

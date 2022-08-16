@@ -53,12 +53,6 @@ onMounted(async () => {
     type: 'geojson',
     data: emptyData,
   });
-  const image = new Image();
-  image.src = '/a.jpg';
-  image.onload = () => {
-    console.log('load');
-    map.addImage('pattern', image);
-  };
   map.addLayer({
     type: 'fill',
     id: fillLayerId,
