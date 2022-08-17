@@ -48,3 +48,12 @@ export const getGraphSystems = (data) => {
     data,
   });
 };
+
+// 根据关键词搜索所有相关系统
+export const getGraphCompare = (data) => {
+  return axios.request({
+    method: 'POST',
+    url: '/api/graph/compare',
+    data,
+  });
+};

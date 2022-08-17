@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 // 根树的svg图标
 export function svgLogo(d) {
   const root = `
@@ -80,27 +81,38 @@ export const svgAddReduce = {
 };
 // 计算节点间链接线点位
 export function mathMidPoints(x1, y1, x2, y2, h, sw, tw, position) {
+  // （x1, y1）目标点， （x2,y2）原点， sw原点文本宽， tw目标点文本宽度
   let x3, y3, x4, y4;
+  // （x3, y3）计算目标点， （x4,y4）计算原点
   if (y2 === y1 || Math.abs(y2 - y1) < 0.001) {
     // 水平连线
     y3 = y1;
     y4 = y1;
-    const min = Math.min(x1, x2);
-    const max = Math.max(x1, x2);
-    x3 = min + sw / 2;
-    x4 = max - tw / 2;
+    // const max = Math.max(x1, x2);
+    // const min = Math.min(x1, x2);
+    // x3 = min + tw / 2;
+    // x4 = max - sw / 2;
+    if (position === 'left') {
+      x3 = x1 + tw / 2;
+      x4 = x2 - sw / 2;
+    } else {
+      x3 = x1 - tw / 2;
+      x4 = x2 + sw / 2;
+    }
+
+    console.log(x3, x4);
   } else {
     // 非水平连线
     if (y2 - y1 < 0) {
       // k < 0 下降线
       if (position === 'left') {
-        x3 = x1 + sw / 2 + 9;
-        x4 = x2 - tw / 2 + 9;
+        x3 = x1 + tw / 2;
+        x4 = x2 - sw / 2;
         y3 = y1;
         y4 = y2;
       } else if (position === 'right') {
-        x3 = x1 - sw / 2 - 9;
-        x4 = x2 + tw / 2 - 9;
+        x3 = x1 - tw / 2;
+        x4 = x2 + sw / 2;
         y3 = y1;
         y4 = y2;
       } else {
@@ -114,13 +126,13 @@ export function mathMidPoints(x1, y1, x2, y2, h, sw, tw, position) {
     } else {
       // k> 0 上升线
       if (position === 'left') {
-        x3 = x1 + sw / 2 + 9;
-        x4 = x2 - tw / 2 + 9;
+        x3 = x1 + tw / 2;
+        x4 = x2 - sw / 2;
         y3 = y1;
         y4 = y2;
       } else if (position === 'right') {
-        x3 = x1 - sw / 2 - 9;
-        x4 = x2 + tw / 2 - 9;
+        x3 = x1 - tw / 2;
+        x4 = x2 + sw / 2;
         y3 = y1;
         y4 = y2;
       } else {
@@ -175,12 +187,18 @@ export function hideChildrenOnFirst(node, depth) {
   return;
 }
 // 展示列表树的初始化，只显示5层多的去除
-// 第一次加载树形图时最多展示depth层（多的隐藏）
+// 第一次加载树形图时最多展示depth层（多的删除）用于图谱图列表
 export function delChildrenOnFirst(node, depth) {
-  console.log(node, depth);
+  // console.log(node, depth);
   const height = 0;
   function goChildren(node, height) {
     height++;
+    if (node.name.length > 8 && height === 2) {
+      node.name = '...';
+    }
+    if (node.name.length > 3 && height > 2) {
+      node.name = '...';
+    }
     if (node.children) {
       for (let i = 0; i < node.children.length; i++) {
         if (height === depth) {
@@ -222,6 +240,7 @@ export const mainTreeLocation = {
     y: 0,
   },
 };
+// x轴移动动画
 export function animateX(obj, target, recall) {
   // obj 对象 ，target目标位置， recall ？ 回调函数
   //  当我们不断的点击按钮，这个元素的速度会越来越快，因为开启了太多定时器
@@ -249,6 +268,7 @@ export function animateX(obj, target, recall) {
     // console.log(obj.scrollLeft, targetValue);
   }, 30);
 }
+// y轴移动动画
 export function animateY(obj, target, recall) {
   // obj 对象 ，target目标位置， recall ？ 回调函数
   //  当我们不断的点击按钮，这个元素的速度会越来越快，因为开启了太多定时器
@@ -277,4 +297,13 @@ export function animateY(obj, target, recall) {
     // console.log(obj.scrollTop, targetValue);
     // console.log()
   }, 30);
+}
+// 获取树的最大宽度
+export function getTreeMax(data) {
+  const num = [];
+  data.forEach((item) => {
+    const tree = d3.hierarchy(item);
+    num.push(tree.count().value);
+  });
+  return Math.max(...num);
 }

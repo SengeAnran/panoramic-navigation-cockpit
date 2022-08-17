@@ -6,7 +6,6 @@ import { userLogin } from '@/api/user';
 const whiteList = []; // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to, from);
   // 不验证登录
   if (!config.isLogin) {
     next();
@@ -17,7 +16,6 @@ router.beforeEach(async (to, from, next) => {
     next();
     return;
   }
-  console.log('token', storage.getToken());
   if (!storage.getToken()) {
     try {
       const data = {

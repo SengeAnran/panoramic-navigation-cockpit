@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-// 对接口数据初始化得到树
+// 对接口数据初始化得到树(暂时不用)
 export function getInitTree(data) {
   // console.log(data);
   return data.map((item) => {
@@ -44,4 +44,23 @@ export function getInitTree(data) {
     // console.log(res);
     return res;
   });
+}
+
+// 对接口数据初始化树属性
+export function initNodeTree(arr) {
+  function allChildren(node) {
+    node.name = node.node_name;
+    if (node.children) {
+      for (let i = 0; i < node.children.length; i++) {
+        // node.children[i].name = node.children[i].node_name;
+        allChildren(node.children[i]);
+      }
+    }
+    return;
+  }
+  arr.forEach((item) => {
+    allChildren(item);
+    item.check = false;
+  });
+  return;
 }
