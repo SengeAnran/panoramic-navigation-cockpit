@@ -112,11 +112,11 @@ export default class Globe {
   };
 
   addEvent() {
-    window.addEventListener('resize', this.resize);
+    // window.addEventListener('resize', this.resize);
   }
 
   destroy() {
-    window.removeEventListener('resize', this.resize);
+    // window.removeEventListener('resize', this.resize);
     while (this.layers.length) {
       this.remove(this.layers[0]);
     }

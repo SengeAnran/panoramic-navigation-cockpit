@@ -190,6 +190,8 @@ export default class {
     cssRender.domElement.style.position = 'absolute';
     cssRender.domElement.style.top = '0px';
     cssRender.domElement.style.left = '0px';
+    cssRender.domElement.style.width = '100%';
+    cssRender.domElement.style.height = '100%';
     cssRender.domElement.style.pointerEvents = 'none';
   }
 
