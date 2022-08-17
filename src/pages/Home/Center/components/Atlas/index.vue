@@ -249,7 +249,7 @@ watch(
 // 获取检索结果
 async function getDataList() {
   const data = {
-    keys: state.getters.query,
+    keys: state.getters.query.map((i) => i.name),
     mode: 'specific',
   };
   const res = await getGraphSystems(data);
@@ -264,7 +264,7 @@ function getSystemListSmall() {
   }
 }
 function showAll() {
-  checkOne();
+  checkOne('', '', true);
 }
 function changeAtlas(typeName) {
   atlasType.value = typeName;

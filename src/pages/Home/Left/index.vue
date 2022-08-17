@@ -19,10 +19,10 @@
         v-for="(item, index) in dataList"
         :key="index"
         ref="listItem"
-        :class="{ active: activeIndex === index }"
-        @click="selectKey(item, index)"
+        :class="{ active: item.checked }"
+        @click="selectKey(item)"
       >
-        <img v-if="activeIndex === index" :src="item.activeImgUrl" alt="" />
+        <img v-if="item.checked" :src="item.activeImgUrl" alt="" />
         <img v-else :src="item.imgUrl" alt="" />
         <div class="name">
           <div class="name-text">{{ item.name }}</div>
@@ -35,7 +35,7 @@
 
 <script setup>
 // import * as d3 from 'd3';
-import { ref, reactive, onMounted, nextTick } from 'vue';
+import { ref, reactive, onMounted, nextTick, watch } from 'vue';
 import { useStore } from 'vuex';
 import { getAreaDirectory, getBusinessDirectory, getTechnicalDirectory } from '@/api/search';
 const state = useStore();
@@ -72,7 +72,7 @@ onMounted(() => {
   });
 });
 
-const activeIndex = ref(1);
+// const activeIndex = ref(-2);
 const dataList = ref([
   // {
   //   name: '教育',
@@ -167,6 +167,9 @@ async function getDataList() {
   dataList.value = res.map((i) => {
     return {
       name: i,
+      checked: false,
+      position: 'left',
+      type: seletType.name,
       eglishName: ''.toUpperCase(),
       imgUrl: require('./img/icon_jy.png'),
       activeImgUrl: require('./img/icon_jy_active.png'),
@@ -174,12 +177,44 @@ async function getDataList() {
   });
   nextTick(() => {
     setPosition();
+    chengeCheckedActive(state.getters.query);
   });
 }
 // 选中导览词
-function selectKey(item, index) {
-  activeIndex.value = index;
-  state.commit('ADD_QUERY', item.name);
+function selectKey(item) {
+  // activeIndex.value = index;
+  item.checked = true;
+  const data = {
+    position: item.position,
+    type: item.type,
+    name: item.name,
+  };
+  state.commit('ADD_QUERY', data);
+}
+watch(
+  () => state.getters.query,
+  (val) => {
+    chengeCheckedActive(val);
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
+// 检索词状态选中状态更新
+function chengeCheckedActive(val) {
+  dataList.value.forEach((item) => {
+    item.checked = false;
+  });
+  val.forEach((item) => {
+    // if (item.name)
+    const index = dataList.value.findIndex((item2) => {
+      return item2.name === item.name && item2.position === item.position && item.type === item2.type;
+    });
+    if (index !== -1) {
+      dataList.value[index].checked = true;
+    }
+  });
 }
 const list = ref('');
 const itemHeight = 122;
@@ -206,6 +241,7 @@ function setPosition() {
   z-index: 10;
   background: url('./img/bg_img_left.png') no-repeat;
   position: absolute;
+  top: 0;
   left: 280px;
   width: 640px;
   height: 100%;

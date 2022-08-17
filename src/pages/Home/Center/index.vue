@@ -17,7 +17,7 @@
     </div>
     <div v-if="searchKeys && searchKeys.length > 0" class="search-keys">
       <div class="key-item" v-for="(item, index) in searchKeys" :key="index">
-        <div class="key-name theme-font-style">{{ item }}</div>
+        <div class="key-name theme-font-style">{{ item.name }}</div>
         <button @click="deleteKey(item)"></button>
       </div>
     </div>
@@ -61,7 +61,12 @@ onMounted(() => {
     const pushQuery = searchkey.value.trim();
     console.log(pushQuery);
     if (pushQuery !== '') {
-      state.commit('ADD_QUERY', pushQuery);
+      const data = {
+        position: 'center',
+        type: 'search',
+        name: pushQuery,
+      };
+      state.commit('ADD_QUERY', data);
     }
     const query = state.getters.query;
     console.log(query);
@@ -80,7 +85,8 @@ function deleteKey(item) {
 .center-content {
   width: 100%;
   height: 100%;
-  position: relative;
+  position: absolute;
+  z-index: 0;
   .mask {
     width: 100%;
     height: 100%;
