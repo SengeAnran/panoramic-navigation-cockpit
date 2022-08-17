@@ -1,5 +1,5 @@
 <template>
-  <div class="marker-icon"></div>
+  <div class="marker-icon" :class="color"></div>
 </template>
 <script setup>
 defineProps({

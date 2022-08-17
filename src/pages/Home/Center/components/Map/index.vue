@@ -6,13 +6,21 @@
     <Polygon :data="outData" autoFitBound :fillPaint="fillPaint" :linePaint="linePaint" />
     <ThreeLayer>
       <OdLine :data="odLines" v-if="show" />
+      <Wall :data="wallData" />
     </ThreeLayer>
     <Marker :position="[104, 33]" :options="{ offset: [0, -27] }">
       <template #icon>
+        <MarkerIcon color="orange" />
+      </template>
+    </Marker>
+    <Marker :position="[108, 37]" :options="{ offset: [0, -27] }">
+      <template #icon>
         <MarkerIcon />
       </template>
-      <template #popup>
-        <div style="color: #000">hello popup</div>
+    </Marker>
+    <Marker :position="[112, 33]" :options="{ offset: [0, -27] }">
+      <template #icon>
+        <MarkerIcon />
       </template>
     </Marker>
   </Map>
@@ -29,6 +37,7 @@ import Polygon from '@/MMap/Polygon';
 import Marker from '@/MMap/Marker';
 import ThreeLayer from '@/MMap/ThreeLayer';
 import OdLine from '@/MMap/ThreeLayer/OdLine';
+import Wall from '@/MMap/ThreeLayer/Wall';
 import Legend from './Legend';
 import MarkerIcon from './MarkerIcon';
 import { odLines } from './mock';
@@ -52,6 +61,11 @@ const outData = shallowRef();
 onMounted(async () => {
   const data = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json').then((res) => res.json());
   outData.value = data;
+});
+const wallData = shallowRef();
+onMounted(async () => {
+  const data = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000.json').then((res) => res.json());
+  wallData.value = data;
 });
 const patternID = 'pattern-alterman';
 const linePaint = {};
