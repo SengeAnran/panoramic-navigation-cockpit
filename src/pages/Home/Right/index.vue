@@ -10,8 +10,8 @@
         v-for="(item, index) in dataList"
         :key="index"
         ref="listItem"
-        :class="{ active: activeIndex === index }"
-        @click="selectKey(item, index)"
+        :class="{ active: item.checked }"
+        @click="selectKey(item)"
       >
         <div class="name">
           <div class="name-text">{{ item.name }}</div>
@@ -22,17 +22,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import { useStore } from 'vuex';
 import { getHighFrequencyWords } from '@/api/search';
 const state = useStore();
-const activeIndex = ref(1);
 const dataList = ref([]);
 async function getDataList() {
   const res = await getHighFrequencyWords();
   dataList.value = res.map((i) => {
     return {
+      position: 'right',
+      type: 'heightWord',
       name: i.word,
+      checked: false,
     };
   });
   nextTick(() => {
@@ -40,9 +42,39 @@ async function getDataList() {
   });
 }
 // 选中导览词
-function selectKey(item, index) {
-  activeIndex.value = index;
-  state.commit('ADD_QUERY', item.name);
+function selectKey(item) {
+  item.checked = true;
+  const data = {
+    position: item.position,
+    type: item.type,
+    name: item.name,
+  };
+  state.commit('ADD_QUERY', data);
+}
+watch(
+  () => state.getters.query,
+  (val) => {
+    chengeCheckedActive(val);
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+);
+// 检索词状态选中状态更新
+function chengeCheckedActive(val) {
+  dataList.value.forEach((item) => {
+    item.checked = false;
+  });
+  val.forEach((item) => {
+    // if (item.name)
+    const index = dataList.value.findIndex((item2) => {
+      return item2.name === item.name && item2.position === item.position && item.type === item2.type;
+    });
+    if (index !== -1) {
+      dataList.value[index].checked = true;
+    }
+  });
 }
 const list = ref('');
 const itemHeight = 99.5;

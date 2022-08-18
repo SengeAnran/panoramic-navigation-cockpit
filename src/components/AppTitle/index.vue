@@ -17,6 +17,7 @@ import Time from './Time';
 
 <style lang="scss" scoped>
 .AppTitle-root {
+  pointer-events: none;
   position: absolute;
   z-index: 9;
   display: flex;

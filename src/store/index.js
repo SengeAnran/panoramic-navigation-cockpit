@@ -53,9 +53,16 @@ export default createStore({
     SET_CONTENT_OPACITY(state, payload) {
       state.contentOpacity = payload;
     },
+    // 检索词数据结构
+    // {
+    //   position: item.position,
+    //     type: item.type,
+    //   name: item.name,
+    // }
     // 添加检索词
     ADD_QUERY(state, data) {
-      if (state.query.findIndex((i) => i === data) === -1) {
+      if (state.query.findIndex((i) => i.name === data.name && i.type === data.type) === -1) {
+        // 避免重复检索词
         state.query.push(data);
       }
     },
@@ -72,13 +79,17 @@ export default createStore({
     },
   },
   actions: {
-    getUserInfo({ commit }) {
-      return new Promise((resolve) => {
-        getUserInfo().then((res) => {
-          commit('SET_USER_INFO', res || {});
-          resolve();
-        });
-      });
+    // getUserInfo({ commit }) {
+    //   return new Promise((resolve) => {
+    //     getUserInfo().then((res) => {
+    //       commit('SET_USER_INFO', res || {});
+    //       resolve();
+    //     });
+    //   });
+    // },
+    async getUserInfo({ commit }) {
+      const res = await getUserInfo();
+      commit('SET_USER_INFO', res || {});
     },
     login(data) {
       return new Promise((resolve) => {

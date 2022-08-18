@@ -1,7 +1,7 @@
 <template>
   <div class="content" :class="{ opacity: contentOpacity }">
-    <Left />
     <CenterContent />
+    <Left />
     <Right />
   </div>
   <Dialog v-if="contentOpacity" />
