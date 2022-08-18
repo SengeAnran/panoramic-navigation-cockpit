@@ -4,19 +4,22 @@
     <Left />
     <Right />
   </div>
-  <Dialog v-if="contentOpacity" />
+  <OneDialog v-if="showOneDialog" />
 </template>
 
 <script setup>
 import Left from './Left/index';
 import Right from './Right/index';
 import CenterContent from './Center/index';
-import Dialog from './Dialog/index';
+import OneDialog from './OneDialog/index';
 import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 const state = useStore();
 const contentOpacity = computed(() => {
   return state.getters.contentOpacity;
+});
+const showOneDialog = computed(() => {
+  return state.getters.showOneDialog;
 });
 onMounted(() => {});
 </script>

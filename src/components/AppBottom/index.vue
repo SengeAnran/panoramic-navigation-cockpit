@@ -11,8 +11,9 @@ import AppName from './AppName';
 
 <style lang="scss" scoped>
 .AppTitle-root {
+  pointer-events: none;
   position: absolute;
-  z-index: 9;
+  z-index: 8;
   display: flex;
   justify-content: center;
   bottom: 0;

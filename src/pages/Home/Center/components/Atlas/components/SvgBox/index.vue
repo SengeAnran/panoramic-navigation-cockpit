@@ -81,17 +81,6 @@ function init() {
     .attr('y', (d) => d.y)
     .attr('opacity', (d) => (d.depth === 0 ? 0 : 1))
     .attr('class', 'rect');
-  // 画节点图标
-  g.value
-    .append('g')
-    .attr('class', 'logo-svg')
-    .selectAll('g')
-    .data([node[0]])
-    .join('g')
-    .html(rootSvg)
-    .attr('transform', (d) => {
-      return `translate(${d.x - 10}, ${d.y - 10})`;
-    });
   // 文字
   g.value
     .selectAll('text')
@@ -105,6 +94,17 @@ function init() {
     .attr('fill', 'white');
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
   // .attr('text-orientation', 'upright');
+  // 画节点图标
+  g.value
+    .append('g')
+    .attr('class', 'logo-svg')
+    .selectAll('g')
+    .data([node[0]])
+    .join('g')
+    .html(rootSvg)
+    .attr('transform', (d) => {
+      return `translate(${d.x - 10}, ${d.y - 10})`;
+    });
 }
 </script>
 
@@ -122,7 +122,7 @@ function init() {
 </style>
 <style>
 .cls-m1 {
-  opacity: 0.8;
+  opacity: 1;
 }
 .cls-m2 {
   fill: #99c9f2;

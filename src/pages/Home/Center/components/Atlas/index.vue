@@ -31,7 +31,7 @@
 import AtlasBall from './components/AtlasBall/index';
 import AtlasMap from './components/AtlasMap/index';
 import SvgBox from './components/SvgBox/index';
-import { ref, watch, reactive, onMounted } from 'vue';
+import { ref, watch, reactive } from 'vue';
 import { useStore } from 'vuex';
 import { deepClone } from '@/utils';
 import {
@@ -39,7 +39,7 @@ import {
   delChildrenOnFirst,
 } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 import { initNodeTree } from './constants';
-import { getGraphSystems } from '@/api/search';
+import { getGraphCompare, getGraphSystems } from '@/api/search';
 const state = useStore();
 const showSearchRes = ref(false);
 watch(
@@ -221,9 +221,9 @@ const contrastData = reactive({
 //   name: '公积金',
 //   children: [],
 // });
-onMounted(() => {
-  getSystemListSmall();
-});
+// onMounted(() => {
+//   getSystemListSmall();
+// });
 watch(
   () => systemList.value,
   (val) => {
@@ -257,11 +257,14 @@ async function getDataList() {
   systemList.value = res;
 }
 function getSystemListSmall() {
+  contrastData.children = [];
+  systemListSmall.value = [];
   for (let i = 0; i < systemList.value.length; i++) {
     const tree = deepClone(systemList.value[i]);
     delChildrenOnFirst(tree, 3);
     systemListSmall.value.push(tree);
   }
+  moveStart();
 }
 function showAll() {
   checkOne('', '', true);
@@ -276,7 +279,7 @@ function changeAtlas(typeName) {
 function showRes() {
   showSearchRes.value = !showSearchRes.value;
 }
-function checkOne(item, index, click) {
+async function checkOne(item, index, click) {
   // 控制对比图谱只能选择两个进行对比
   if (
     atlasType.value === '对比图谱' &&
@@ -288,11 +291,38 @@ function checkOne(item, index, click) {
   }
   if (atlasType.value === '对比图谱') {
     contrastData.children = [];
-    systemListSmall.value.forEach((item, index) => {
-      if (item.check) {
-        contrastData.children.push(deepClone(systemList.value[index]));
-      }
-    });
+    if (systemListSmall.value.filter((i) => i.check).length === 2) {
+      // 选择两个从接口获取数据
+      const checkList = systemListSmall.value.filter((i) => i.check);
+      const data = {
+        systemA: checkList[0].name,
+        systemB: checkList[1].name,
+      };
+      const res = await getGraphCompare(data);
+      initNodeTree(res.systemANodes, true);
+      initNodeTree(res.systemBNodes, true);
+      const systemA = {
+        name: res.systemANodes[0].system || checkList[0].name,
+        children: res.systemANodes,
+      };
+      const systemB = {
+        name: res.systemBNodes[0].system || checkList[1].name,
+        children: res.systemBNodes,
+      };
+      const sameNode = {
+        name: res.systemACommonNodes[0].system || checkList[1].name,
+        children: res.systemBNodes,
+      };
+      console.log(systemA, systemB);
+      contrastData.children = [systemA, systemB, sameNode];
+    } else {
+      // 单个使用已有的数据展示
+      systemListSmall.value.forEach((item, index) => {
+        if (item.check) {
+          contrastData.children.push(deepClone(systemList.value[index]));
+        }
+      });
+    }
     if (click) {
       state.commit('atlasMap/SET_SHOW_FIRST_TIME', true);
     }
@@ -302,6 +332,12 @@ function checkOne(item, index, click) {
 }
 const atlasItems = ref('');
 let itemIndex = 0;
+function moveStart() {
+  itemIndex = 0;
+  setTimeout(() => {
+    atlasItems.value.scrollLeft = 0;
+  });
+}
 function moveLeft() {
   // itemIndex = (itemIndex + 1) % (systemListSmall.value.length - 2);
   itemIndex = itemIndex + 1;

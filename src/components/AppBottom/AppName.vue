@@ -9,9 +9,15 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useStore } from 'vuex';
+let showChangeDialog = false;
+const state = useStore();
 
 const firstName = ref('切换');
 function changeShow() {
+  showChangeDialog = !showChangeDialog;
+  state.commit('SET_CONTENT_OPACITY', showChangeDialog);
+  state.commit('SET_SHOW_CHANGE_DIALOG', showChangeDialog);
   console.log('切换');
 }
 </script>
@@ -34,6 +40,7 @@ function changeShow() {
     line-height: 106px;
     -webkit-background-clip: text;
     .first-name {
+      pointer-events: stroke;
       font-size: 44px;
       font-family: YouSheBiaoTiHei;
       font-weight: 400;

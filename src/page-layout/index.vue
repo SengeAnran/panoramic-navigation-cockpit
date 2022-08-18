@@ -3,7 +3,9 @@
   <!--  centerFull-->
   <FitScreen displayType="none" :pageSize="pageSize" />
   <AppTitle style="z-index: 1" />
+  <AppBottom :class="{ opacity: bottomOpacity }" />
   <router-view v-if="!isLoading" />
+  <ChangeDialog v-if="showChangeDialog" />
 </template>
 
 <script setup>
@@ -18,7 +20,12 @@ const store = useStore();
 const pageSize = { width: gs(appCfg.width), height: gs(appCfg.height) };
 const curTheme = computed(() => store.state.theme.curTheme);
 const isLoading = ref(false);
-
+const bottomOpacity = computed(() => {
+  return store.getters.bottomOpacity;
+});
+const showChangeDialog = computed(() => {
+  return store.getters.showChangeDialog;
+});
 // 刷新页面
 function refreshPage() {
   const loadingInstance = ElLoading.service({
@@ -40,3 +47,9 @@ onMounted(() => store.commit(Types.SET_INTERVAL_ID, true));
 
 onUnmounted(() => store.commit(Types.SET_INTERVAL_ID, false));
 </script>
+
+<style scoped>
+.opacity {
+  opacity: 0.1;
+}
+</style>

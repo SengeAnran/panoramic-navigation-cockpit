@@ -54,9 +54,14 @@ function mouseMove() {
     let y = e.pageY;
     let ox = showBox.scrollLeft;
     let oy = showBox.scrollTop;
+    let timer = null; // 节流阀
     showBox.onmousemove = (e) => {
-      showBox.scrollLeft = ox - (e.pageX - x);
-      showBox.scrollTop = oy - (e.pageY - y);
+      if (timer) return;
+      timer = setTimeout(() => {
+        showBox.scrollLeft = ox - (e.pageX - x);
+        showBox.scrollTop = oy - (e.pageY - y);
+        timer = null;
+      }, 16);
     };
     showBox.addEventListener('mouseup', () => {
       showBox.onmousemove = null;
@@ -125,18 +130,18 @@ const state = useStore();
 // 初始化
 function init() {
   let multiple = 1,
-    heightMultiple = 1,
+    heightMultiple = 1, // 屏高系数
     widthMultiple = 1; // 屏宽系数
   treeHeight = d3.hierarchy(props.data).height;
   const treeWidth = getTreeMax(props.data.children);
-  // console.log('treeHeight', treeHeight);
-  if (treeHeight > 4) {
-    heightMultiple = treeHeight / 5 + 2 / 5;
+  console.log('treeHeight', treeHeight);
+  if (treeHeight > 3) {
+    heightMultiple = treeHeight / 2 + 2 / 2;
   }
   if (treeWidth > 9) {
     widthMultiple = treeWidth / 10;
   }
-  // console.log(widthMultiple);
+  console.log(widthMultiple, heightMultiple);
   multiple = Math.max(widthMultiple, heightMultiple);
   svg = d3.select(`.svg-${props.index}`);
   if (svg.select('.chart-g')) {
@@ -146,8 +151,8 @@ function init() {
   let height = defaultHeight;
   // console.log('multiple', multiple);
   if (multiple !== 1) {
-    width = width * multiple;
-    height = height * multiple;
+    width = width * heightMultiple;
+    height = height * widthMultiple;
   }
   svg.attr('width', width + 'px').attr('height', height + 'px');
   innerWidth = width - margin.left - margin.right;
@@ -162,8 +167,9 @@ function init() {
     hideChildrenOnFirst(fristRoot, 5);
     if (multiple !== 1) {
       // 设置窗口展示位置
-      const left = ((multiple - 1) / 2) * (defaultWidth - margin.left - margin.right);
-      const top = multiple > 1 ? (multiple * innerHeight) / 16 : 0;
+      // const left = ((multiple - 1) / 2) * (defaultWidth - margin.left - margin.right);
+      const left = multiple > 1 ? (innerWidth + margin.left) / 2 - defaultWidth / 2 : 0;
+      const top = multiple > 1 ? innerHeight / 4 - 400 : 0;
       document.querySelector('.svg-show-box').scrollTop = top; //通过scrollTop设置滚动到100位置
       document.querySelector('.svg-show-box').scrollLeft = left; //通过scrollTop设置滚动到200位置
     }
@@ -207,21 +213,21 @@ function init() {
       ],
     };
     sameData.children = props.data.children[1].children;
-    const optionSame = {
-      data: sameData,
-      position: 'center',
-      rootNode: {
-        x: innerWidth / 6,
-        y: 0,
-      },
-    };
-    render(optionSame);
+    // const optionSame = {
+    //   data: sameData,
+    //   position: 'center',
+    //   rootNode: {
+    //     x: innerWidth / 6,
+    //     y: 0,
+    //   },
+    // };
+    // render(optionSame);
     // renderSame(sameData);
     const optionRoot = {
       data: data,
       rootNode: {
         x: midValue / 2,
-        y: multiple > 1 ? 30 + (multiple * innerHeight) / 25 : 30,
+        y: multiple > 1 ? data.children[0].y - 200 : 30,
       },
     };
     renderRoot(optionRoot);
@@ -247,7 +253,7 @@ function render(option) {
   const regionSize = {
     left: [(innerHeight * 2) / 3, innerWidth / 4], // f(w/2 - y, x)
     right: [(innerHeight * 2) / 3, innerWidth / 4], // f(w/2 + y, x)
-    center: [innerWidth / 3, (innerHeight * 2) / 4], // f(x + w/3, y + h/4)
+    center: [innerWidth / 2, innerWidth / 3], // f(x + w/3, y + h/4)
   };
   root = d3.tree().size(regionSize[position])(root);
   root.x = rootNode.x; // 设置根节点初始位置
@@ -346,7 +352,7 @@ function render(option) {
     )
     .attr('opacity', (d) => {
       return d.data.hide === true ||
-        (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length === 2)
+        (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length >= 2)
         ? 0
         : 1;
     });
@@ -361,6 +367,7 @@ function render(option) {
       if (d.depth && !d.data.same) {
         console.log('需要单展示啦！');
         state.commit('SET_CONTENT_OPACITY', true);
+        state.commit('SET_SHOW_ONE_DIALOG', true);
         state.commit('atlasMap/SET_DIALOG_INFO', d.data);
         state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
         state.commit('SET_MAIN_TITLE', getRootInfo(d).name);
@@ -381,7 +388,7 @@ function render(option) {
     .style('font-family', 'YouSheBiaoTiHei')
     .attr('opacity', (d) => {
       return d.data.hide === true ||
-        (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length === 2)
+        (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length >= 2)
         ? 0
         : 1;
     })
@@ -428,7 +435,7 @@ function render(option) {
       init();
     })
     .attr('opacity', (d) => {
-      return d.data.hide === true || (d.depth === 0 && props.data.children.length === 2) || !d.data.children ? 0 : 1;
+      return d.data.hide === true || (d.depth === 0 && props.data.children.length >= 2) || !d.data.children ? 0 : 1;
     });
   // 画减按钮
   g.append('g')
@@ -458,7 +465,7 @@ function render(option) {
       init();
     })
     .attr('opacity', (d) => {
-      return d.data.hide === true || (d.depth === 0 && props.data.children.length === 2) || !d.data.children ? 0 : 1;
+      return d.data.hide === true || (d.depth === 0 && props.data.children.length >= 2) || !d.data.children ? 0 : 1;
     });
 }
 // 画布移动到某一位置
@@ -483,7 +490,7 @@ function renderRoot(option) {
   // (x: 80.79166666666667 y: 181.75)  (x: 242.375 y: 181.75) ( 403.95833333333337 y: 181.75)
   root = d3.tree().size([midValue * 1.6, innerHeight / 4])(root);
   root.x = rootNode.x * 1.6; // 242.375;
-  root.y = rootNode.y;
+  root.y = root.children[0].y - 200;
   const node = root.descendants();
   const path = root.links();
   // console.log(node, path);

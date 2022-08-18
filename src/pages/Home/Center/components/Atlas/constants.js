@@ -47,7 +47,7 @@ export function getInitTree(data) {
 }
 
 // 对接口数据初始化树属性
-export function initNodeTree(arr) {
+export function initNodeTree(arr, noCheck) {
   function allChildren(node) {
     node.name = node.node_name;
     if (node.children) {
@@ -58,9 +58,18 @@ export function initNodeTree(arr) {
     }
     return;
   }
-  arr.forEach((item) => {
-    allChildren(item);
-    item.check = false;
-  });
+  // if (typeof arr === '')
+  if (Array.isArray(arr)) {
+    // 传入数据为数组数据
+    arr.forEach((item) => {
+      allChildren(item);
+      if (!noCheck) {
+        item.check = false;
+      }
+    });
+  } else {
+    // 传入数据为树形对象
+    allChildren(arr);
+  }
   return;
 }

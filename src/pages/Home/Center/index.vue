@@ -30,7 +30,7 @@
       </div>
       <img v-show="!showSearch" src="./img/search_icon.png" alt="" />
     </div>
-    <AppBottom :class="{ opacity: bottomOpacity }" />
+    <!--    <AppBottom :class="{ opacity: bottomOpacity }" />-->
   </div>
 </template>
 
@@ -51,9 +51,9 @@ const searchKeys = computed(() => {
 });
 const showSearch = ref(false);
 const searchkey = ref('');
-const bottomOpacity = computed(() => {
-  return state.getters.bottomOpacity;
-});
+// const bottomOpacity = computed(() => {
+//   return state.getters.bottomOpacity;
+// });
 onMounted(() => {
   const searchForm = d3.select('#searchForm');
   searchForm.on('submit', (e) => {
@@ -277,8 +277,8 @@ function deleteKey(item) {
       //border-radius: 4px;
     }
   }
-  .opacity {
-    opacity: 0.1;
-  }
+  //.opacity {
+  //  opacity: 0.1;
+  //}
 }
 </style>

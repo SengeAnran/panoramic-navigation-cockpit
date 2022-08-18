@@ -49,7 +49,7 @@ export const getGraphSystems = (data) => {
   });
 };
 
-// 根据关键词搜索所有相关系统
+// 对比图谱
 export const getGraphCompare = (data) => {
   return axios.request({
     method: 'POST',

@@ -17,6 +17,8 @@ export default createStore({
     bottomOpacity: false, // 底部透明设置
     contentOpacity: false, // 主体内容透明设置
     mainTitle: defaultMainTitle, // 页面标题
+    showOneDialog: false, // 显示单系统弹窗
+    showChangeDialog: false, // 显示切换页面弹窗
   },
   mutations: {
     [Types.SET_INTERVAL_ID](state, msg) {
@@ -49,9 +51,17 @@ export default createStore({
     SET_BOTTOM_OPACITY(state, payload) {
       state.bottomOpacity = payload;
     },
-    // 底部透明设置
+    // 内容透明设置
     SET_CONTENT_OPACITY(state, payload) {
       state.contentOpacity = payload;
+    },
+    // 显示单系统弹窗
+    SET_SHOW_ONE_DIALOG(state, payload) {
+      state.showOneDialog = payload;
+    },
+    // 显示切换页面弹窗
+    SET_SHOW_CHANGE_DIALOG(state, payload) {
+      state.showChangeDialog = payload;
     },
     // 检索词数据结构
     // {
@@ -106,6 +116,8 @@ export default createStore({
     intervalTime: (state) => state.intervalTime,
     bottomOpacity: (state) => state.bottomOpacity,
     contentOpacity: (state) => state.contentOpacity,
+    showOneDialog: (state) => state.showOneDialog,
+    showChangeDialog: (state) => state.showChangeDialog,
     query: (state) => state.query,
     showFirstTime: (state) => state.atlasMap.showFirstTime,
     dialogShowFirstTime: (state) => state.atlasMap.dialogShowFirstTime,
