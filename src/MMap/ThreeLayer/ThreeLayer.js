@@ -60,7 +60,6 @@ export default class ThreeLayer {
   render(gl, matrix) {
     this.camera.projectionMatrix = new Matrix4().fromArray(matrix).multiply(this.centerMatrix);
     this.renderer.resetState();
-    this.renderer.setRenderTarget(null);
     this.layers.forEach((layer) => layer.tick?.(Date.now() - this.createAt));
     this.renderer.render(this.scene, this.camera);
     this.map.triggerRepaint();

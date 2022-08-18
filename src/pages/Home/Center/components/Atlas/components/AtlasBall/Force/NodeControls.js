@@ -65,6 +65,8 @@ export default class NodeControls extends EventDispatcher {
     if (!dragObject) {
       return;
     }
+    this.domElement.setPointerCapture(ev.pointerId);
+
     this.clickThreshold = 0;
     const { dragPlane, camera, worldPosition } = this;
     const matrixWorld = new Matrix4();
@@ -146,7 +148,9 @@ export default class NodeControls extends EventDispatcher {
     this.dragObject = null;
   };
 
-  onPointerCancel() {
+  onPointerCancel(ev) {
+    this.domElement.releasePointerCapture(ev.pointerId);
+
     this.pointerdown = false;
     if (!this.dragObject) {
       return;

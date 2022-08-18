@@ -195,10 +195,23 @@ export default class {
     cssRender.domElement.style.pointerEvents = 'none';
   }
 
+  orbitControl = () => {
+    this.globe.orbitControls.autoRotate = false;
+    clearTimeout(this.resumeOrbit);
+    this.resumeOrbit = setTimeout(this.resumeControl, 1000);
+  }
+
+  resumeControl = () => {
+    this.globe.orbitControls.autoRotate = true;
+    clearTimeout(this.resumeOrbit);
+    this.resumeOrbit = null;
+  }
+
   addTo(globe) {
     this.globe = globe;
     globe.scene.add(this.group);
     globe.container.appendChild(this.cssRender.domElement);
+    this.globe.renderer.domElement.addEventListener('mousemove', this.orbitControl);
 
     const controls = new NodeControls(this.nodes, globe.camera, globe.renderer.domElement);
     this.controls = controls;
@@ -260,7 +273,8 @@ export default class {
       }
     });
     this.globe?.scene.remove(this.group);
-    this.globe.container.remove(this.cssRender.domElement);
+    // this.globe.container.remove(this.cssRender.domElement);
+    this.globe.renderer.domElement.removeEventListener('mousemove', this.orbitControl);
     this.cssRender = null;
   }
 }
