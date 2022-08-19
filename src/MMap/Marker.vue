@@ -13,7 +13,7 @@ const props = defineProps({
 const mapPromise = inject('mapPromise');
 
 const slots = useSlots();
-console.log(slots);
+// console.log(slots);
 
 const markerEle = slots.icon ? document.createElement('div') : undefined;
 const popupEle = slots.popup ? document.createElement('div') : undefined;

@@ -11,7 +11,7 @@
 import Left from './Left/index';
 import Right from './Right/index';
 import CenterContent from './Center/index';
-import OneDialog from './OneDialog/index';
+// import OneDialog from './OneDialog/index';
 import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 const state = useStore();
