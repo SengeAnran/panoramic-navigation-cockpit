@@ -7,6 +7,7 @@ import NodeControls from './NodeControls';
 import tubeVert from './tube.vert';
 import tubeFrag from './tube.frag';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import './tip.css';
 // import nodeVert from './node.vert';
 // import nodeFrag from './node.frag';
 
@@ -177,16 +178,13 @@ export default class {
 
   addHighlight() {
     const tipDOM = document.createElement('div');
-    tipDOM.style.color = '#fff';
-    tipDOM.innerHTML = 'tip';
+    tipDOM.classList.add('node-tip');
     const cssObj = (this.cssObj = new CSS2DObject(tipDOM));
     cssObj.position.set(0, 0, 0);
     cssObj.matrixAutoUpdate = false;
 
     const cssRender = (this.cssRender = new CSS2DRenderer());
     // console.log(this.cssRender);
-
-    cssRender.setSize(window.innerWidth, window.innerHeight);
     cssRender.domElement.style.position = 'absolute';
     cssRender.domElement.style.top = '0px';
     cssRender.domElement.style.left = '0px';
@@ -212,6 +210,9 @@ export default class {
     globe.scene.add(this.group);
     globe.container.appendChild(this.cssRender.domElement);
     this.globe.renderer.domElement.addEventListener('mousemove', this.orbitControl);
+    const container = this.globe.container;
+    this.cssRender.setSize(container.clientWidth, container.clientHeight);
+
 
     const controls = new NodeControls(this.nodes, globe.camera, globe.renderer.domElement);
     this.controls = controls;
