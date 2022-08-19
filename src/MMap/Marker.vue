@@ -1,14 +1,15 @@
 <template>
   <teleport :to="markerEle" v-if="slots.icon"><slot name="icon" /></teleport>
-  <teleport :to="popupEle" v-if="slots.popup"><slot name="popup" /></teleport>
+  <teleport :to="popupEle" v-if="slots.popup && (!openAsync || showPopup)"><slot name="popup" /></teleport>
 </template>
 <script setup>
 import mapboxgl from 'mapbox-gl';
-import { inject, onMounted, onUnmounted, useSlots } from 'vue';
+import { inject, onMounted, onUnmounted, useSlots, ref } from 'vue';
 
 const props = defineProps({
   position: Array,
   options: Object,
+  openAsync: { type: Boolean, default: true },
 });
 const mapPromise = inject('mapPromise');
 
@@ -19,9 +20,16 @@ const markerEle = slots.icon ? document.createElement('div') : undefined;
 const popupEle = slots.popup ? document.createElement('div') : undefined;
 const marker = new mapboxgl.Marker({ ...props.options, element: markerEle });
 let popup;
+let showPopup = ref(false);
 
 if (slots.popup) {
   popup = new mapboxgl.Popup().setDOMContent(popupEle);
+  popup.on('open', () => {
+    showPopup.value = true;
+  });
+  popup.on('close', () => {
+    showPopup.value = false;
+  });
   marker.setPopup(popup);
 }
 onMounted(async () => {

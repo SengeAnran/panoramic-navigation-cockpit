@@ -18,3 +18,7 @@ export const getRelationGraph = (data) => {
     data,
   });
 };
+
+export const getSystemPoints = () => {
+  return axios.post('/api/slot/getList');
+};

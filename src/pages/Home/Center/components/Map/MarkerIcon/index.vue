@@ -13,6 +13,7 @@ defineProps({
   height: 76px;
   background-image: url('./blue.png');
   background-size: 100% 100%;
+  cursor: pointer;
   &.orange {
     background-image: url('./orange.png');
   }
