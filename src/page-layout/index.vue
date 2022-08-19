@@ -3,9 +3,8 @@
   <!--  centerFull-->
   <FitScreen displayType="none" :pageSize="pageSize" />
   <AppTitle style="z-index: 1" />
-  <AppBottom :class="{ opacity: bottomOpacity }" />
   <router-view v-if="!isLoading" />
-  <ChangeDialog v-if="showChangeDialog" />
+  <AppBottom :class="{ opacity: bottomOpacity }" />
 </template>
 
 <script setup>
@@ -22,9 +21,6 @@ const curTheme = computed(() => store.state.theme.curTheme);
 const isLoading = ref(false);
 const bottomOpacity = computed(() => {
   return store.getters.bottomOpacity;
-});
-const showChangeDialog = computed(() => {
-  return store.getters.showChangeDialog;
 });
 // 刷新页面
 function refreshPage() {

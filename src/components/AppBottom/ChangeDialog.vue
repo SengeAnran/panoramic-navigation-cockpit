@@ -1,21 +1,24 @@
 <template>
-  <div class="change-dialog">
-    <div class="pages">
-      <div
-        class="item"
-        v-for="(item, index) in pages"
-        :key="index"
-        :style="{ background: `url(${item.imgUrl}) no-repeat` }"
-        @click="selectOnePage(item)"
-      ></div>
+  <teleport to="body">
+    <div class="change-dialog">
+      <div class="pages">
+        <div
+          class="item"
+          v-for="(item, index) in pages"
+          :key="index"
+          :style="{ background: `url(${item.imgUrl}) no-repeat` }"
+          @click="selectOnePage(item)"
+        ></div>
+      </div>
     </div>
-  </div>
+  </teleport>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+const emit = defineEmits(['change']);
 const pages = ref([
   {
     name: '项目地图',
@@ -30,7 +33,7 @@ const pages = ref([
 ]);
 const router = useRouter();
 function selectOnePage(item) {
-  // console.log(item);
+  emit('change');
   router.push({ name: item.name });
 }
 </script>
