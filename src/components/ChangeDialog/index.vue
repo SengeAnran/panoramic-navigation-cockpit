@@ -14,21 +14,24 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const pages = ref([
   {
-    name: '',
-    path: '',
-    imgUrl: require('./img/btn_img_01.png'),
-  },
-  {
-    name: '',
+    name: '项目地图',
     path: '',
     imgUrl: require('./img/btn_img_02.png'),
   },
+  {
+    name: '首页',
+    path: '',
+    imgUrl: require('./img/btn_img_01.png'),
+  },
 ]);
+const router = useRouter();
 function selectOnePage(item) {
-  console.log(item);
+  // console.log(item);
+  router.push({ name: item.name });
 }
 </script>
 
