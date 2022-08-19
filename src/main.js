@@ -8,6 +8,7 @@ import './assets/iconfont/index.css';
 import './assets/fonts/font.scss';
 import './assets/scss/global.scss';
 import './assets/scss/element-plus.scss';
+import './assets/scss/map-popup.scss';
 import './permission';
 
 // import CustomLoading from '@/views/CesiumMap/class/loading';

@@ -8,7 +8,8 @@ import { inject, onMounted, onUnmounted, useSlots, ref } from 'vue';
 
 const props = defineProps({
   position: Array,
-  options: Object,
+  markerOptions: Object,
+  popupOptions: Object,
   openAsync: { type: Boolean, default: true },
 });
 const mapPromise = inject('mapPromise');
@@ -18,12 +19,12 @@ const slots = useSlots();
 
 const markerEle = slots.icon ? document.createElement('div') : undefined;
 const popupEle = slots.popup ? document.createElement('div') : undefined;
-const marker = new mapboxgl.Marker({ ...props.options, element: markerEle });
+const marker = new mapboxgl.Marker({ ...props.markerOptions, element: markerEle });
 let popup;
 let showPopup = ref(false);
 
 if (slots.popup) {
-  popup = new mapboxgl.Popup().setDOMContent(popupEle);
+  popup = new mapboxgl.Popup(props.popupOptions).setDOMContent(popupEle);
   popup.on('open', () => {
     showPopup.value = true;
   });

@@ -12,7 +12,13 @@
       <OdLine :data="odLines" v-if="false" />
       <Wall :data="wallData" />
     </ThreeLayer>
-    <Marker :position="item.position" v-for="item in systemPoints" :key="item.id" :options="{ offset: [0, -27] }">
+    <Marker
+      :position="item.position"
+      :markerOptions="{ offset: [0, -27] }"
+      :popupOptions="{ className: 'opacity-popup', maxWidth: 'none', anchor: 'left', closeButton: false }"
+      v-for="item in systemPoints"
+      :key="item.id"
+    >
       <template #icon>
         <MarkerIcon />
       </template>

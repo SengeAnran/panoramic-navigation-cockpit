@@ -1,0 +1,11 @@
+.opacity-popup {
+  .mapboxgl-popup-tip {
+    opacity: 0;
+  }
+  .mapboxgl-popup-content {
+    padding: 7px;
+    border: 1px solid #46E9FE;
+    border-radius: 10px;
+    background-color: transparent;
+  }
+}
