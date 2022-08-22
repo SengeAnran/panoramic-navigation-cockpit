@@ -1,11 +1,11 @@
 <template>
-  <div v-if="searchKeys && searchKeys.length > 0" class="search-keys">
+  <div v-if="searchKeys && searchKeys.length > 0" class="search-keys" :class="{ opacity: contentOpacity }">
     <div class="key-item" v-for="(item, index) in searchKeys" :key="index">
       <div class="key-name theme-font-style">{{ item.name }}</div>
       <button @click="deleteKey(item)"></button>
     </div>
   </div>
-  <div class="search" @click="showSearchInput">
+  <div class="search" @click="showSearchInput" :class="{ opacity: contentOpacity }">
     <div v-show="showSearch" class="search-input">
       <form ref="searchForm" id="searchForm" action="">
         <input type="text" v-model="searchkey" />
@@ -30,6 +30,7 @@ const searchkey = ref('');
 // const bottomOpacity = computed(() => {
 //   return state.getters.bottomOpacity;
 // });
+const contentOpacity = computed(() => state.getters.contentOpacity);
 onMounted(() => {
   const searchForm = d3.select('#searchForm');
   searchForm.on('submit', (e) => {
@@ -204,5 +205,9 @@ function deleteKey(item) {
     //border: 1px solid #77bbf9;
     //border-radius: 4px;
   }
+}
+.opacity {
+  opacity: 0.5;
+  filter: blur(5px); // 模糊
 }
 </style>

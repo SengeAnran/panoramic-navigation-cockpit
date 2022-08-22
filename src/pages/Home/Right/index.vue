@@ -149,44 +149,44 @@ function setPosition() {
         border-right: 6.5px solid rgba(255, 255, 255, 0);
       }
     }
-    .option-list {
-      z-index: 3;
-      position: absolute;
-      top: 61px;
-      width: 230px;
-      background: #0f203c;
-      border: 1px solid #6c99c7;
-      box-shadow: 0px 0px 24px 0px rgba(64, 87, 125, 0.78);
-      opacity: 0.8;
-      border-radius: 10px;
-      //border-image: linear-gradient(-49deg, #6c99c7, #ffffff) 10 10;
-      .option-item {
-        cursor: pointer;
-        position: relative;
-        height: 54px;
-        text-align: center;
-        line-height: 54px;
-        font-size: 24px;
-        font-family: Source Han Sans CN;
-        font-weight: 400;
-        color: #ffffff;
-        opacity: 0.8;
-      }
-      .option-item:nth-child(n + 1)::before {
-        position: absolute;
-        left: 0;
-        display: inline-block;
-        content: '';
-        height: 1px;
-        width: 228px;
-        background: linear-gradient(
-          -90deg,
-          rgba(31, 57, 86, 0.1) 0%,
-          rgba(122, 191, 255, 0.97) 49%,
-          rgba(34, 61, 93, 0.1) 100%
-        );
-      }
-    }
+    //.option-list {
+    //  z-index: 3;
+    //  position: absolute;
+    //  top: 61px;
+    //  width: 230px;
+    //  background: #0f203c;
+    //  border: 1px solid #6c99c7;
+    //  box-shadow: 0px 0px 24px 0px rgba(64, 87, 125, 0.78);
+    //  opacity: 0.8;
+    //  border-radius: 10px;
+    //  //border-image: linear-gradient(-49deg, #6c99c7, #ffffff) 10 10;
+    //  .option-item {
+    //    cursor: pointer;
+    //    position: relative;
+    //    height: 54px;
+    //    text-align: center;
+    //    line-height: 54px;
+    //    font-size: 24px;
+    //    font-family: Source Han Sans CN;
+    //    font-weight: 400;
+    //    color: #ffffff;
+    //    opacity: 0.8;
+    //  }
+    //  .option-item:nth-child(n + 1)::before {
+    //    position: absolute;
+    //    left: 0;
+    //    display: inline-block;
+    //    content: '';
+    //    height: 1px;
+    //    width: 228px;
+    //    background: linear-gradient(
+    //      -90deg,
+    //      rgba(31, 57, 86, 0.1) 0%,
+    //      rgba(122, 191, 255, 0.97) 49%,
+    //      rgba(34, 61, 93, 0.1) 100%
+    //    );
+    //  }
+    //}
   }
   .list {
     position: absolute;
