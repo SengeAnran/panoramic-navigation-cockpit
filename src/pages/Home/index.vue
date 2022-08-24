@@ -8,11 +8,11 @@
 </template>
 
 <script setup>
+import { MyWebSocket } from '@/utils/MyWebSocket';
 import Left from './Left/index';
 import Right from './Right/index';
 import CenterContent from './Center/index';
-// import OneDialog from './OneDialog/index';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 const state = useStore();
 const contentOpacity = computed(() => {
@@ -22,6 +22,21 @@ const showOneDialog = computed(() => {
   return state.getters.showOneDialog;
 });
 onMounted(() => {});
+watch(
+  () => showOneDialog.value,
+  () => {
+    if (showOneDialog.value) {
+      initStocket();
+    }
+  },
+);
+const stocket = ref('');
+function initStocket() {
+  stocket.value = MyWebSocket('ws://172.16.24.1:8088/api/ws', resdata);
+}
+function resdata(data) {
+  console.log(data);
+}
 </script>
 
 <style lang="scss" scoped>
