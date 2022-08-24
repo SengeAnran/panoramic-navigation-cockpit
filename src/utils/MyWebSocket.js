@@ -112,7 +112,6 @@ class NewWebSocket extends WebSocket {
   }
 
   sendMsg(obj) {
-    console.log(this.readyState);
     this.send(JSON.stringify(obj));
     // if (this.readyState === 2) {
     //   this.send(JSON.stringify(obj));
