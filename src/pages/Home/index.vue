@@ -33,6 +33,9 @@ watch(
 const stocket = ref('');
 function initStocket() {
   stocket.value = MyWebSocket('ws://172.16.24.1:8088/api/ws', resData);
+  setTimeout(() => {
+    stocket.value.sendMsg({ id: 123, url: '12344' });
+  }, 1000);
 }
 function resData(data) {
   console.log(data);

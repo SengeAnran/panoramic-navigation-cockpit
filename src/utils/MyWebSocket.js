@@ -16,28 +16,34 @@ export function MyWebSocket(url, callback) {
   }
   const heartBeatConfig = {
     //time：心跳时间间隔 timeout：心跳超时间隔 reconnect：断线重连时
-    time: 3 * 1000,
+    time: 59 * 1000,
     timeout: 5 * 1000,
     reconnect: 5 * 1000,
   };
   const isReconnect = true;
-  // 第一次连接或者断开重连
   if (!socket) {
     //第一次执行，初始化
     connectWebSocket();
   }
-  if (socket && socket.reconnectTimer) {
-    //防止多个websocket同时执行
-    clearTimeout(socket.reconnectTimer);
-    socket.reconnectTimer = null;
-    connectWebSocket();
-  }
+  const timer = setInterval(() => {
+    // 断开重连
+    if (socket && socket.reconnectValue) {
+      //防止多个websocket同时执行
+      socket.reconnectTimer = false;
+      connectWebSocket();
+    } else if (socket.readyState === 3) {
+      clearInterval(timer);
+    }
+  }, heartBeatConfig.reconnect);
   function connectWebSocket() {
     socket = new NewWebSocket(wsUrl, heartBeatConfig, isReconnect);
     if (callback) {
       socket.registerCallBack(callback);
     }
   }
+  window.onbeforeunload = () => {
+    socket.closeWebsocket();
+  };
   return socket;
 }
 
@@ -56,7 +62,9 @@ class NewWebSocket extends WebSocket {
     this.onerror = this.errorHandler; //连接出错
     this.heartBeat = heartBeatConfig;
     this.isReconnect = isReconnect; // 是否断开重连
-    this.reconnectTimer = null; //断线重连时间器
+    this.reconnectValue = false; // 是否重连
+    this.heartBeatTimer = null; //心跳时间器
+    this.waitTimer = null; //等待心跳时间器
     this.callBackMapping = {}; //回调函数
     this.webSocketState = false; //socket状态 true为已连接
     return this;
@@ -82,7 +90,10 @@ class NewWebSocket extends WebSocket {
         console.log('收到心跳响应' + data.msg);
         break;
       default:
-        console.log('收到消息' + data);
+        if (data.code === -1) {
+          // 返回错误消息
+          console.log(data.msg);
+        }
         if (this.callBackMapping) {
           this.callBackMapping(data);
         }
@@ -110,12 +121,9 @@ class NewWebSocket extends WebSocket {
   unRegisterCallBack() {
     this.callBackMapping = null;
   }
-
+  // 发送消息
   sendMsg(obj) {
     this.send(JSON.stringify(obj));
-    // if (this.readyState === 2) {
-    //   this.send(JSON.stringify(obj));
-    // }
   }
 
   getMsg(e) {
@@ -127,7 +135,7 @@ class NewWebSocket extends WebSocket {
    * @param time：心跳时间间隔
    */
   startHeartBeat(time) {
-    setTimeout(() => {
+    this.heartBeatTimer = setTimeout(() => {
       const data = {
         type: 'ping',
         content: {},
@@ -140,7 +148,7 @@ class NewWebSocket extends WebSocket {
   //延时等待服务端响应，通过webSocketState判断是否连线成功
   waitingServer() {
     this.webSocketState = false;
-    setTimeout(() => {
+    this.waitTimer = setTimeout(() => {
       if (this.webSocketState) {
         this.startHeartBeat(this.heartBeat.time);
         return;
@@ -154,12 +162,18 @@ class NewWebSocket extends WebSocket {
       this.reconnectWebSocket();
     }, this.heartBeat.timeout);
   }
+  /** 断开websocket连接 */
+  closeWebsocket() {
+    this.close();
+    this.heartBeatTimer && clearTimeout(this.heartBeatTimer);
+    this.waitTimer && clearTimeout(this.waitTimer);
+  }
 
   //重连操作
   reconnectWebSocket() {
     if (!this.isReconnect) {
       return;
     }
-    this.reconnectTimer = setTimeout(() => {}, this.heartBeat.reconnect);
+    this.reconnectValue = true;
   }
 }

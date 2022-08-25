@@ -127,6 +127,9 @@ let sameData = {
   children: [],
 };
 const state = useStore();
+// let multiple = 1,
+//   heightMultiple = 1, // 屏高系数
+//   widthMultiple = 1; // 屏宽系数
 // 初始化
 function init() {
   let multiple = 1,
@@ -212,16 +215,16 @@ function init() {
         },
       ],
     };
-    sameData.children = props.data.children[1].children;
-    // const optionSame = {
-    //   data: sameData,
-    //   position: 'center',
-    //   rootNode: {
-    //     x: innerWidth / 6,
-    //     y: 0,
-    //   },
-    // };
-    // render(optionSame);
+    sameData.children = props.data.children[2].children;
+    const optionSame = {
+      data: props.data.children[2],
+      position: 'center',
+      rootNode: {
+        x: innerWidth / 4,
+        y: 0,
+      },
+    };
+    render(optionSame);
     // renderSame(sameData);
     const optionRoot = {
       data: data,
@@ -250,10 +253,24 @@ function render(option) {
   const { data, position, rootNode } = option;
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
   let root = d3.hierarchy(data);
+  // if (position === 'center') {
+  //   let heightMultiple = 1,
+  //     widthMultiple = 1;
+  //   const treeHeight = data.height;
+  //   const treeWidth = getTreeMax(data.children);
+  //   console.log('treeHeight', treeHeight);
+  //   if (treeHeight > 3) {
+  //     heightMultiple = treeHeight / 2 + 2 / 2;
+  //   }
+  //   if (treeWidth > 9) {
+  //     widthMultiple = treeWidth / 10;
+  //   }
+  //   console.log(heightMultiple, widthMultiple);
+  // }
   const regionSize = {
     left: [(innerHeight * 2) / 3, innerWidth / 4], // f(w/2 - y, x)
     right: [(innerHeight * 2) / 3, innerWidth / 4], // f(w/2 + y, x)
-    center: [innerWidth / 2, innerWidth / 3], // f(x + w/3, y + h/4)
+    center: [innerWidth / 2, innerWidth / 4], // f(x + w/4, y + h/4)
   };
   root = d3.tree().size(regionSize[position])(root);
   root.x = rootNode.x; // 设置根节点初始位置
@@ -274,7 +291,7 @@ function render(option) {
         // 左右会左右旋转
         // 计算点的x的实际坐标
         return position === 'center'
-          ? y + innerWidth / 3
+          ? y + innerWidth / 4
           : position === 'right'
           ? innerWidth / 2 + y + midValue / 2
           : innerWidth / 2 - y - midValue / 2;
@@ -342,7 +359,7 @@ function render(option) {
     .attr('rx', 4)
     .attr('x', (d) => {
       return position === 'center'
-        ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3
+        ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 4
         : position === 'right'
         ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2 //
         : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
@@ -377,7 +394,7 @@ function render(option) {
     .attr('title', (d) => d.data.name) // 位置
     .attr('x', (d) =>
       position === 'center'
-        ? d.x + innerWidth / 3
+        ? d.x + innerWidth / 4
         : position === 'right'
         ? innerWidth / 2 + d.y + midValue / 2
         : innerWidth / 2 - d.y - midValue / 2,
@@ -415,11 +432,28 @@ function render(option) {
     .html(svgAddReduce.add)
     .attr('transform', (d) => {
       function mathX() {
-        return position === 'center'
-          ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3
-          : position === 'right'
-          ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
-          : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
+        let positionX;
+        if (props.data && props.data.children.length > 1 && d.depth === 0) {
+          switch (position) {
+            case 'center':
+              positionX = d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 4 - 10;
+              break;
+            case 'left':
+              positionX = innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2 - 50;
+              break;
+            case 'right':
+              positionX = innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2 - 30;
+              break;
+          }
+        } else {
+          positionX =
+            position === 'center'
+              ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 4
+              : position === 'right'
+              ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
+              : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
+        }
+        return positionX;
       }
       function mathY() {
         return position === 'center'
@@ -435,7 +469,8 @@ function render(option) {
       init();
     })
     .attr('opacity', (d) => {
-      return d.data.hide === true || (d.depth === 0 && props.data.children.length >= 2) || !d.data.children ? 0 : 1;
+      // return d.data.hide === true || (d.depth === 0 && props.data.children.length >= 2) || !d.data.children ? 0 : 1;
+      return d.data.hide === true || !d.data.children ? 0 : 1;
     });
   // 画减按钮
   g.append('g')
@@ -446,11 +481,33 @@ function render(option) {
     .html(svgAddReduce.reduce)
     .attr('transform', (d) => {
       function mathX() {
-        return position === 'center'
-          ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 3
-          : position === 'right'
-          ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
-          : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
+        let positionX;
+        if (props.data && props.data.children.length > 1 && d.depth === 0) {
+          switch (position) {
+            case 'center':
+              positionX = d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 4 - 10;
+              break;
+            case 'left':
+              positionX = innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2 - 50;
+              break;
+            case 'right':
+              positionX = innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2 - 30;
+              break;
+          }
+        } else {
+          positionX =
+            position === 'center'
+              ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 4
+              : position === 'right'
+              ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
+              : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
+        }
+        return positionX;
+        // return position === 'center'
+        //   ? d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 4
+        //   : position === 'right'
+        //   ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
+        //   : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
       }
       function mathY() {
         return position === 'center'
@@ -465,7 +522,7 @@ function render(option) {
       init();
     })
     .attr('opacity', (d) => {
-      return d.data.hide === true || (d.depth === 0 && props.data.children.length >= 2) || !d.data.children ? 0 : 1;
+      return d.data.hide === true || !d.data.children ? 0 : 1;
     });
 }
 // 画布移动到某一位置
