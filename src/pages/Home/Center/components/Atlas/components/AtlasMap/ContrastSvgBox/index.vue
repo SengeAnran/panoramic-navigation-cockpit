@@ -83,7 +83,6 @@ watch(
 watch(
   () => props.hideAll,
   (val) => {
-    console.log(val);
     if (val) {
       nextTick(() => {
         showMain();

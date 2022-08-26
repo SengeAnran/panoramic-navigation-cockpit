@@ -304,7 +304,6 @@ export function getTreeMax(data) {
     const tree = d3.hierarchy(item);
     num.push(tree.count().value);
   });
-  console.log(num);
   return Math.max(...num);
 }
 
