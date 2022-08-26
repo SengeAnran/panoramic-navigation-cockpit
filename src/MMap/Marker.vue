@@ -12,6 +12,7 @@ const props = defineProps({
   popupOptions: Object,
   openAsync: { type: Boolean, default: true },
 });
+const emit = defineEmits(['openPopup', 'closePopup']);
 const mapPromise = inject('mapPromise');
 
 const slots = useSlots();
@@ -26,9 +27,11 @@ let showPopup = ref(false);
 if (slots.popup) {
   popup = new mapboxgl.Popup(props.popupOptions).setDOMContent(popupEle);
   popup.on('open', () => {
+    emit('openPopup');
     showPopup.value = true;
   });
   popup.on('close', () => {
+    emit('closePopup');
     showPopup.value = false;
   });
   marker.setPopup(popup);

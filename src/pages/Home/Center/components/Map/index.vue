@@ -16,11 +16,11 @@
       :position="item.position"
       :markerOptions="{ offset: [0, -27] }"
       :popupOptions="{ className: 'opacity-popup', maxWidth: 'none', anchor: 'left', closeButton: false }"
-      v-for="item in systemPoints"
+      v-for="item in showPoints"
       :key="item.id"
     >
       <template #icon>
-        <MarkerIcon />
+        <MarkerIcon :type="item.type" />
       </template>
       <template #popup>
         <SystemPopup :point="item" />
@@ -30,7 +30,7 @@
   <Legend :options="options" v-model="selected"></Legend>
 </template>
 <script setup>
-import { shallowRef, onMounted, ref } from 'vue';
+import { shallowRef, onMounted, ref, computed } from 'vue';
 import Map from '@/MMap/Map';
 import Image from '@/MMap/Image';
 import RaterLayer from '@/MMap/RaterLayer';
@@ -58,11 +58,16 @@ const options = [
 ];
 const selected = ref(['system', 'company']);
 
-const systemPoints = shallowRef([]);
+const allPoints = shallowRef([]);
+const showPoints = computed(() => {
+  const points = allPoints.value;
+  const types = selected.value || [];
+  return points.filter((d) => types.includes(d.type));
+});
 
 onMounted(async () => {
-  const data = await getSystemPoints();
-  systemPoints.value = data.map((d) => ({
+  const data = await getSystemPoints({ mode: 'all' });
+  allPoints.value = data.map((d) => ({
     ...d,
     position: [+d.lon, +d.lat],
   }));

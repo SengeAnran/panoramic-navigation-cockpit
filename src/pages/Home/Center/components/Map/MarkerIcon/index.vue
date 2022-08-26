@@ -1,9 +1,9 @@
 <template>
-  <div class="marker-icon" :class="color"></div>
+  <div class="marker-icon" :class="type"></div>
 </template>
 <script setup>
 defineProps({
-  color: { type: String },
+  type: { type: String, default: 'system' },
   size: { type: String, default: 'medium' },
 });
 </script>
@@ -11,10 +11,13 @@ defineProps({
 .marker-icon {
   width: 27px;
   height: 76px;
-  background-image: url('./blue.png');
   background-size: 100% 100%;
+  background-image: url('./blue.png');
   cursor: pointer;
-  &.orange {
+  &.system {
+    background-image: url('./blue.png');
+  }
+  &.company {
     background-image: url('./orange.png');
   }
 }

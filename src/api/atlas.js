@@ -19,6 +19,12 @@ export const getRelationGraph = (data) => {
   });
 };
 
-export const getSystemPoints = () => {
-  return axios.post('/api/slot/getList');
+// 获取系统地图点位
+export const getSystemPoints = (data) => {
+  return axios.post('/api/slot/getList', data);
+};
+
+// 获取公司点位详情
+export const getSystemDetail = (id) => {
+  return axios.post('/api/slot/system', { id });
 };

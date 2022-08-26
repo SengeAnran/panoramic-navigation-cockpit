@@ -1,24 +1,24 @@
 <template>
   <div class="system-popup">
     <h4 class="title">{{ point.name }}</h4>
+    <ul class="company-list">
+      <li class="company" v-for="item in devCompany" :key="item">{{ item }}</li>
+    </ul>
   </div>
 </template>
 <script setup>
-import { onMounted, shallowRef } from 'vue';
-import { getSystemDetail } from '@/api/atlas';
+import { ref } from 'vue';
 
-const props = defineProps({
+defineProps({
   point: Object,
 });
-// const emit = defineEmits(['']);
 
-const detail = shallowRef();
-onMounted(async () => {
-  const data = await getSystemDetail(props.point.id);
-  detail.value = data;
-  // console.log(data);
-  // emit('');
-});
+const devCompany = ref([
+  '上海奇点网络有限公司',
+  '北京奇点网络有限公司',
+  '杭州奇点网络有限公司',
+  '深圳奇点网络有限公司',
+]);
 </script>
 <style lang="scss" scoped>
 .system-popup {
