@@ -301,6 +301,7 @@ async function checkOne(item, index, click) {
       const res = await getGraphCompare(data);
       initNodeTree(res.systemANodes, true);
       initNodeTree(res.systemBNodes, true);
+      initNodeTree(res.commonNodes, true);
       const systemA = {
         name: res.systemANodes[0].system || checkList[0].name,
         children: res.systemANodes,
@@ -310,10 +311,10 @@ async function checkOne(item, index, click) {
         children: res.systemBNodes,
       };
       const sameNode = {
-        name: res.systemACommonNodes[0].system || checkList[1].name,
-        children: res.systemBNodes,
+        name: '相同节点',
+        children: [res.commonNodes],
       };
-      console.log(systemA, systemB);
+      console.log(systemA, systemB, sameNode);
       contrastData.children = [systemA, systemB, sameNode];
     } else {
       // 单个使用已有的数据展示

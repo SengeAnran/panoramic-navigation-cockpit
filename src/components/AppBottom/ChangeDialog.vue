@@ -17,6 +17,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 const emit = defineEmits(['change']);
 const pages = ref([
@@ -32,8 +33,10 @@ const pages = ref([
   },
 ]);
 const router = useRouter();
+const state = useStore();
 function selectOnePage(item) {
   emit('change');
+  state.commit('DELETE_ALL_QUERY');
   router.push({ name: item.name });
 }
 </script>

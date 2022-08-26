@@ -5,9 +5,11 @@
   <AppTitle style="z-index: 1" />
   <router-view v-if="!isLoading" />
   <AppBottom :class="{ opacity: bottomOpacity }" />
+  <Search />
 </template>
 
 <script setup>
+import Search from '@/views/Search';
 import { onMounted, onUnmounted, computed, ref, watch } from 'vue';
 import appCfg from '@/config/appConfig';
 import { useStore } from 'vuex';

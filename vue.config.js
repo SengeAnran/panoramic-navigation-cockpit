@@ -40,6 +40,15 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: { '^/apiProxy': '' },
       },
+      '/socket': {
+        // 设置websocket代理
+        target: 'ws://172.16.24.1:8088/',
+        ws: true, // 开启websocket代理  注意
+        changeOrigin: true,
+        pathRewrite: {
+          '^/socket': '',
+        },
+      },
     },
   },
 };
