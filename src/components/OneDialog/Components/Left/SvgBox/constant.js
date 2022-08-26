@@ -1,4 +1,6 @@
 // 根树的svg图标
+import * as d3 from 'd3';
+
 export const svgLogo = `<g  data-name="图层 2">
     <g data-name="图层 1">
       <path class="cls-31" d="M14.17,61.84l-.08-38.78L40.72,8.14l.08,38.79Z"/>
@@ -212,4 +214,11 @@ export function animateY(obj, target, recall) {
     // console.log(obj.scrollTop, targetValue);
     // console.log()
   }, 30);
+}
+// 获取树的最大宽度
+export function getTreeMax(data) {
+  const num = [];
+  const tree = d3.hierarchy(data);
+  num.push(tree.count().value);
+  return Math.max(...num);
 }

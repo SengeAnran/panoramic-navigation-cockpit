@@ -16,9 +16,10 @@ import {
   getRootInfo,
   svgLogo,
 } from './constant';
-import { defineProps, nextTick, onMounted, ref } from 'vue';
+import { defineProps, nextTick, onMounted, ref, watch } from 'vue';
 import * as d3 from 'd3';
 import { useStore } from 'vuex';
+import { getTreeMax } from './constant';
 const props = defineProps({
   data: {
     type: Object,
@@ -43,21 +44,41 @@ let innerWidth, // 内宽
 const svgClass = ref('');
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
-  nextTick(() => {
-    init();
-  });
+  mouseMove();
 });
-// watch(
-//   () => props.data,
-//   (val) => {
-//     if (val.children) {
-//       nextTick(() => {
-//         init();
-//       });
-//     }
-//   },
-//   { immediate: true, deep: true },
-// );
+function mouseMove() {
+  const showBox = document.querySelector('.svg-show-box-dialog');
+  showBox.addEventListener('mousedown', (e) => {
+    let x = e.pageX;
+    let y = e.pageY;
+    let ox = showBox.scrollLeft;
+    let oy = showBox.scrollTop;
+    let timer = null; // 节流阀
+    showBox.onmousemove = (e) => {
+      if (timer) return;
+      timer = setTimeout(() => {
+        showBox.scrollLeft = ox - (e.pageX - x);
+        showBox.scrollTop = oy - (e.pageY - y);
+        timer = null;
+      }, 16);
+    };
+    showBox.addEventListener('mouseup', () => {
+      showBox.onmousemove = null;
+    });
+  });
+}
+watch(
+  () => props.data,
+  (val) => {
+    if (val && val.name) {
+      console.log(val);
+      nextTick(() => {
+        init();
+      });
+    }
+  },
+  { immediate: true, deep: true },
+);
 // 节点背景颜色
 function rectColor(d) {
   return d.data.same ? '#3B78F2' : '#142847';
@@ -86,42 +107,46 @@ const midValue = 300; // left 和right 相距距离
 const state = useStore();
 // 初始化
 function init() {
-  let multiple = 1; // 屏宽系数
+  let multiple = 1,
+    heightMultiple = 1, // 屏高系数
+    widthMultiple = 1; // 屏宽系数
   treeHeight = d3.hierarchy(props.data).height;
-  // console.log('treeHeight', treeHeight);
-  console.log(treeHeight);
-  if (treeHeight > 4) {
-    multiple = treeHeight / 5;
+  const treeWidth = getTreeMax(props.data);
+  if (treeHeight > 3) {
+    heightMultiple = treeHeight / 3;
   }
+  if (treeWidth > 3) {
+    widthMultiple = treeWidth / 3;
+  }
+  multiple = Math.max(widthMultiple, heightMultiple);
   svg = d3.select(`.svg-${props.index}`);
   if (svg.select('.chart-g')) {
     svg.selectAll('.chart-g').remove();
   }
   let width = defaultWidth;
   let height = defaultHeight;
-  // console.log('multiple', multiple);
-  if (multiple !== 1) {
-    width = width * multiple;
-    height = height * multiple;
+  if (heightMultiple !== 1 || widthMultiple !== 1) {
+    width = width * widthMultiple;
+    height = height * heightMultiple;
   }
   svg.attr('width', width + 'px').attr('height', height + 'px');
   innerWidth = width - margin.left - margin.right;
   innerHeight = height - margin.top - margin.bottom;
   inWidVal.value = innerWidth;
   inHeiVal.value = innerHeight;
-  // rootX.value = innerWidth / 2 - 10;
 
   if (state.getters.dialogShowFirstTime) {
-    // 第一次展示最多展示5层
+    // 第一次展示最多展示3层
     const fristRoot = d3.hierarchy(props.data);
-    hideChildrenOnFirst(fristRoot, 5);
+    hideChildrenOnFirst(fristRoot, 3);
     if (multiple !== 1) {
       // 设置窗口展示位置
-      const left = ((multiple - 1) / 2) * defaultWidth;
-      const top = multiple > 1 ? (multiple * innerHeight) / 16 : 0;
+      const left = widthMultiple > 1 ? (innerWidth + margin.left) / 2 - defaultWidth / 2 : 0;
+      const top = 0;
       console.log(multiple, left, top);
-      // document.querySelector('.svg-show-box-dialog').scrollTop = top; //通过scrollTop设置滚动到100位置
+      document.querySelector('.svg-show-box-dialog').scrollTop = top; //通过scrollTop设置滚动到100位置
       document.querySelector('.svg-show-box-dialog').scrollLeft = left; //通过scrollTop设置滚动到200位置
+      console.dir(document.querySelector('.svg-show-box-dialog'));
     }
     state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', false);
   }
@@ -129,7 +154,7 @@ function init() {
     data: props.data,
     position: 'center',
     rootNode: {
-      x: innerWidth / 6,
+      x: innerWidth / 2,
       y: 0,
     },
   };
@@ -150,7 +175,7 @@ function init() {
  * @returns {Object}
  */
 function render(option) {
-  const { data, position } = option;
+  const { data, position, rootNode } = option;
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
   let root = d3.hierarchy(data);
   const regionSize = {
@@ -159,7 +184,7 @@ function render(option) {
     center: [innerWidth, innerHeight], // f(x + w/3, y + h/4)
   };
   root = d3.tree().size(regionSize[position])(root);
-  // root.x = rootNode.x; // 设置根节点初始位置
+  root.x = rootNode.x; // 设置根节点初始位置
   // root.y = rootNode.y;
   const node = root.descendants(); // x: 181.75 y: 0
   const path = root.links();
@@ -308,11 +333,33 @@ function render(option) {
     .html(svgAddReduce.add)
     .attr('transform', (d) => {
       function mathX() {
-        return position === 'center'
-          ? d.x - nodeOption2.width(d.data.name) / 2
-          : position === 'right'
-          ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
-          : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
+        let positionX;
+        if (d.depth === 0) {
+          switch (position) {
+            case 'center':
+              positionX = d.x - 80;
+              break;
+            case 'left':
+              positionX = innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2 - 50;
+              break;
+            case 'right':
+              positionX = innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2 - 30;
+              break;
+          }
+        } else {
+          positionX =
+            position === 'center'
+              ? d.x - nodeOption2.width(d.data.name) / 2
+              : position === 'right'
+              ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
+              : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
+        }
+        return positionX;
+        // return position === 'center'
+        //   ? d.x - nodeOption2.width(d.data.name) / 2
+        //   : position === 'right'
+        //   ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
+        //   : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
       }
       function mathY() {
         return position === 'center' ? d.y - nodeOption2.height / 2 - 16 : d.x - nodeOption.width / 2 - 16;
@@ -337,11 +384,28 @@ function render(option) {
     .html(svgAddReduce.reduce)
     .attr('transform', (d) => {
       function mathX() {
-        return position === 'center'
-          ? d.x - nodeOption2.width(d.data.name) / 2
-          : position === 'right'
-          ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
-          : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
+        let positionX;
+        if (d.depth === 0) {
+          switch (position) {
+            case 'center':
+              positionX = d.x - 80;
+              break;
+            case 'left':
+              positionX = innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2 - 50;
+              break;
+            case 'right':
+              positionX = innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2 - 30;
+              break;
+          }
+        } else {
+          positionX =
+            position === 'center'
+              ? d.x - nodeOption2.width(d.data.name) / 2
+              : position === 'right'
+              ? innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2
+              : innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2;
+        }
+        return positionX;
       }
       function mathY() {
         return position === 'center' ? d.y - nodeOption2.height / 2 - 16 : d.x - nodeOption.width / 2 - 16;

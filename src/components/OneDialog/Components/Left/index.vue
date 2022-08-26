@@ -2,86 +2,34 @@
   <div class="dialog-left">
     <h3 class="theme-font-style">系统图谱</h3>
     <div class="show-box">
-      <SvgBox :data="systemList" :index="6666" />
+      <SvgBox :data="systemList" :index="7777" />
     </div>
   </div>
 </template>
 
 <script setup>
 import SvgBox from './SvgBox';
-import { reactive } from 'vue';
-const systemList = reactive({
-  name: '系统名称3',
-  check: false,
-  same: false,
-  children: [
-    {
-      name: '节点名称1',
-      same: false,
-      children: [
-        {
-          name: '节点名称21',
-          same: false,
-        },
-        {
-          name: '节点名称22',
-          same: false,
-        },
-        {
-          name: '节点名称23',
-          same: false,
-          children: [
-            {
-              name: '节点名称31',
-              same: false,
-              children: [
-                {
-                  name: '节点名称42',
-                  same: false,
-                  children: [
-                    {
-                      name: '节点名称52',
-                      same: false,
-                      children: [
-                        {
-                          name: '节点名称52',
-                          // children: [
-                          //   // {
-                          //   //   name: '节点名称52',
-                          //   //   children: [
-                          //   //     {
-                          //   //       name: '节点名称52',
-                          //   //       children: [
-                          //   //         {
-                          //   //           name: '节点名称52',
-                          //   //           children: [
-                          //   //             {
-                          //   //               name: '节点名称52',
-                          //   //             },
-                          //   //           ],
-                          //   //         },
-                          //   //       ],
-                          //   //     },
-                          //   //   ],
-                          //   // },
-                          // ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        {
-          name: '节点名称24',
-          same: false,
-        },
-      ],
-    },
-  ],
+import { computed, onMounted, ref } from 'vue';
+import { useStore } from 'vuex';
+import { getNodeById } from '@/api/atlas';
+import { initNodeTree } from '@/pages/Home/Center/components/Atlas/constants';
+const state = useStore();
+const systemList = ref({});
+const nodeInfo = computed(() => {
+  return state.getters.dialogInfo;
 });
+onMounted(() => {
+  getNodeData();
+});
+function getNodeData() {
+  const data = {
+    id: nodeInfo.value.rootId,
+  };
+  getNodeById(data).then((res) => {
+    res && initNodeTree(res, true);
+    systemList.value = res;
+  });
+}
 </script>
 
 <style lang="scss" scoped>
