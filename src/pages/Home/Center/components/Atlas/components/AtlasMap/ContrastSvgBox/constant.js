@@ -215,7 +215,6 @@ export function delChildrenOnFirst(node, depth) {
   return node;
 }
 export function getRootInfo(node) {
-  console.log(node);
   let currentNode = node;
   while (currentNode.parent !== null) {
     currentNode = currentNode.parent;
@@ -306,4 +305,14 @@ export function getTreeMax(data) {
     num.push(tree.count().value);
   });
   return Math.max(...num);
+}
+
+// 获取树的根节点id
+export function getTreeRootId(node) {
+  if (node.parent && node.parent.data.node_id) {
+    // 防止根节点无id，找有id的最大层级节点id
+    return getTreeRootId(node.parent);
+  } else {
+    return node.data.node_id;
+  }
 }

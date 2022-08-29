@@ -17,6 +17,7 @@ import {
   svgLogo,
   getRootInfo,
   getTreeMax,
+  getTreeRootId,
 } from './constant';
 import { defineProps, nextTick, onMounted, ref, watch } from 'vue';
 import * as d3 from 'd3';
@@ -82,7 +83,6 @@ watch(
 watch(
   () => props.hideAll,
   (val) => {
-    console.log(val);
     if (val) {
       nextTick(() => {
         showMain();
@@ -137,14 +137,12 @@ function init() {
     widthMultiple = 1; // 屏宽系数
   treeHeight = d3.hierarchy(props.data).height;
   const treeWidth = getTreeMax(props.data.children);
-  console.log('treeHeight', treeHeight);
   if (treeHeight > 3) {
     heightMultiple = treeHeight / 2 + 2 / 2;
   }
   if (treeWidth > 9) {
     widthMultiple = treeWidth / 10;
   }
-  console.log(widthMultiple, heightMultiple);
   multiple = Math.max(widthMultiple, heightMultiple);
   svg = d3.select(`.svg-${props.index}`);
   if (svg.select('.chart-g')) {
@@ -384,9 +382,10 @@ function render(option) {
       if (d.depth && !d.data.same) {
         console.log('需要单展示啦！');
         state.commit('SET_CONTENT_OPACITY', true);
-        state.commit('SET_SHOW_ONE_DIALOG', true);
-        state.commit('atlasMap/SET_DIALOG_INFO', d.data);
+        const rootId = getTreeRootId(d);
+        state.commit('atlasMap/SET_DIALOG_INFO', { rootId, ...d.data });
         state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
+        state.commit('SET_SHOW_ONE_DIALOG', true);
         state.commit('SET_MAIN_TITLE', getRootInfo(d).name);
       }
     })
@@ -436,13 +435,13 @@ function render(option) {
         if (props.data && props.data.children.length > 1 && d.depth === 0) {
           switch (position) {
             case 'center':
-              positionX = d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 4 - 10;
+              positionX = d.x + innerWidth / 4 - 55;
               break;
             case 'left':
-              positionX = innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2 - 50;
+              positionX = innerWidth / 2 - midValue / 2 - 75;
               break;
             case 'right':
-              positionX = innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2 - 30;
+              positionX = innerWidth / 2 + midValue / 2 - 55;
               break;
           }
         } else {
@@ -485,13 +484,13 @@ function render(option) {
         if (props.data && props.data.children.length > 1 && d.depth === 0) {
           switch (position) {
             case 'center':
-              positionX = d.x - nodeOption2.width(d.data.name) / 2 + innerWidth / 4 - 10;
+              positionX = d.x + innerWidth / 4 - 55;
               break;
             case 'left':
-              positionX = innerWidth / 2 - (d.y + nodeOption.height(d.data.name) / 2) - midValue / 2 - 50;
+              positionX = innerWidth / 2 - midValue / 2 - 75;
               break;
             case 'right':
-              positionX = innerWidth / 2 + d.y - nodeOption.height(d.data.name) / 2 + midValue / 2 - 30;
+              positionX = innerWidth / 2 + midValue / 2 - 55;
               break;
           }
         } else {

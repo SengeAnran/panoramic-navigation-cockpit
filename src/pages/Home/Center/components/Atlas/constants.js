@@ -49,7 +49,7 @@ export function getInitTree(data) {
 // 对接口数据初始化树属性
 export function initNodeTree(arr, noCheck) {
   function allChildren(node) {
-    node.name = node.node_name;
+    node.name = node.node_name || '';
     if (node.children) {
       for (let i = 0; i < node.children.length; i++) {
         // node.children[i].name = node.children[i].node_name;

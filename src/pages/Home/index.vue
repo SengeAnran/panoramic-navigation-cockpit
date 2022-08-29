@@ -27,6 +27,8 @@ watch(
   () => {
     if (showOneDialog.value) {
       initStocket();
+    } else if (stocket.value) {
+      stocket.value.closeWebsocket();
     }
   },
 );

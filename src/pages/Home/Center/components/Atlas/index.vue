@@ -51,179 +51,12 @@ watch(
 
 const atlasType = ref('关系图谱');
 // const systemList = ref([]);
-const systemList = ref([
-  // {
-  //   name: '系统名称1',
-  //   check: false,
-  //   children: [
-  //     {
-  //       name: '节点名',
-  //       children: [
-  //         {
-  //           same: true,
-  //           name: '节点反对复古风的观',
-  //           children: [
-  //             {
-  //               same: false,
-  //               name: '节点名称十多度',
-  //             },
-  //           ],
-  //         },
-  //         {
-  //           same: false,
-  //           name: '节点名称对撒的',
-  //         },
-  //         {
-  //           same: true,
-  //           name: '节点名称',
-  //           children: [
-  //             {
-  //               same: false,
-  //               name: '节点名称31',
-  //               children: [
-  //                 {
-  //                   same: false,
-  //                   name: '节点名称42',
-  //                   // children: [
-  //                   //   {
-  //                   //     same: false,
-  //                   //     name: '节点名称42',
-  //                   //     children: [
-  //                   //       {
-  //                   //         same: false,
-  //                   //         name: '节点名称42',
-  //                   //       },
-  //                   //     ],
-  //                   //   },
-  //                   // ],
-  //                 },
-  //               ],
-  //             },
-  //           ],
-  //         },
-  //         {
-  //           same: false,
-  //           name: '节点名称24',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: '系统名称2',
-  //   check: false,
-  //   children: [
-  //     {
-  //       same: true,
-  //       name: '节点名称1',
-  //       children: [
-  //         {
-  //           same: false,
-  //           name: '节点名称21',
-  //         },
-  //         {
-  //           same: true,
-  //           name: '节点名称22',
-  //         },
-  //         {
-  //           same: false,
-  //           name: '节点名称23',
-  //           children: [
-  //             {
-  //               same: true,
-  //               name: '节点名称31',
-  //             },
-  //           ],
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: '系统名称3',
-  //   check: false,
-  //   same: true,
-  //   children: [
-  //     {
-  //       name: '节点名称1',
-  //       same: true,
-  //       children: [
-  //         {
-  //           name: '节点名称21',
-  //           same: true,
-  //         },
-  //         {
-  //           name: '节点名称22',
-  //           same: true,
-  //         },
-  //         {
-  //           name: '节点名称23',
-  //           same: true,
-  //           children: [
-  //             {
-  //               name: '节点名称31',
-  //               same: true,
-  //               children: [
-  //                 {
-  //                   name: '节点名称42',
-  //                   same: true,
-  //                   children: [
-  //                     {
-  //                       name: '节点名称52',
-  //                       same: true,
-  //                       children: [
-  //                         {
-  //                           name: '节点名称52',
-  //                           // children: [
-  //                           //   {
-  //                           //     name: '节点名称52',
-  //                           //     // children: [
-  //                           //     //   {
-  //                           //     //     name: '节点名称52',
-  //                           //     //     children: [
-  //                           //     //       {
-  //                           //     //         name: '节点名称52',
-  //                           //     //         children: [
-  //                           //     //           {
-  //                           //     //             name: '节点名称52',
-  //                           //     //           },
-  //                           //     //         ],
-  //                           //     //       },
-  //                           //     //     ],
-  //                           //     //   },
-  //                           //     // ],
-  //                           //   },
-  //                           // ],
-  //                         },
-  //                       ],
-  //                     },
-  //                   ],
-  //                 },
-  //               ],
-  //             },
-  //           ],
-  //         },
-  //         {
-  //           name: '节点名称24',
-  //           same: true,
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-]);
+const systemList = ref([]);
 const systemListSmall = ref([]);
 const contrastData = reactive({
   name: '公积金',
   children: [],
 });
-// const contrastDataClone = reactive({
-//   name: '公积金',
-//   children: [],
-// });
-// onMounted(() => {
-//   getSystemListSmall();
-// });
 watch(
   () => systemList.value,
   (val) => {
@@ -314,7 +147,6 @@ async function checkOne(item, index, click) {
         name: '相同节点',
         children: [res.commonNodes],
       };
-      console.log(systemA, systemB, sameNode);
       contrastData.children = [systemA, systemB, sameNode];
     } else {
       // 单个使用已有的数据展示

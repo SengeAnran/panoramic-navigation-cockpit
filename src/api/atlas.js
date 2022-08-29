@@ -18,6 +18,13 @@ export const getRelationGraph = (data) => {
     data,
   });
 };
+// 根据id获取节点
+export const getNodeById = (data) => {
+  return axios.request({
+    method: 'post',
+    url: `/api/graph/getNode/${data.id}`,
+  });
+};
 
 // 获取系统地图点位
 export const getSystemPoints = (data) => {
