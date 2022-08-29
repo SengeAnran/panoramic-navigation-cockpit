@@ -48,5 +48,16 @@ onUnmounted(async () => {
   width: 100%;
   height: 100%;
   transform: translateX(-50%);
+  &::after {
+    position: absolute;
+    content: '';
+    background: url('./map-mask.png');
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    opacity: 0.95;
+  }
 }
 </style>

@@ -79,11 +79,17 @@ function handleClick(item) {
     &:nth-child(2)::before {
       border-color: #ffa400;
     }
+    &:nth-child(3)::before {
+      border-color: #1e4acc;
+    }
     &.selected:nth-child(1)::before {
       background-color: #46e9fe;
     }
     &.selected:nth-child(2)::before {
       background-color: #ffa400;
+    }
+    &.selected:nth-child(3)::before {
+      background-color: #1e4acc;
     }
   }
 }
