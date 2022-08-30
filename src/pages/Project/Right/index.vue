@@ -37,7 +37,6 @@ async function getDataList() {
       checked: false,
     };
   });
-  console.log(dataList.value);
   nextTick(() => {
     setWordOption();
   });
