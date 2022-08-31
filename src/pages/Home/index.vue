@@ -43,7 +43,7 @@ function initStocket() {
   setTimeout(() => {
     stocket.value.emit('socket-broadcast', { id: 123, url: '12344' });
   }, 1000);
-  stocket.value.on('ping', (res) => {
+  stocket.value.on('notifyUrl', (res) => {
     console.log(res);
   });
 }

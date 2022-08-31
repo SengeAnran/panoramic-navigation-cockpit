@@ -127,6 +127,7 @@ async function checkOne(item, index, click) {
     if (systemListSmall.value.filter((i) => i.check).length === 2) {
       // 选择两个从接口获取数据
       const checkList = systemListSmall.value.filter((i) => i.check);
+      state.commit('atlasMap/SET_COMPARISON_MAP_INFO', checkList);
       const data = {
         systemA: checkList[0].name,
         systemB: checkList[1].name,

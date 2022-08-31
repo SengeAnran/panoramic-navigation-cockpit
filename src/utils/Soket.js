@@ -51,8 +51,8 @@ export default class Socket extends EventEmitter {
           this.closeSocketTimeout = null; // 关闭socket关闭时间器
           return;
         }
-        const data = JSON.parse(payload); // 接收到普通消息
-        this.emit(data.type, data.payload);
+        const data = payload; // 接收到普通消息
+        this.emit(data.type, data.content);
       } catch (err) {
         console.log(err);
       }

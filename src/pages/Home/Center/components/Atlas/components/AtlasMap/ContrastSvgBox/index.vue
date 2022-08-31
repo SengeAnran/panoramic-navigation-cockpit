@@ -34,15 +34,25 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  defaultWidth: {
+    // 默认展示宽度
+    type: Number,
+    default: 1999,
+  },
+  defaultHeight: {
+    // 默认展示高度
+    type: Number,
+    default: 750,
+  },
 });
 const inWidVal = ref(0);
 const inHeiVal = ref(0);
 let innerWidth, // 内宽
   innerHeight, // 内高
   svg,
-  treeHeight, // 树高
-  defaultWidth = 1999, // 默认展示宽度
-  defaultHeight = 750; // 默认展示高度
+  treeHeight; // 树高
+// props.defaultWidth = 1999, // 默认展示宽度
+// props.defaultHeight = 750; // 默认展示高度
 const svgClass = ref('');
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
@@ -143,14 +153,14 @@ function init() {
   if (treeWidth > 9) {
     widthMultiple = treeWidth / 10;
   }
+
   multiple = Math.max(widthMultiple, heightMultiple);
   svg = d3.select(`.svg-${props.index}`);
   if (svg.select('.chart-g')) {
     svg.selectAll('.chart-g').remove();
   }
-  let width = defaultWidth;
-  let height = defaultHeight;
-  // console.log('multiple', multiple);
+  let width = props.defaultWidth;
+  let height = props.defaultHeight;
   if (multiple !== 1) {
     width = width * heightMultiple;
     height = height * widthMultiple;
@@ -168,9 +178,10 @@ function init() {
     hideChildrenOnFirst(fristRoot, 5);
     if (multiple !== 1) {
       // 设置窗口展示位置
-      // const left = ((multiple - 1) / 2) * (defaultWidth - margin.left - margin.right);
-      const left = multiple > 1 ? (innerWidth + margin.left) / 2 - defaultWidth / 2 : 0;
+      // const left = ((multiple - 1) / 2) * (props.defaultWidth - margin.left - margin.right);
+      const left = multiple > 1 ? (innerWidth + margin.left) / 2 - props.defaultWidth / 2 : 0;
       const top = multiple > 1 ? innerHeight / 4 - 400 : 0;
+      console.log(left, top);
       document.querySelector('.svg-show-box').scrollTop = top; //通过scrollTop设置滚动到100位置
       document.querySelector('.svg-show-box').scrollLeft = left; //通过scrollTop设置滚动到200位置
     }
@@ -526,8 +537,8 @@ function render(option) {
 }
 // 画布移动到某一位置
 function moveTo(e) {
-  const top = e.offsetY - defaultHeight / 2;
-  const left = e.offsetX - defaultWidth / 2;
+  const top = e.offsetY - props.defaultHeight / 2;
+  const left = e.offsetX - props.defaultWidth / 2;
   const obj = document.querySelector('.svg-show-box');
   if (Math.abs(top) > 5) {
     animateY(obj, Math.ceil(top));
