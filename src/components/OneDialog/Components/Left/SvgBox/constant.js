@@ -177,7 +177,7 @@ export function animateX(obj, target, recall) {
         ? Math.ceil((targetValue - obj.scrollLeft) / 10)
         : Math.floor((targetValue - obj.scrollLeft) / 10);
     // 兼容正走倒走
-    obj.scrollLeft = obj.scrollLeft + step;
+    obj.scrollLeft = Math.floor(obj.scrollLeft + step);
     if (obj.scrollLeft === proValue) {
       recall && recall(); // 有回调则执行
       clearInterval(obj.timer); // 停止动画，
@@ -204,7 +204,7 @@ export function animateY(obj, target, recall) {
         ? Math.ceil((targetValue - obj.scrollTop) / 10)
         : Math.floor((targetValue - obj.scrollTop) / 10);
     // 兼容正走倒走
-    obj.scrollTop = obj.scrollTop + step;
+    obj.scrollTop = Math.floor(obj.scrollTop + step);
     if (obj.scrollTop === proValue) {
       // 不能移动了
       recall && recall(); // 有回调则执行
