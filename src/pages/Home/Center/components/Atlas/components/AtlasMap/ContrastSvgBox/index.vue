@@ -1,5 +1,6 @@
 <template>
   <div class="svg-show-box">
+    <!--    动态class 防止获取冲突-->
     <svg class="svg-box" :class="svgClass"></svg>
   </div>
 </template>

@@ -37,7 +37,8 @@
 // import * as d3 from 'd3';
 import { ref, reactive, onMounted, nextTick, watch } from 'vue';
 import { useStore } from 'vuex';
-import { getAreaDirectory, getBusinessDirectory, getTechnicalDirectory } from '@/api/search';
+// import { getTechnicalDirectory } from '@/api/search';
+import { getProjectTypeList } from '@/api/project';
 const state = useStore();
 const seletType = reactive({
   name: '项目类型',
@@ -147,22 +148,20 @@ const dataList = ref([
 async function getDataList() {
   let res;
   switch (seletType.name) {
-    case '业务导览':
-      res = await getBusinessDirectory();
+    case '项目类型':
+      res = await getProjectTypeList();
       break;
-    case '技术导览':
-      res = await getTechnicalDirectory();
-      break;
-    case '地域导览':
-      res = await getAreaDirectory();
-      break;
+    // case '项目领域':
+    //   res = await getTechnicalDirectory();
+    //   break;
     default:
       res = [];
   }
 
   dataList.value = res.map((i) => {
     return {
-      name: i,
+      name: i.text || i,
+      value: i.value || '',
       checked: false,
       position: 'left',
       type: seletType.name,
@@ -184,6 +183,7 @@ function selectKey(item) {
     position: item.position,
     type: item.type,
     name: item.name,
+    value: item.value,
   };
   state.commit('ADD_QUERY', data);
 }
