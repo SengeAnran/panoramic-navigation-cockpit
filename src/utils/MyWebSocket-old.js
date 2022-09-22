@@ -27,9 +27,10 @@ export function MyWebSocket(url, callback) {
   }
   const timer = setInterval(() => {
     // 断开重连
-    if (socket && socket.reconnectValue) {
+    if (socket && socket.reconnectValue && socket.reconnectNum < 3) {
       //防止多个websocket同时执行
       socket.reconnectTimer = false;
+      socket.reconnectNum++; // 重连次数加一
       connectWebSocket();
     } else if (socket.readyState === 3) {
       clearInterval(timer);
@@ -62,21 +63,23 @@ class NewWebSocket extends WebSocket {
     this.onerror = this.errorHandler; //连接出错
     this.heartBeat = heartBeatConfig;
     this.isReconnect = isReconnect; // 是否断开重连
+    this.reconnectNum = 0; // 重连次数
     this.reconnectValue = false; // 是否重连
     this.heartBeatTimer = null; //心跳时间器
     this.waitTimer = null; //等待心跳时间器
     this.callBackMapping = {}; //回调函数
     this.webSocketState = false; //socket状态 true为已连接
-    return this;
   }
 
   openHandler() {
+    // onopen = () => {
     this.webSocketState = true; //socket状态设置为连接，做为后面的断线重连的拦截器
     this.heartBeat && this.heartBeat.time ? this.startHeartBeat(this.heartBeat.time) : ''; //是否启动心跳机制
     console.log('开启');
   }
 
   messageHandler(e) {
+    // onmessage(e) {
     let data = this.getMsg(e);
     switch (data.data) {
       case ModeCode.MSG: //普通消息
@@ -102,12 +105,14 @@ class NewWebSocket extends WebSocket {
   }
 
   closeHandler() {
+    // onclose() {
     //socket关闭
     this.webSocketState = false; //socket状态设置为断线
     console.log('关闭');
   }
 
   errorHandler() {
+    // onerror() {
     //socket出错
     this.webSocketState = false; //socket状态设置为断线
     this.reconnectWebSocket(); //重连

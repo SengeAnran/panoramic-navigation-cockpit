@@ -8,12 +8,13 @@
 </template>
 
 <script setup>
-import { MyWebSocket } from '@/utils/MyWebSocket';
+// import { MyWebSocket } from '@/utils/MyWebSocket';
 import Left from './Left/index';
 import Right from './Right/index';
 import CenterContent from './Center/index';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
+import Socket from '@/utils/Soket';
 const state = useStore();
 const contentOpacity = computed(() => {
   return state.getters.contentOpacity;
@@ -28,19 +29,23 @@ watch(
     if (showOneDialog.value) {
       initStocket();
     } else if (stocket.value) {
-      stocket.value.closeWebsocket();
+      stocket.value.destroySocket();
     }
   },
 );
 const stocket = ref('');
 function initStocket() {
-  stocket.value = MyWebSocket('ws://172.16.24.1:8088/api/ws', resData);
+  const { protocol, host } = location;
+  const url = `${protocol === 'http:' ? 'ws' : 'wss'}://${host}/socket/api/ws`;
+  // stocket.value = MyWebSocket('ws://172.16.24.1:8088/api/ws', resData);
+  // stocket.value = MyWebSocket(url, resData);
+  stocket.value = new Socket(url);
   setTimeout(() => {
-    stocket.value.sendMsg({ id: 123, url: '12344' });
+    stocket.value.emit('socket-broadcast', { id: 123, url: '12344' });
   }, 1000);
-}
-function resData(data) {
-  console.log(data);
+  stocket.value.on('notifyUrl', (res) => {
+    console.log(res);
+  });
 }
 </script>
 

@@ -251,20 +251,20 @@ export function animateX(obj, target, recall) {
     // 给不同的对象指定不同的定时器
     if (obj.scrollLeft === targetValue) {
       recall && recall(); // 有回调则执行
-      clearInterval(obj.timer); // 停止动画，
+      return clearInterval(obj.timer); // 停止动画，
     }
     const step =
       targetValue - obj.scrollLeft >= 0
         ? Math.ceil((targetValue - obj.scrollLeft) / 10)
         : Math.floor((targetValue - obj.scrollLeft) / 10);
     // 兼容正走倒走
-    obj.scrollLeft = obj.scrollLeft + step;
+    obj.scrollLeft = Math.floor(obj.scrollLeft + step);
     if (obj.scrollLeft === proValue) {
       recall && recall(); // 有回调则执行
-      clearInterval(obj.timer); // 停止动画，
+      return clearInterval(obj.timer); // 停止动画，
     }
     proValue = obj.scrollLeft;
-    // console.log(obj.scrollLeft, targetValue);
+    // console.log('animateX:' + obj.scrollLeft, 'targetValue:' + targetValue);
   }, 30);
 }
 // y轴移动动画
@@ -286,14 +286,14 @@ export function animateY(obj, target, recall) {
         ? Math.ceil((targetValue - obj.scrollTop) / 10)
         : Math.floor((targetValue - obj.scrollTop) / 10);
     // 兼容正走倒走
-    obj.scrollTop = obj.scrollTop + step;
+    obj.scrollTop = Math.floor(obj.scrollTop + step);
     if (obj.scrollTop === proValue) {
       // 不能移动了
       recall && recall(); // 有回调则执行
       clearInterval(obj.timer2); // 停止动画，
     }
     proValue = obj.scrollTop;
-    // console.log(obj.scrollTop, targetValue);
+    // console.log('animateY:' + obj.scrollTop, 'targetValue:' + targetValue);
     // console.log()
   }, 30);
 }

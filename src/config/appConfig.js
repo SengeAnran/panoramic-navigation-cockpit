@@ -4,7 +4,7 @@ if (baseUrl.length && baseUrl[baseUrl.length - 1] === '/') {
 }
 const prodConfig = {
   prodOrDev: 'prod', // 正式环境
-  apiHost: '/apiProxyCockpit', // 接口代理
+  apiHost: '/', // 接口代理
   mapHost: 'https://xfsqxcx.deqing.gov.cn/arcgis',
   userHost: '/userProxy', // 用户模块代理
   width: 3840,

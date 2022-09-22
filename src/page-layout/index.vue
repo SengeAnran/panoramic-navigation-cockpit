@@ -1,7 +1,7 @@
 <!-- page-layout -->
 <template>
   <!--  centerFull-->
-  <FitScreen displayType="none" :pageSize="pageSize" />
+  <FitScreen displayType="centerFull" :pageSize="pageSize" />
   <AppTitle style="z-index: 1" />
   <router-view v-if="!isLoading" />
   <AppBottom :class="{ opacity: bottomOpacity }" />

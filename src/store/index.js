@@ -116,6 +116,7 @@ export default createStore({
     showFirstTime: (state) => state.atlasMap.showFirstTime,
     dialogShowFirstTime: (state) => state.atlasMap.dialogShowFirstTime,
     dialogInfo: (state) => state.atlasMap.dialogInfo,
+    comparisonMapInfo: (state) => state.atlasMap.comparisonMapInfo,
     mainTitle: (state) => state.mainTitle,
   },
 });
