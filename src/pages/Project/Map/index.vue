@@ -8,7 +8,7 @@
       <!-- <OdLine :data="odLines" v-if="show" /> -->
       <Wall :data="wallData" />
     </ThreeLayer>
-    <Marker :position="[104, 33]" :options="{ offset: companyOffset }">
+    <Marker :position="[104, 33]" :markerOptions="{ offset: companyOffset }">
       <template #icon>
         <CompanyIcon />
       </template>
