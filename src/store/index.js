@@ -18,6 +18,7 @@ export default createStore({
     contentOpacity: false, // 主体内容透明设置
     mainTitle: defaultMainTitle, // 页面标题
     showOneDialog: false, // 显示单系统弹窗
+    hidePageTitle: false,
   },
   mutations: {
     [Types.SET_INTERVAL_ID](state, msg) {
@@ -81,6 +82,9 @@ export default createStore({
     // 清空检索词
     DELETE_ALL_QUERY(state) {
       state.query = [];
+    },
+    SET_HIDE_PAGE_TITLE(state, data) {
+      state.hidePageTitle = data;
     },
   },
   actions: {

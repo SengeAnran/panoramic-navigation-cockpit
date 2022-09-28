@@ -40,6 +40,7 @@ import {
 } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 import { initNodeTree } from './constants';
 import { getGraphCompare, getGraphSystems } from '@/api/search';
+// import router from '@/router';
 const state = useStore();
 const showSearchRes = ref(false);
 watch(
@@ -128,6 +129,7 @@ async function checkOne(item, index, click) {
       // 选择两个从接口获取数据
       const checkList = systemListSmall.value.filter((i) => i.check);
       state.commit('atlasMap/SET_COMPARISON_MAP_INFO', checkList);
+      // router.push('/compareMap');
       const data = {
         systemA: checkList[0].name,
         systemB: checkList[1].name,
