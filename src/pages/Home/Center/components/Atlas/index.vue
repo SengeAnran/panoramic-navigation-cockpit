@@ -83,7 +83,12 @@ watch(
 // 获取检索结果
 async function getDataList() {
   const data = {
-    keys: state.getters.query.map((i) => i.name),
+    query: state.getters.query.map((i) => {
+      return {
+        theme: i.type,
+        word: i.name,
+      };
+    }),
     mode: 'specific',
   };
   const res = await getGraphSystems(data);

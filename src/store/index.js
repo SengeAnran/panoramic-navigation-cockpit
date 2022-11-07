@@ -61,9 +61,9 @@ export default createStore({
     },
     // 检索词数据结构
     // {
-    //   position: item.position,
-    //     type: item.type,
-    //   name: item.name,
+    //   position: item.position, // 位置
+    //     type: item.type, // 类型
+    //   name: item.name, // 名称
     // }
     // 添加检索词
     ADD_QUERY(state, data) {

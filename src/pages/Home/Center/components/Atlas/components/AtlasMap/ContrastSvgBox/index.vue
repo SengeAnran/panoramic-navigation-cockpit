@@ -110,7 +110,7 @@ function showMain() {
 }
 // 节点背景颜色
 function rectColor(d) {
-  return d.data.same ? '#3B78F2' : '#142847';
+  return d.data.counterpart ? '#3B78F2' : '#142847';
 }
 const nodeOption = {
   height: (name) => {
