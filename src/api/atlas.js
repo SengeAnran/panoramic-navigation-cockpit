@@ -29,3 +29,12 @@ export const getNodeById = (data) => {
 export const getSystemPoints = () => {
   return axios.post('/api/slot/getList');
 };
+
+// 切换显示模式
+export const changeToggle = (data) => {
+  return axios.request({
+    method: 'post',
+    url: '/api/graph/toggle',
+    data,
+  });
+};
