@@ -1,5 +1,28 @@
 <template>
   <div class="svg-show-box-dialog">
+    <svg>
+      <defs>
+        <!--    filter定义SVG滤镜, <filter>标签使用必需的id属性来定义向图形应用哪个滤镜-->
+        <filter id="dropShadow">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="18" />
+          <feColorMatrix
+            result="matrixOut"
+            in="offOut"
+            type="matrix"
+            values="
+              0 0 0 1 0
+              0 0 1 1 0
+              1 1 1 1 1
+              0 0 0 1 0"
+          />
+          <feOffset dx="0" dy="0" />
+          <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
     <svg class="svg-box" :class="svgClass"></svg>
   </div>
 </template>
@@ -105,6 +128,7 @@ const margin = {
 };
 const midValue = 300; // left 和right 相距距离
 const state = useStore();
+const gSvg = ref('');
 // 初始化
 function init() {
   let multiple = 1,
@@ -177,6 +201,7 @@ function init() {
 function render(option) {
   const { data, position, rootNode } = option;
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
+  gSvg.value = g;
   let root = d3.hierarchy(data);
   const regionSize = {
     left: [innerHeight / 2, innerWidth / 3], // f(w/2 - y, x)
@@ -443,6 +468,38 @@ function moveTo(e) {
     animateX(obj, Math.ceil(left));
   }
 }
+// setTimeout(() => {
+//   addActive();
+// }, 2000);
+// setTimeout(() => {
+//   addActive(575647);
+// }, 4000);
+// 给当前显示元素加选中色
+// function addActive(data = 659500) {
+//   if (!gSvg.value) {
+//     return;
+//   }
+//   const allRect = gSvg.value.selectAll('.rect-box');
+//   console.log(allRect.nodes());
+//   console.log(allRect._groups);
+//   let activeIndex;
+//   allRect.nodes().forEach((i, index) => {
+//     console.log(i.__data__.data);
+//     if (i.__data__.data.node_id === data) {
+//       activeIndex = index;
+//     }
+//   });
+//   // allRect.
+//   const nodes = allRect.nodes();
+//   nodes.forEach((i) => {
+//     i.setAttribute('filter', '');
+//   });
+//   nodes[activeIndex].setAttribute('filter', 'url(#dropShadow)');
+//   console.log([allRect.nodes()[activeIndex]]);
+//   // allRect.
+//   // .attr('filter', 'url(#dropShadow)')
+// }
+
 // // 画根树状图
 // function renderRoot(option) {
 //   const { data, rootNode } = option;
