@@ -468,37 +468,37 @@ function moveTo(e) {
     animateX(obj, Math.ceil(left));
   }
 }
-// setTimeout(() => {
-//   addActive();
-// }, 2000);
-// setTimeout(() => {
-//   addActive(575647);
-// }, 4000);
-// 给当前显示元素加选中色
-// function addActive(data = 659500) {
-//   if (!gSvg.value) {
-//     return;
-//   }
-//   const allRect = gSvg.value.selectAll('.rect-box');
-//   console.log(allRect.nodes());
-//   console.log(allRect._groups);
-//   let activeIndex;
-//   allRect.nodes().forEach((i, index) => {
-//     console.log(i.__data__.data);
-//     if (i.__data__.data.node_id === data) {
-//       activeIndex = index;
-//     }
-//   });
-//   // allRect.
-//   const nodes = allRect.nodes();
-//   nodes.forEach((i) => {
-//     i.setAttribute('filter', '');
-//   });
-//   nodes[activeIndex].setAttribute('filter', 'url(#dropShadow)');
-//   console.log([allRect.nodes()[activeIndex]]);
-//   // allRect.
-//   // .attr('filter', 'url(#dropShadow)')
-// }
+setTimeout(() => {
+  addActive();
+}, 2000);
+setTimeout(() => {
+  addActive(575647);
+}, 4000);
+// 给当前显示元素加选中色;
+function addActive(data = 659500) {
+  if (!gSvg.value) {
+    return;
+  }
+  const allRect = gSvg.value.selectAll('.rect-box');
+  console.log(allRect.nodes());
+  console.log(allRect._groups);
+  let activeIndex;
+  allRect.nodes().forEach((i, index) => {
+    console.log(i.__data__.data);
+    if (i.__data__.data.node_id === data) {
+      activeIndex = index;
+    }
+  });
+  // allRect.
+  const nodes = allRect.nodes();
+  nodes.forEach((i) => {
+    i.setAttribute('filter', '');
+  });
+  nodes[activeIndex].setAttribute('filter', 'url(#dropShadow)');
+  console.log([allRect.nodes()[activeIndex]]);
+  // allRect.
+  // .attr('filter', 'url(#dropShadow)')
+}
 
 // // 画根树状图
 // function renderRoot(option) {
