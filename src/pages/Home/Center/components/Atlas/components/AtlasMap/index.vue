@@ -49,6 +49,7 @@ async function clickOne(node) {
     console.log(res);
     state.commit('SET_CONTENT_OPACITY', true);
     const rootId = getTreeRootId(node);
+    console.log(rootId, node.data);
     state.commit('atlasMap/SET_DIALOG_INFO', { rootId, ...node.data });
     state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
     state.commit('SET_SHOW_ONE_DIALOG', true);
