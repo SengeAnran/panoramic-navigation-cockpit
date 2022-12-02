@@ -23,6 +23,7 @@ const devConfig = {
   prodOrDev: 'dev', // 开发环境
   // apiHost: 'http://172.16.24.139:12003/apiProxyCockpit/open/index/executor', // 接口代理
   apiHost: '/apiProxy', // 接口代理
+  voiceApiHost: '/apiVoice', // 语音接口代理
   userHost: 'http://172.16.24.139:7000/',
   mapHost: 'https://xfsqxcx.deqing.gov.cn/arcgis',
   width: 3840, // 大屏分辨率-宽

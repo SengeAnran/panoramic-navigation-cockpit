@@ -49,6 +49,14 @@ module.exports = {
           '^/socket': '',
         },
       },
+      '/apiVoice': {
+        // 设置websocket代理
+        target: 'http://10.21.235.147:20001/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/apiVoice': '',
+        },
+      },
     },
   },
 };
