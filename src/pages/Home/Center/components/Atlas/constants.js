@@ -45,11 +45,20 @@ export function getInitTree(data) {
     return res;
   });
 }
-
+// 相同节点树节点节点名称预处理
+function getName(name) {
+  let nodeName = name;
+  nodeName = JSON.parse(nodeName)
+    .map((i) => {
+      return i.length > 5 ? i.slice(0, 4) + '..' : i;
+    })
+    .join('-');
+  return nodeName;
+}
 // 对接口数据初始化树属性
-export function initNodeTree(arr, noCheck) {
+export function initNodeTree(arr, noCheck, center = false) {
   function allChildren(node) {
-    node.name = node.node_name || '';
+    node.name = center ? getName(node.node_name) : node.node_name || '';
     if (node.children) {
       for (let i = 0; i < node.children.length; i++) {
         // node.children[i].name = node.children[i].node_name;

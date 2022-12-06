@@ -7,8 +7,8 @@
   </div>
   <div class="search" :class="{ opacity: contentOpacity }">
     <div class="voice" ref="voice"></div>
-    <div>
-      <div v-show="showSearch" @click="showSearchInput" class="search-input">
+    <div @click="showSearchInput">
+      <div v-show="showSearch" class="search-input">
         <form ref="searchForm" id="searchForm" action="">
           <input type="text" v-model="searchkey" />
           <button type="submit"></button>

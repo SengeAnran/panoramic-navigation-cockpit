@@ -39,7 +39,7 @@ function showAllTree() {
 // 点击节点
 async function clickOne(node) {
   // console.log(node);
-  if (node.depth && !node.data.similarity) {
+  if (node.depth && !node.data.counterpart && node.position !== 'center') {
     // 单系统结果展示
     console.log('需要单展示啦！');
     const { url, video_url } = node.data.meta || {};
@@ -56,7 +56,7 @@ async function clickOne(node) {
     state.commit('SET_MAIN_TITLE', getRootInfo(node).name);
     return;
   }
-  if (node.depth && node.data.similarity) {
+  if (node.depth && (node.data.counterpart || node.position === 'center')) {
     // 对比系统结果展示
     console.log('需要对比展示啦！');
     const { url, video_url } = node.data.meta || {};

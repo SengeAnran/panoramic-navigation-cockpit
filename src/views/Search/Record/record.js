@@ -1,10 +1,11 @@
 let mediaStreamValue, jsNode, mediaNode;
 let leftDataList = [],
   rightDataList = [];
+// 录音
 export function record() {
   leftDataList = [];
   rightDataList = [];
-  mediaStreamValue = null;
+  mediaStreamValue = null; // 音频流
   jsNode = null;
   mediaNode = null;
   window.navigator.mediaDevices
@@ -60,8 +61,7 @@ function createJSNode(audioContext) {
   const INPUT_CHANNEL_COUNT = 2; // 输入和输出频道数量,这里设定为双声道
   const OUTPUT_CHANNEL_COUNT = 2;
   // createJavaScriptNode已被废弃
-  let creator =
-    audioContext.createScriptProcessor || audioContext.createJavaScriptNode;
+  let creator = audioContext.createScriptProcessor || audioContext.createJavaScriptNode;
   creator = creator.bind(audioContext); // 改变函数this指向
   return creator(BUFFER_SIZE, INPUT_CHANNEL_COUNT, OUTPUT_CHANNEL_COUNT);
 }
@@ -79,7 +79,7 @@ export function stopRecord() {
   console.log(data);
   // 转换成能播放的 Wav 格式的 arrayBuffer 数据
   const arrayBuffer = createWavFile(data);
-  console.log("arrayBuffer", arrayBuffer);
+  console.log('arrayBuffer', arrayBuffer);
   play(arrayBuffer);
   console.log(arrayBuffer);
 }
@@ -114,14 +114,14 @@ function createWavFile(audioData) {
   const view = new DataView(buffer);
   // 写入wav头部信息
   // RIFF chunk descriptor/identifier
-  writeUTFBytes(view, 0, "RIFF");
+  writeUTFBytes(view, 0, 'RIFF');
   // RIFF chunk length
   view.setUint32(4, 44 + audioData.length * 2, true);
   // RIFF type
-  writeUTFBytes(view, 8, "WAVE");
+  writeUTFBytes(view, 8, 'WAVE');
   // // format chunk identifier
   // // FMT sub-chunk
-  writeUTFBytes(view, 12, "fmt ");
+  writeUTFBytes(view, 12, 'fmt ');
   // format chunk length 格式化块长度
   view.setUint32(16, 16, true);
   // sample format (raw)
@@ -138,7 +138,7 @@ function createWavFile(audioData) {
   view.setUint16(34, 16, true);
   // data sub-chunk
   // data chunk identifier
-  writeUTFBytes(view, 36, "data");
+  writeUTFBytes(view, 36, 'data');
   // data chunk length 数据块长度
   view.setUint32(40, audioData.length * 2, true);
   //写入录音数据
@@ -167,30 +167,30 @@ function writeUTFBytes(view, offset, string) {
 function playRecord(arrayBuffer) {
   const blob = new Blob([new Uint8Array(arrayBuffer)]);
   const blobUrl = URL.createObjectURL(blob);
-  document.querySelector(".audio-node").src = blobUrl;
+  document.querySelector('.audio-node').src = blobUrl;
 }
 //
 function play(arrayBuffer) {
-  console.log("解码前的数据", arrayBuffer);
+  console.log('解码前的数据', arrayBuffer);
   // 获取AudioContext类
   // safari 需要使用webkit前缀
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioContext = new AudioContext();
-  console.log("audioContext", audioContext);
+  console.log('audioContext', audioContext);
   // 创建audioBufferSourceNode对象
   // 创建一个AudioBufferSourceNode对象，使用AudioContext的工厂函数创建
   const audioNode = audioContext.createBufferSource();
   const gainNode = audioContext.createGain();
-  console.log("AudioBufferSourceNode对象", audioNode);
+  console.log('AudioBufferSourceNode对象', audioNode);
   // 将解码后数据放入buffer属性
   // 解码音频，可以使用Promise，但是较老的Safari需要使用回调
   audioContext.decodeAudioData(arrayBuffer, function (audioBuffer) {
-    console.log("解码后的数据", audioBuffer);
+    console.log('解码后的数据', audioBuffer);
     // 音频时长duration:257.62258333333335， 声道数量 numberOfChannels和采样率 sampleRate
     audioNode.buffer = audioBuffer;
     audioNode.connect(audioContext.destination); // 连接播放器 audioContext.destination
     // 从0s播放音乐
-    console.log("从0s后播放音乐");
+    console.log('从0s后播放音乐');
     audioNode.start(0);
   });
   // console.log(audioBufferSourceNode);

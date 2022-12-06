@@ -109,7 +109,7 @@ function showMain() {
 }
 // 节点背景颜色
 function rectColor(d) {
-  return d.data.counterpart ? '#3B78F2' : '#142847';
+  return d.position === 'center' || d.data.counterpart ? '#3B78F2' : '#142847';
 }
 const nodeOption = {
   height: (name) => {
@@ -362,7 +362,7 @@ function render(option) {
     .attr('class', 'rect-box')
     .attr('width', (d) => nodeOption.height(d.data.name))
     .attr('height', nodeOption.width)
-    .attr('fill', (d) => rectColor(d))
+    .attr('fill', (d) => rectColor({ ...d, position }))
     .attr('stroke', '#3B78F2')
     .attr('stroke-width', 2)
     .attr('rx', 4)
@@ -388,10 +388,9 @@ function render(option) {
     .join('text')
     .on('click', (e, d) => {
       // console.log(e.target.__data__); // 点击的节点
-      emit('clickOne', d);
+      emit('clickOne', { ...d, position });
     })
     .attr('text-anchor', 'middle') // 位置
-    .attr('title', (d) => d.data.name) // 位置
     .attr('x', (d) =>
       position === 'center'
         ? d.x + innerWidth / 4

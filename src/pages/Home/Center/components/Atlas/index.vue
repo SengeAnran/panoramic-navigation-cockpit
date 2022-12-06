@@ -55,7 +55,7 @@ const atlasType = ref('关系图谱');
 const systemList = ref([]);
 const systemListSmall = ref([]);
 const contrastData = reactive({
-  name: '公积金',
+  name: ' ',
   children: [],
 });
 watch(
@@ -142,7 +142,7 @@ async function checkOne(item, index, click) {
       const res = await getGraphCompare(data);
       initNodeTree(res.systemANodes, true);
       initNodeTree(res.systemBNodes, true);
-      initNodeTree(res.commonNodes, true);
+      initNodeTree(res.commonNodes, true, true);
       const systemA = {
         name: res.systemANodes[0].system || checkList[0].name,
         children: res.systemANodes,
