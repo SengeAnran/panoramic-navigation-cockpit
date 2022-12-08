@@ -51,7 +51,8 @@ module.exports = {
       },
       '/apiVoice': {
         // 设置websocket代理
-        target: 'http://10.21.235.147:20001/',
+        // target: 'http://10.21.235.147:20001/',
+        target: 'http://172.16.24.1:20001/', // 公司测试环境
         changeOrigin: true,
         pathRewrite: {
           '^/apiVoice': '',

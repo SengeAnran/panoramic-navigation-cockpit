@@ -1,8 +1,11 @@
 import { getVoiceTxt } from '@/api/voice';
 
 let mediaStreamValue, jsNode, mediaNode;
-let leftDataList = [],
-  rightDataList = [];
+let leftDataList = [];
+let rightDataList = [];
+const channels = 1; // 声道数
+const inputSampleRate = 44100; // 采频率
+const outputSampleRate = 16000; // 采频率
 
 export function record() {
   leftDataList = [];
@@ -14,8 +17,8 @@ export function record() {
     .getUserMedia({
       // audio: true,
       audio: {
-        sampleRate: 44100, // 采频率
-        channelCount: 2, // 声道
+        sampleRate: inputSampleRate, // 输入采频率
+        channelCount: channels, // 声道
         volume: 1.0, // 音量
       },
     })
@@ -51,19 +54,23 @@ function beginRecord(mediaStrem) {
 function onAudioProcess(event) {
   const audioBuffer = event.inputBuffer;
   // 保存数据
+  // console.log(audioBuffer.getChannelData(1));
   const leftChannelData = audioBuffer.getChannelData(0); // 左声道
-  const rightChannelData = audioBuffer.getChannelData(1); // 右声道
+  if (channels === 2) {
+    const rightChannelData = audioBuffer.getChannelData(1); // 右声道
+    rightDataList.push(rightChannelData.slice(0));
+  }
+
   // 需要克隆一下 ??
   leftDataList.push(leftChannelData.slice(0));
-  rightDataList.push(rightChannelData.slice(0));
 }
 
 // 创建javascriptProcessorNode 实例
 function createJSNode(audioContext) {
   const BUFFER_SIZE = 4096; // 缓冲区大小，通常设定为4kB
   // 它里面有两个缓冲区，一个是输入inputBuffer，另一个是输出outputBuffer 它们是AudioBuffer实例
-  const INPUT_CHANNEL_COUNT = 2; // 输入和输出频道数量,这里设定为双声道
-  const OUTPUT_CHANNEL_COUNT = 2;
+  const INPUT_CHANNEL_COUNT = channels; // 输入和输出频道数量,这里设定为双声道
+  const OUTPUT_CHANNEL_COUNT = channels;
   // createJavaScriptNode已被废弃
   let creator = audioContext.createScriptProcessor || audioContext.createJavaScriptNode;
   creator = creator.bind(audioContext); // 改变函数this指向
@@ -72,16 +79,25 @@ function createJSNode(audioContext) {
 
 // 停止录音
 export function stopRecord() {
+  let allData, compressData;
   mediaStreamValue.getAudioTracks()[0].stop(); // 停止录音
   mediaNode.disconnect(); // 断开mediaNode连接
   jsNode.disconnect(); // 断开jsNode连接
   // 左右声道数据分别进行Float32Array数据拍平
   const leftData = mergeArray(leftDataList);
-  const rightData = mergeArray(rightDataList);
-  // 所有数据融合成一维数组
-  const data = interleaveLeftAndRight(leftData, rightData);
+  let rightData, arrayBuffer;
+  if (channels === 2) {
+    rightData = mergeArray(rightDataList);
+    // 所有数据融合成一维数组
+    allData = interleaveLeftAndRight(leftData, rightData);
+  } else {
+    allData = leftData;
+  }
+  // 压缩数据
+  compressData = compress(allData);
   // 转换成能播放的 Wav 格式的 arrayBuffer 数据
-  const arrayBuffer = createWavFile(data);
+  arrayBuffer = createWavFile(compressData);
+  // play(arrayBuffer);
   return uploadFile(arrayBuffer);
 }
 
@@ -108,9 +124,28 @@ function interleaveLeftAndRight(left, right) {
   }
   return data;
 }
+// 压缩数据
+function compress(inputData) {
+  console.log('inputData', inputData);
+  //压缩
+  // 压缩比率
+  const compression = parseInt(inputSampleRate / outputSampleRate);
+  console.log('compression', compression);
+  const length = inputData.length / compression;
+  const result = new Float32Array(length);
+  let index = 0,
+    j = 0;
+  while (index < length) {
+    result[index] = inputData[j];
+    j += compression;
+    index++;
+  }
+  console.log('outputData', result);
+  return result;
+}
 
 // 创建一个wav文件，首先写入wav的头部信息，包括设置声道、采样率、位声等
-function createWavFile(audioData) {
+export function createWavFile(audioData) {
   const WAV_HEAD_SIZE = 44;
   // 创建一个长度audioData.length * 2 + WAV_HEAD_SIZE 的ArrayBuffer 数据；
   const buffer = new ArrayBuffer(audioData.length * 2 + WAV_HEAD_SIZE);
@@ -120,7 +155,7 @@ function createWavFile(audioData) {
   // RIFF chunk descriptor/identifier
   writeUTFBytes(view, 0, 'RIFF');
   // RIFF chunk length
-  view.setUint32(4, 44 + audioData.length * 2, true);
+  view.setUint32(4, 44 + audioData.length * channels, true);
   // RIFF type
   writeUTFBytes(view, 8, 'WAVE');
   // // format chunk identifier
@@ -128,17 +163,17 @@ function createWavFile(audioData) {
   writeUTFBytes(view, 12, 'fmt ');
   // format chunk length 格式化块长度
   view.setUint32(16, 16, true);
-  // sample format (raw)
+  // sample format (raw) 样本格式（原始）
   view.setUint16(20, 1, true);
   // stereo (2 channels) // 声道
-  view.setUint16(22, 2, true);
+  view.setUint16(22, channels, true);
   // sample rate 频率
-  view.setUint32(24, 44100, true);
-  // byte rate (sample rate * block align)
-  view.setUint32(28, 44100 * 2, true);
-  // block align (channel count * bytes per sample)
-  view.setUint16(32, 2 * 2, true);
-  // bits per sample
+  view.setUint32(24, outputSampleRate, true);
+  // byte rate (sample rate * block align) 字节速率
+  view.setUint32(28, outputSampleRate * 2, true);
+  // block align (channel count * bytes per sample) 块定位
+  view.setUint16(32, channels * 2, true);
+  // bits per sample 每个样本位数
   view.setUint16(34, 16, true);
   // data sub-chunk
   // data chunk identifier
@@ -148,6 +183,23 @@ function createWavFile(audioData) {
   //写入录音数据
   const length = audioData.length;
   let index = 44;
+  const volume = 1; // 音量倍数
+  for (let i = 0; i < length; i++) {
+    view.setInt16(index, audioData[i] * (0x7fff * volume), true);
+    index += 2;
+  }
+  return buffer;
+}
+// 创建文件（无头部信息）
+export function createFile(audioData) {
+  // const WAV_HEAD_SIZE = 44;
+  // 创建一个长度audioData.length * 2 的ArrayBuffer 数据；
+  const buffer = new ArrayBuffer(audioData.length * 2);
+  //// 需要用一个view来操控buffer
+  const view = new DataView(buffer);
+  //写入录音数据
+  const length = audioData.length;
+  let index = 0;
   const volume = 1;
   for (let i = 0; i < length; i++) {
     view.setInt16(index, audioData[i] * (0x7fff * volume), true);
@@ -162,20 +214,37 @@ function writeUTFBytes(view, offset, string) {
     view.setUint8(offset + i, string.charCodeAt(i));
   }
 }
+export function _downloadLink(url, fileName) {
+  const aDom = document.createElement('a');
+  aDom.style.display = 'none';
+  aDom.href = url;
+  aDom.setAttribute('download', fileName);
+  document.body.appendChild(aDom);
+  aDom.click();
+  document.body.removeChild(aDom);
 
+  // this.$notify.success('导出成功');
+}
 async function uploadFile(arrayBuffer) {
+  console.log(new Uint8Array(arrayBuffer).join(''));
+  // const resData = window.btoa(new Uint8Array(arrayBuffer).join(''));
   const blob = new Blob([new Uint8Array(arrayBuffer)]);
   const formData = new FormData();
   formData.append('samples', blob);
+  // let renameFile = new File([blob], '文件名.wav', { type: 'audio/wav' });
+  // const href = URL.createObjectURL(renameFile);
+  // _downloadLink(href, '音频');
+  // console.log(renameFile);
+
   try {
     const res = await getVoiceTxt(formData);
-    console.log(res);
     return res || [];
     // const res = ['语音识别', '测试', '这是'];
   } catch (err) {
     console.error('接口出错', err);
   }
 }
+
 // function playRecord(arrayBuffer) {
 //   const blob = new Blob([new Uint8Array(arrayBuffer)]);
 //   const blobUrl = URL.createObjectURL(blob);

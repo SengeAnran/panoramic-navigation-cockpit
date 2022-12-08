@@ -20,7 +20,8 @@
 </template>
 
 <script setup>
-import { record, stopRecord } from './record';
+// import { record, stopRecord } from './record';
+import { starRecord, endRecord } from './recorder';
 import * as d3 from 'd3';
 import { onMounted, ref, computed, nextTick } from 'vue';
 import { useStore } from 'vuex';
@@ -60,8 +61,8 @@ function initVoice() {
   nextTick(() => {
     const voiceNode = voice.value;
     voiceNode.addEventListener('mousedown', clickVoice);
-    voiceNode.addEventListener('mouseup', () => {
-      const res = stopRecord();
+    voiceNode.addEventListener('mouseup', async () => {
+      const res = await endRecord();
       if (res instanceof Array && res.length > 0) {
         // 识别结果加入检索标签
         res.forEach((i) => {
@@ -85,7 +86,8 @@ function deleteKey(item) {
 function clickVoice() {
   console.log('按下');
   // showSearchInput();
-  record();
+  // record();
+  starRecord();
 }
 </script>
 
