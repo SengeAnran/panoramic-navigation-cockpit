@@ -180,10 +180,10 @@ function selectKey(item) {
   // activeIndex.value = index;
   item.checked = true;
   const data = {
-    position: item.position,
-    type: item.type,
-    name: item.name,
-    value: item.value,
+    position: item.position, // 标签页面中的位置：left,right等
+    type: item.type, // 标签类型 ge:项目类型
+    name: item.name, // 标签名
+    value: item.value, // 标签值
   };
   state.commit('ADD_QUERY', data);
 }

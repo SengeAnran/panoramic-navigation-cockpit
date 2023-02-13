@@ -16,9 +16,7 @@ import {
   showChildrenNode,
   svgAddReduce,
   svgLogo,
-  getRootInfo,
   getTreeMax,
-  getTreeRootId,
 } from './constant';
 import { defineProps, nextTick, onMounted, ref, watch } from 'vue';
 import * as d3 from 'd3';
@@ -46,6 +44,7 @@ const props = defineProps({
     default: 750,
   },
 });
+const emit = defineEmits(['clickOne']);
 const inWidVal = ref(0);
 const inHeiVal = ref(0);
 let innerWidth, // 内宽
@@ -110,7 +109,7 @@ function showMain() {
 }
 // 节点背景颜色
 function rectColor(d) {
-  return d.data.same ? '#3B78F2' : '#142847';
+  return d.position === 'center' || d.data.counterpart ? '#3B78F2' : '#142847';
 }
 const nodeOption = {
   height: (name) => {
@@ -363,7 +362,7 @@ function render(option) {
     .attr('class', 'rect-box')
     .attr('width', (d) => nodeOption.height(d.data.name))
     .attr('height', nodeOption.width)
-    .attr('fill', (d) => rectColor(d))
+    .attr('fill', (d) => rectColor({ ...d, position }))
     .attr('stroke', '#3B78F2')
     .attr('stroke-width', 2)
     .attr('rx', 4)
@@ -389,20 +388,9 @@ function render(option) {
     .join('text')
     .on('click', (e, d) => {
       // console.log(e.target.__data__); // 点击的节点
-      console.log(d);
-      console.log('点击了,深度为：' + d.depth);
-      if (d.depth && !d.data.same) {
-        console.log('需要单展示啦！');
-        state.commit('SET_CONTENT_OPACITY', true);
-        const rootId = getTreeRootId(d);
-        state.commit('atlasMap/SET_DIALOG_INFO', { rootId, ...d.data });
-        state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
-        state.commit('SET_SHOW_ONE_DIALOG', true);
-        state.commit('SET_MAIN_TITLE', getRootInfo(d).name);
-      }
+      emit('clickOne', { ...d, position });
     })
     .attr('text-anchor', 'middle') // 位置
-    .attr('title', (d) => d.data.name) // 位置
     .attr('x', (d) =>
       position === 'center'
         ? d.x + innerWidth / 4

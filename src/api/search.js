@@ -4,6 +4,13 @@ import axios from '@/utils/axios';
 // export const getUserInfo = () => {
 //   return axios.get('/api/user/getUserDetail');
 // };
+// 获取业务-技术-地域导览列表
+export const getBusAreTecDirectory = () => {
+  return axios.request({
+    method: 'get',
+    url: '/api/directory/getList',
+  });
+};
 // 获取业务导览列表
 export const getBusinessDirectory = (data) => {
   return axios.request({

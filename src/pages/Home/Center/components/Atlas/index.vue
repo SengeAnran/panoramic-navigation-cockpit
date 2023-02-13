@@ -40,6 +40,7 @@ import {
 } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 import { initNodeTree } from './constants';
 import { getGraphCompare, getGraphSystems } from '@/api/search';
+// import router from '@/router';
 const state = useStore();
 const showSearchRes = ref(false);
 watch(
@@ -54,7 +55,7 @@ const atlasType = ref('关系图谱');
 const systemList = ref([]);
 const systemListSmall = ref([]);
 const contrastData = reactive({
-  name: '公积金',
+  name: ' ',
   children: [],
 });
 watch(
@@ -82,7 +83,12 @@ watch(
 // 获取检索结果
 async function getDataList() {
   const data = {
-    keys: state.getters.query.map((i) => i.name),
+    query: state.getters.query.map((i) => {
+      return {
+        theme: i.type,
+        word: i.name,
+      };
+    }),
     mode: 'specific',
   };
   const res = await getGraphSystems(data);
@@ -128,6 +134,7 @@ async function checkOne(item, index, click) {
       // 选择两个从接口获取数据
       const checkList = systemListSmall.value.filter((i) => i.check);
       state.commit('atlasMap/SET_COMPARISON_MAP_INFO', checkList);
+      // router.push('/compareMap');
       const data = {
         systemA: checkList[0].name,
         systemB: checkList[1].name,
@@ -135,7 +142,7 @@ async function checkOne(item, index, click) {
       const res = await getGraphCompare(data);
       initNodeTree(res.systemANodes, true);
       initNodeTree(res.systemBNodes, true);
-      initNodeTree(res.commonNodes, true);
+      initNodeTree(res.commonNodes, true, true);
       const systemA = {
         name: res.systemANodes[0].system || checkList[0].name,
         children: res.systemANodes,

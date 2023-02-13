@@ -5,20 +5,25 @@
       <button @click="deleteKey(item)"></button>
     </div>
   </div>
-  <div class="search" @click="showSearchInput" :class="{ opacity: contentOpacity }">
-    <div v-show="showSearch" class="search-input">
-      <form ref="searchForm" id="searchForm" action="">
-        <input type="text" v-model="searchkey" />
-        <button type="submit"></button>
-      </form>
+  <div class="search" :class="{ opacity: contentOpacity }">
+    <div class="voice" ref="voice"></div>
+    <div @click="showSearchInput">
+      <div v-show="showSearch" class="search-input">
+        <form ref="searchForm" id="searchForm" action="">
+          <input type="text" v-model="searchkey" />
+          <button type="submit"></button>
+        </form>
+      </div>
+      <img v-show="!showSearch" src="./img/search_icon.png" alt="" />
     </div>
-    <img v-show="!showSearch" src="./img/search_icon.png" alt="" />
   </div>
 </template>
 
 <script setup>
+// import { record, stopRecord } from './record';
+import { starRecord, endRecord } from './recorder';
 import * as d3 from 'd3';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, nextTick } from 'vue';
 import { useStore } from 'vuex';
 const state = useStore();
 
@@ -27,6 +32,7 @@ const searchKeys = computed(() => {
 });
 const showSearch = ref(false);
 const searchkey = ref('');
+const voice = ref(null);
 // const bottomOpacity = computed(() => {
 //   return state.getters.bottomOpacity;
 // });
@@ -49,12 +55,39 @@ onMounted(() => {
     console.log(query);
     searchkey.value = '';
   });
+  initVoice();
 });
+function initVoice() {
+  nextTick(() => {
+    const voiceNode = voice.value;
+    voiceNode.addEventListener('mousedown', clickVoice);
+    voiceNode.addEventListener('mouseup', async () => {
+      const res = await endRecord();
+      if (res instanceof Array && res.length > 0) {
+        // 识别结果加入检索标签
+        res.forEach((i) => {
+          const data = {
+            position: '',
+            type: 'voice',
+            name: i,
+          };
+          state.commit('ADD_QUERY', data);
+        });
+      }
+    });
+  });
+}
 function showSearchInput() {
   showSearch.value = true;
 }
 function deleteKey(item) {
   state.commit('DELETE_ONE_QUERY', item);
+}
+function clickVoice() {
+  console.log('按下');
+  // showSearchInput();
+  // record();
+  starRecord();
 }
 </script>
 
@@ -165,9 +198,10 @@ function deleteKey(item) {
   top: 82px;
   left: 2369px;
   height: 41px;
+  display: flex;
   img {
     cursor: pointer;
-    float: right;
+    float: left;
     width: 41px;
     height: 41px;
   }
@@ -205,7 +239,21 @@ function deleteKey(item) {
     //border: 1px solid #77bbf9;
     //border-radius: 4px;
   }
+  .voice {
+    cursor: pointer;
+    margin-right: 16px;
+    float: left;
+    //z-index: 13;
+    //position: absolute;
+    //top: 82px;
+    //left: 2469px;
+    height: 41px;
+    width: 41px;
+    background: url('./img/voice.png') left top no-repeat;
+    background-size: 100% 100%;
+  }
 }
+
 .opacity {
   opacity: 0.5;
   filter: blur(5px); // 模糊

@@ -1,5 +1,28 @@
 <template>
   <div class="svg-show-box-dialog">
+    <svg>
+      <defs>
+        <!--    filter定义SVG滤镜, <filter>标签使用必需的id属性来定义向图形应用哪个滤镜-->
+        <filter id="dropShadow">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="10" />
+          <feColorMatrix
+            result="matrixOut"
+            in="offOut"
+            type="matrix"
+            values="
+              0 0 0 1 0
+              0 0 1 1 0
+              1 1 1 1 1
+              0 0 0 1 0"
+          />
+          <feOffset dx="0" dy="0" />
+          <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
     <svg class="svg-box" :class="svgClass"></svg>
   </div>
 </template>
@@ -20,6 +43,19 @@ import { defineProps, nextTick, onMounted, ref, watch } from 'vue';
 import * as d3 from 'd3';
 import { useStore } from 'vuex';
 import { getTreeMax } from './constant';
+import { computed } from 'vue';
+const state = useStore();
+const nodeInfo = computed(() => {
+  return state.getters.dialogInfo;
+});
+watch(
+  () => nodeInfo.value.node_id,
+  (val) => {
+    if (val) {
+      addActive(val);
+    }
+  },
+);
 const props = defineProps({
   data: {
     type: Object,
@@ -71,7 +107,6 @@ watch(
   () => props.data,
   (val) => {
     if (val && val.name) {
-      console.log(val);
       nextTick(() => {
         init();
       });
@@ -104,7 +139,8 @@ const margin = {
   left: 30,
 };
 const midValue = 300; // left 和right 相距距离
-const state = useStore();
+
+const gSvg = ref('');
 // 初始化
 function init() {
   let multiple = 1,
@@ -159,6 +195,7 @@ function init() {
     },
   };
   render(optionSame);
+  addActive(nodeInfo.value.node_id); // 加当前节点效果
 }
 
 // 画左右两边树状图
@@ -177,6 +214,7 @@ function init() {
 function render(option) {
   const { data, position, rootNode } = option;
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
+  gSvg.value = g;
   let root = d3.hierarchy(data);
   const regionSize = {
     left: [innerHeight / 2, innerWidth / 3], // f(w/2 - y, x)
@@ -443,75 +481,27 @@ function moveTo(e) {
     animateX(obj, Math.ceil(left));
   }
 }
-// // 画根树状图
-// function renderRoot(option) {
-//   const { data, rootNode } = option;
-//   const formula = innerWidth / 2 - (midValue * 1.6) / 2;
-//   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
-//   let root = d3.hierarchy(data);
-//   // x:242.375 y: 0
-//   // (x: 80.79166666666667 y: 181.75)  (x: 242.375 y: 181.75) ( 403.95833333333337 y: 181.75)
-//   root = d3.tree().size([midValue * 1.6, innerHeight / 4])(root);
-//   root.x = rootNode.x * 1.6; // 242.375;
-//   root.y = rootNode.y;
-//   const node = root.descendants();
-//   const path = root.links();
-//   // console.log(node, path);
-//   // 画线
-//   g.selectAll('path')
-//     .data(path)
-//     .join('path')
-//     .attr('fill', 'none')
-//     .attr('stroke', '#7CA3EF')
-//     .attr('stroke-width', 1)
-//     .attr('d', (d) => {
-//       function mathX(x) {
-//         // 计算点的x的实际坐标
-//         return x + formula;
-//       }
-//       const x1 = mathX(d.source.x);
-//       const y1 = d.source.y;
-//       const x2 = mathX(d.target.x);
-//       const y2 = d.target.y;
-//       return `
-//         M${x1},${y1}
-//         ${x2},${y2}`;
-//     });
-//   // 画节点图标
-//   g.append('g')
-//     .attr('class', 'logo-svg')
-//     .selectAll('g')
-//     .data(node)
-//     .join('g')
-//     .html((d) => svgLogo(d))
-//     .attr('transform', (d) => {
-//       if (d.x === 403.95833333333337) {
-//         return `translate(${d.x + formula}, ${d.y - nodeOption2.height})`;
-//       }
-//       return `translate(${d.x - nodeOption2.width(d.data.name) / 2 + formula}, ${d.y - nodeOption2.height})`;
-//     });
-//   // 文字
-//   g.selectAll('text')
-//     .data(node)
-//     .join('text')
-//     .on('click', (d) => {
-//       console.log(d.target.__data__); // 点击的节点
-//       console.log('点击了,深度为：' + d.target.__data__.depth);
-//       if (d.target.__data__.depth) {
-//         console.log('需要展示啦！');
-//       }
-//     })
-//     // .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
-//     .attr('text-anchor', 'middle') // 位置
-//     .attr('x', (d) => d.x + formula)
-//     .attr('y', (d) => (d.children ? d.y - 40 : d.y + 66))
-//     .text((d) => d.data.name)
-//     .style('font-size', (d) => (d.children ? '24px' : '18px'))
-//     .style('font-weight', (d) => (d.children ? '800' : '400'))
-//     .attr('fill', 'white');
-//   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
-//   // .attr('text-orientation', 'upright');
-// }
+// 给当前显示元素加选中色;
+function addActive(data) {
+  if (!gSvg.value) {
+    return;
+  }
+  const allRect = gSvg.value.selectAll('.rect-box');
+  let activeIndex;
+  allRect.nodes().forEach((i, index) => {
+    if (i.__data__.data.node_id === data) {
+      activeIndex = index;
+    }
+  });
+  const nodes = allRect.nodes();
+  nodes.forEach((i) => {
+    i.setAttribute('filter', '');
+  });
+  if (activeIndex || activeIndex === 0) {
+    nodes[activeIndex].setAttribute('filter', 'url(#dropShadow)');
+    // nodes[activeIndex].setAttribute('stroke', 'white');
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -530,50 +520,3 @@ function moveTo(e) {
   //box-shadow: 0px 0px 20px 0px #1d4d8d;
 }
 </style>
-<!--<style>-->
-<!--.cls-1 {-->
-<!--  fill: #b8d9f6;-->
-<!--}-->
-<!--.cls-2 {-->
-<!--  fill: #99c9f2;-->
-<!--}-->
-<!--.cls-3 {-->
-<!--  fill: #e0effb;-->
-<!--}-->
-<!--.cls-4 {-->
-<!--  fill: #5ca8ea;-->
-<!--}-->
-<!--.cls-5 {-->
-<!--  fill: #fff;-->
-<!--}-->
-<!--</style>-->
-<!--&lt;!&ndash;相同节点&ndash;&gt;-->
-<!--<style>-->
-<!--.cls-21 {-->
-<!--  fill: #b8d9f6;-->
-<!--}-->
-<!--.cls-22 {-->
-<!--  fill: #5ca8ea;-->
-<!--}-->
-<!--.cls-23 {-->
-<!--  fill: #99c9f2;-->
-<!--}-->
-<!--.cls-24 {-->
-<!--  fill: #e0effb;-->
-<!--}-->
-<!--</style>-->
-<!--&lt;!&ndash;系统&ndash;&gt;-->
-<!--<style>-->
-<!--.cls-31 {-->
-<!--  fill: #99c9f2;-->
-<!--}-->
-<!--.cls-32 {-->
-<!--  fill: #b8d9f6;-->
-<!--}-->
-<!--.cls-33 {-->
-<!--  fill: #5ca8ea;-->
-<!--}-->
-<!--.cls-34 {-->
-<!--  fill: #e0effb;-->
-<!--}-->
-<!--</style>-->

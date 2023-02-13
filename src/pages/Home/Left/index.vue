@@ -163,13 +163,12 @@ async function getDataList() {
     default:
       res = [];
   }
-
-  dataList.value = res.map((i) => {
+  dataList.value = res.labels.map((i) => {
     return {
       name: i,
       checked: false,
       position: 'left',
-      type: seletType.name,
+      type: res.theme,
       eglishName: ''.toUpperCase(),
       imgUrl: require('./img/icon_jy.png'),
       activeImgUrl: require('./img/icon_jy_active.png'),

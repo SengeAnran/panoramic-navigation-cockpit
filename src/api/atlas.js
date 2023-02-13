@@ -48,3 +48,12 @@ export const getSystemList = (data) => {
 export const getSystemDetail = (id) => {
   return axios.get(`/api/project/getSystemDetails/${id}`);
 };
+
+// 切换显示模式
+export const changeToggle = (data) => {
+  return axios.request({
+    method: 'post',
+    url: '/api/graph/toggle',
+    data,
+  });
+};

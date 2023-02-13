@@ -18,6 +18,7 @@ export default createStore({
     contentOpacity: false, // 主体内容透明设置
     mainTitle: defaultMainTitle, // 页面标题
     showOneDialog: false, // 显示单系统弹窗
+    hidePageTitle: false,
   },
   mutations: {
     [Types.SET_INTERVAL_ID](state, msg) {
@@ -60,9 +61,9 @@ export default createStore({
     },
     // 检索词数据结构
     // {
-    //   position: item.position,
-    //     type: item.type,
-    //   name: item.name,
+    //   position: item.position, // 位置
+    //     type: item.type, // 类型
+    //   name: item.name, // 名称
     // }
     // 添加检索词
     ADD_QUERY(state, data) {
@@ -83,6 +84,9 @@ export default createStore({
     // 清空检索词
     DELETE_ALL_QUERY(state) {
       state.query = [];
+    },
+    SET_HIDE_PAGE_TITLE(state, data) {
+      state.hidePageTitle = data;
     },
   },
   actions: {
