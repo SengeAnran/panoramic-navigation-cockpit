@@ -1,6 +1,16 @@
 <template>
   <div class="system-popup">
-    <h4 class="title">{{ point.name }}</h4>
+    <h4 class="title">{{ point?.name }}</h4>
+    <div class="company-list">
+      <div class="company" v-for="item in detail?.companies" :key="item">
+        {{ item }}
+      </div>
+    </div>
+    <div class="label-list" v-if="detail?.labels">
+      <div class="label" v-for="item in detail?.labels" :key="item.parentLabel">
+        {{ item.parentLabel }}
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
@@ -16,8 +26,8 @@ const detail = shallowRef();
 onMounted(async () => {
   const data = await getSystemDetail(props.point.id);
   detail.value = data;
+  // console.log(props.point);
   // console.log(data);
-  // emit('');
 });
 </script>
 <style lang="scss" scoped>
@@ -44,15 +54,28 @@ onMounted(async () => {
   }
 
   .company-list {
-    margin-bottom: 0;
-    padding-left: 24px;
+    margin-bottom: 12px;
+    margin-top: 12px;
+    padding-left: 18px;
     list-style: none;
     font-size: 18px;
     font-family: Source Han Sans CN;
     font-weight: 400;
     color: #ffffff;
     .company {
-      line-height: 1.7;
+      font-size: 18px;
+      font-family: Source Han Sans CN;
+      font-weight: 400;
+      color: #ffffff;
+      line-height: 32px;
+    }
+  }
+  .label-list {
+    .label {
+      font-size: 18px;
+      font-family: Source Han Sans CN;
+      font-weight: 400;
+      color: #46e9fe;
     }
   }
 }

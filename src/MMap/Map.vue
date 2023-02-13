@@ -5,12 +5,15 @@
 import { onMounted, shallowRef, provide, onUnmounted } from 'vue';
 import mapboxgl from 'mapbox-gl';
 import { defer } from '@/utils/promise';
+import ThreeLayer from './ThreeLayer/ThreeLayer';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 const mapDefer = defer();
 const mapRef = shallowRef();
 
 provide('mapPromise', mapDefer.promise);
+defineExpose({ mapPromise: mapDefer.promise });
+const threeLayer = new ThreeLayer();
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYWx0ZXJtYW4iLCJhIjoiY2pxZzl1d3lxMDhubDQ0cDJyMzN2YWJraiJ9.e1QzONvlILHn_zt1jsjnlw';
 onMounted(() => {
@@ -30,13 +33,18 @@ onMounted(() => {
   });
   window.map = map;
   map.on('load', () => {
+    map.threeLayer = threeLayer;
     mapDefer.resolve(map);
+    setTimeout(() => {
+      map.addLayer(threeLayer);
+    }, 200);
     // new mapboxgl.Marker().setLngLat([118.327367586576, 29.2026987827415]).addTo(map);
   });
 });
 
 onUnmounted(async () => {
   const map = await mapDefer.promise;
+  map.removeLayer(threeLayer.id);
   map.remove();
 });
 </script>

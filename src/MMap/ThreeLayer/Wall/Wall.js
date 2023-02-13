@@ -52,7 +52,9 @@ export default class Wall extends BaseLayer {
 
   createGeometry(data) {
     const geometries = [];
-    const height = area(data) * 1e-15;
+    console.log('area(data)', Math.log(Math.log(area(data))) - 3);
+    const zoom = Math.log(Math.log(area(data))) - 3;
+    const height = zoom * zoom * zoom * zoom;
     flattenEach(data, (feature) => {
       const position = [];
       const uvs = [];

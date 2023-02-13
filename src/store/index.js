@@ -68,14 +68,16 @@ export default createStore({
     ADD_QUERY(state, data) {
       if (state.query.findIndex((i) => i.name === data.name && i.type === data.type) === -1) {
         // 避免重复检索词
-        state.query.push(data);
+        state.query = [...state.query, data];
       }
     },
     // 删除其中一个检索词
     DELETE_ONE_QUERY(state, data) {
       const index = state.query.findIndex((i) => i === data);
       if (index !== -1) {
-        state.query.splice(index, 1);
+        const newQuery = [...state.query];
+        newQuery.splice(index, 1);
+        state.query = newQuery;
       }
     },
     // 清空检索词

@@ -30,5 +30,5 @@ void main() {
   float currentOpacity = calculateTimeContrlOpacity(time, vUv);
   // vec3 color = vec3(vDelay, 0.0, 0.0);
   // gl_FragColor = vec4(color, 1.0);
-  gl_FragColor = vec4(uColor, currentOpacity * 0.95 + 0.05);
+  gl_FragColor = vec4(uColor, currentOpacity * 0.95 + 0.01);
 }

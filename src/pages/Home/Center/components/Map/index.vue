@@ -1,86 +1,104 @@
 <template>
   <Map>
-    <Image src="/b.jpg" :id="patternID" />
     <!-- <RaterLayer :tiles="tiles" :tileSize="512" :minzoom="0" :maxzoom="22" /> -->
     <RaterLayer
       tiles="http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}"
       :tileSize="256"
       :maxzoom="16"
     />
-    <Polygon :data="outData" autoFitBound :fillPaint="fillPaint" :linePaint="linePaint" />
-    <ThreeLayer>
-      <OdLine :data="odLines" v-if="false" />
-      <Wall :data="wallData" />
-    </ThreeLayer>
-    <Marker
-      :position="item.position"
-      :markerOptions="{ offset: [0, -27] }"
-      :popupOptions="{ className: 'opacity-popup', maxWidth: 'none', anchor: 'left', closeButton: false }"
-      v-for="item in showPoints"
-      :key="item.id"
-    >
-      <template #icon>
-        <MarkerIcon :type="item.type" />
-      </template>
-      <template #popup>
-        <SystemPopup :point="item" />
-      </template>
-    </Marker>
+    <OutPolygon :key="currentArea" :code="currentArea" />
+    <OdLine :data="odLines" />
+    <template v-if="showCompany">
+      <Marker
+        v-for="(item, index) in companyPoints"
+        :key="index"
+        :position="[item.lng, item.lat]"
+        :markerOptions="{ offset: [0, -27] }"
+      >
+        <template #icon>
+          <MarkerIcon type="company" />
+        </template>
+      </Marker>
+    </template>
+    <template v-if="showSystem">
+      <Marker
+        v-for="item in systemPoints"
+        :key="item.id"
+        :position="[item.lng, item.lat]"
+        @openPopup="handleOpen(item)"
+        @closePopup="handleClose(item)"
+        :markerOptions="{ offset: [0, -27] }"
+        :popupOptions="{ className: 'opacity-popup', maxWidth: 'none', anchor: 'left', closeButton: false }"
+      >
+        <template #icon>
+          <MarkerIcon type="system" />
+        </template>
+        <template #popup>
+          <SystemPopup :point="item._" />
+        </template>
+      </Marker>
+    </template>
   </Map>
   <Legend :options="options" v-model="selected"></Legend>
 </template>
 <script setup>
 import { shallowRef, onMounted, ref, computed } from 'vue';
 import Map from '@/MMap/Map';
-import Image from '@/MMap/Image';
 import RaterLayer from '@/MMap/RaterLayer';
-import Polygon from '@/MMap/Polygon';
 import Marker from '@/MMap/Marker';
-import ThreeLayer from '@/MMap/ThreeLayer';
 import OdLine from '@/MMap/ThreeLayer/OdLine';
-import Wall from '@/MMap/ThreeLayer/Wall';
 import Legend from './Legend';
+import OutPolygon from './OutPolygon';
 import MarkerIcon from './MarkerIcon';
 import SystemPopup from './SystemPopup';
-import { odLines } from './mock';
-import { getSystemPoints } from '@/api/atlas';
+import { getSystemList } from '@/api/atlas';
 
-const patternID = 'pattern-alterman';
-const linePaint = {};
-const fillPaint = {
-  'fill-opacity': 0.6,
-  'fill-pattern': patternID,
-};
-
+// console.log(odLines);
+const currentArea = ref(100000);
 const options = [
   { label: '系统点位', value: 'system' },
   { label: '公司点位', value: 'company' },
 ];
 const selected = ref(['system', 'company']);
-
-const allPoints = shallowRef([]);
-const showPoints = computed(() => {
-  const points = allPoints.value;
-  const types = selected.value || [];
-  return points.filter((d) => types.includes(d.type));
-});
-
+const showSystem = computed(() => selected.value?.includes('system'));
+const showCompany = computed(() => selected.value?.includes('company'));
+const systemPoints = shallowRef();
+const companyPoints = shallowRef();
+const odLines = shallowRef();
+function handleOpen(item) {
+  odLines.value = [];
+  const detail = item._;
+  const area = detail.areas[0];
+  if (!area) {
+    return;
+  }
+  const start = [+area.longitude, +area.latitude];
+  const lines = detail.companies.map((company) => {
+    return [start, [+company.longitude, +company.latitude]];
+  });
+  odLines.value = lines;
+}
+function handleClose() {
+  odLines.value = undefined;
+}
 onMounted(async () => {
-  const data = await getSystemPoints({ mode: 'all' });
-  allPoints.value = data.map((d) => ({
-    ...d,
-    position: [+d.lon, +d.lat],
-  }));
-});
-
-const outData = shallowRef();
-onMounted(async () => {
-  const data = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json').then((res) => res.json());
-  outData.value = data;
-});
-const wallData = shallowRef();
-onMounted(async () => {
-  const data = await fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000.json').then((res) => res.json());
-  wallData.value = data;
+  const data = await getSystemList();
+  // console.log(data);
+  systemPoints.value = data.map((d) => {
+    const system = d.areas[0];
+    return {
+      lng: +system.longitude,
+      lat: +system.latitude,
+      _: d,
+    };
+  });
+  companyPoints.value = data
+    .map((d) => d.companies)
+    .flat()
+    .map((d) => ({
+      ...d,
+      lng: +d.longitude,
+      lat: +d.latitude,
+    }));
 });
 </script>

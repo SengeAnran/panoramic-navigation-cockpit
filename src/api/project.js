@@ -8,3 +8,7 @@ export const getProjectTypeList = (data) => {
     data,
   });
 };
+
+export const getProjectList = (data) => {
+  return axios.post('/api/project/getProjectList', data);
+};

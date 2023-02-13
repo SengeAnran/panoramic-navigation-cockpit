@@ -44,8 +44,21 @@ onMounted(async () => {
   // new mapboxgl.Marker().setLngLat(props.position).addTo(map);
 });
 onUnmounted(() => {
+  emit('closePopup');
   marker.remove();
   popup?.remove();
 });
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss">
+.mapboxgl-popup {
+  max-width: none !important;
+  .mapboxgl-popup-content {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+  }
+  .mapboxgl-popup-close-button {
+    top: -50px;
+  }
+}
+</style>

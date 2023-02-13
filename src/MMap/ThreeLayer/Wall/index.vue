@@ -8,18 +8,21 @@ import Wall from './Wall';
 const props = defineProps({
   data: Object,
 });
-const threeLayer = inject('threeLayer');
+// const threeLayer = inject('threeLayer');
+const mapPromise = inject('mapPromise');
 
 const wall = new Wall();
 function render() {
   wall.render(props.data);
 }
 watch(() => props.data, render);
-onMounted(() => {
-  threeLayer.add(wall);
+onMounted(async () => {
+  const map = await mapPromise;
+  map.threeLayer.add(wall);
   render();
 });
-onUnmounted(() => {
-  threeLayer.remove(wall);
+onUnmounted(async () => {
+  const map = await mapPromise;
+  map.threeLayer.remove(wall);
 });
 </script>

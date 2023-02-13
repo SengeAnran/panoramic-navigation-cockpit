@@ -7,7 +7,7 @@ export const offset = [0, -30];
 </script>
 <script setup></script>
 <style lang="scss" scoped>
-.company-icon {
+.project-icon {
   background-image: url('./icon.png');
   background-size: 100% 100%;
   width: 58px;

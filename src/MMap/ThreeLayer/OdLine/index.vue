@@ -8,18 +8,20 @@ import OdLine from './OdLine';
 const props = defineProps({
   data: Array,
 });
-const threeLayer = inject('threeLayer');
+const mapPromise = inject('mapPromise');
 
 const odLine = new OdLine();
 function render() {
   odLine.render(props.data);
 }
 watch(() => props.data, render);
-onMounted(() => {
-  threeLayer.add(odLine);
+onMounted(async () => {
+  const map = await mapPromise;
+  map.threeLayer.add(odLine);
   render();
 });
-onUnmounted(() => {
-  threeLayer.remove(odLine);
+onUnmounted(async () => {
+  const map = await mapPromise;
+  map.threeLayer.remove(odLine);
 });
 </script>

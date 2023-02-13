@@ -31,7 +31,20 @@ export const getSystemPoints = (data) => {
   return axios.post('/api/slot/getList', data);
 };
 
-// 获取公司点位详情
+// // 获取公司点位详情
+// export const getSystemDetail = (id) => {
+//   return axios.post('/api/slot/system', { id });
+// };
+
+export const getCompanyDetail = (id) => {
+  return axios.post('/api/slot/company', { id });
+};
+
+// 获取示范系统地区列表
+export const getSystemList = (data) => {
+  return axios.post('/api/project/getSystemList', data);
+};
+// 获取示范系统地区详情
 export const getSystemDetail = (id) => {
-  return axios.post('/api/slot/system', { id });
+  return axios.get(`/api/project/getSystemDetails/${id}`);
 };

@@ -6,3 +6,9 @@ export function defer() {
   });
   return o;
 }
+
+export function delay(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
