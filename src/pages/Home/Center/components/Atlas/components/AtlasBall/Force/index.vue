@@ -23,7 +23,6 @@ onMounted(async () => {
 onBeforeUnmount(async () => {
   // const globe = await globePromise;
   const force = await forDefer.promise;
-  debugger;
   force.remove();
 });
 </script>
