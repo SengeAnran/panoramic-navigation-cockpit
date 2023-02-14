@@ -13,7 +13,6 @@ export default {
       if (image) {
         return map.addImage(props.id, image);
       }
-      debugger;
       image = new Image();
       image.src = props.src;
       image.onload = () => {

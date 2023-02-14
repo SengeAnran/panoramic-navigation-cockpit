@@ -48,6 +48,10 @@ export const getSystemList = (data) => {
 export const getSystemDetail = (id) => {
   return axios.get(`/api/project/getSystemDetails/${id}`);
 };
+// 根据关键词搜索所有相关系统
+export const getSystemsTree = (data) => {
+  return axios.post('/api/graph/systems', data);
+};
 
 // 切换显示模式
 export const changeToggle = (data) => {

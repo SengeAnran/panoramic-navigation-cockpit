@@ -2,19 +2,28 @@
   <Empty />
 </template>
 <script setup>
-import { onMounted, onUnmounted, inject } from 'vue';
+import { getSystemsTree } from '@/api/atlas';
+import { defer } from '@/utils/promise';
+import { onMounted, inject, onBeforeUnmount } from 'vue';
 import Force from './Force';
 
-const globePromise = inject('globePromise');
+const props = defineProps({ params: null });
 
-const force = new Force();
+const globePromise = inject('globePromise');
+const forDefer = defer();
 
 onMounted(async () => {
   const globe = await globePromise;
+  const data = await getSystemsTree(props.params);
+  // console.log(data);
+  const force = new Force(data);
   globe.add(force);
+  forDefer.resolve(force);
 });
-onUnmounted(async () => {
-  const globe = await globePromise;
-  globe.remove(force);
+onBeforeUnmount(async () => {
+  // const globe = await globePromise;
+  const force = await forDefer.promise;
+  debugger;
+  force.remove();
 });
 </script>

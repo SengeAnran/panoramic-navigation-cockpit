@@ -35,7 +35,7 @@
   <Legend :options="options" v-model="selected" />
 </template>
 <script setup>
-import { shallowRef, ref, watchEffect, computed, onMounted, onUnmounted } from 'vue';
+import { shallowRef, ref, watchEffect, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 import Map from '@/MMap/Map';
 import RaterLayer from '@/MMap/RaterLayer';
@@ -75,7 +75,7 @@ onMounted(async () => {
   const map = await mapRef.value.mapPromise;
   map.on('contextmenu', back);
 });
-onUnmounted(async () => {
+onBeforeUnmount(async () => {
   const map = await mapRef.value.mapPromise;
   map.off('contextmenu', back);
 });
