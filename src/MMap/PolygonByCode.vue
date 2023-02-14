@@ -1,5 +1,11 @@
 <template>
-  <Polygon @click="handleClick" :data="outData" :fillPaint="fillPaint" :linePaint="linePaint" />
+  <Polygon
+    @click="handleClick"
+    @dblclick="handleDblClick"
+    :data="outData"
+    :fillPaint="fillPaint"
+    :linePaint="linePaint"
+  />
 </template>
 <script setup>
 import { shallowRef, onMounted } from 'vue';
@@ -11,9 +17,12 @@ const props = defineProps({
   fillPaint: Object,
   linePaint: Object,
 });
-const emit = defineEmits(['click']);
+const emit = defineEmits(['click', 'dblclick']);
 function handleClick(properties) {
   emit('click', properties);
+}
+function handleDblClick(properties) {
+  emit('dblclick', properties);
 }
 const outData = shallowRef();
 onMounted(async () => {

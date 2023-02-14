@@ -1,12 +1,11 @@
 <template>
-  <Map>
-    <!-- <RaterLayer :tiles="tiles" :tileSize="512" :minzoom="0" :maxzoom="22" /> -->
+  <Map ref="mapRef">
     <RaterLayer
       tiles="http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}"
       :tileSize="256"
       :maxzoom="16"
     />
-    <OutPolygon :key="currentArea" :code="currentArea" />
+    <OutPolygon :key="currentArea" :code="currentArea" @dblclick="handleClick" />
     <OdLine :data="odLines" />
     <template v-if="showCompany">
       <Marker
@@ -42,7 +41,8 @@
   <Legend :options="options" v-model="selected"></Legend>
 </template>
 <script setup>
-import { shallowRef, onMounted, ref, computed } from 'vue';
+import { shallowRef, onMounted, ref, computed, onUnmounted, watchEffect } from 'vue';
+import { useStore } from 'vuex';
 import Map from '@/MMap/Map';
 import RaterLayer from '@/MMap/RaterLayer';
 import Marker from '@/MMap/Marker';
@@ -52,9 +52,36 @@ import OutPolygon from './OutPolygon';
 import MarkerIcon from './MarkerIcon';
 import SystemPopup from './SystemPopup';
 import { getSystemList } from '@/api/atlas';
+import areaProps from './flat.json';
 
 // console.log(odLines);
+const store = useStore();
+const mapRef = ref();
 const currentArea = ref(100000);
+// const currentAreaDetail = computed(() => {
+//   return areaProps[currentArea.value];
+// });
+
+function handleClick(item) {
+  console.log('handleClick click');
+  const props = areaProps[item.adcode];
+  if (props.level > 2) {
+    return;
+  }
+  currentArea.value = item.adcode;
+}
+function back() {
+  const props = areaProps[currentArea.value];
+  currentArea.value = props.parent.adcode || 100000;
+}
+onMounted(async () => {
+  const map = await mapRef.value.mapPromise;
+  map.on('contextmenu', back);
+});
+onUnmounted(async () => {
+  const map = await mapRef.value.mapPromise;
+  map.off('contextmenu', back);
+});
 const options = [
   { label: '系统点位', value: 'system' },
   { label: '公司点位', value: 'company' },
@@ -81,8 +108,23 @@ function handleOpen(item) {
 function handleClose() {
   odLines.value = undefined;
 }
-onMounted(async () => {
-  const data = await getSystemList();
+watchEffect(async () => {
+  systemPoints.value = undefined;
+  companyPoints.value = undefined;
+  odLines.value = undefined;
+  const query = store.getters.query?.length ? store.getters.query : [];
+  // console.log(query);
+  const businessGuide = query.filter((d) => d.type === 'field').map((d) => d.name);
+  const hotWords = query.filter((d) => d.type === 'heightWord').map((d) => d.name);
+  const keyWords = query.filter((d) => d.type === 'search').map((d) => d.name);
+
+  const params = {
+    areaCode: currentArea.value === 100000 ? undefined : currentArea.value,
+    businessGuide: businessGuide.length ? businessGuide[0] : '',
+    hotWords: hotWords.length ? hotWords[0] : '',
+    keyWords: keyWords.length ? keyWords[0] : '',
+  };
+  const data = await getSystemList(params);
   // console.log(data);
   systemPoints.value = data.map((d) => {
     const system = d.areas[0];

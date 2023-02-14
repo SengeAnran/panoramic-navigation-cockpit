@@ -13,7 +13,7 @@ const props = defineProps({
   fillPaint: Object,
   autoFitBound: Boolean,
 });
-const emit = defineEmits(['click']);
+const emit = defineEmits(['click', 'dblclick']);
 
 const comId = `polygon-layer-${uid()}`;
 
@@ -84,6 +84,12 @@ onMounted(async () => {
     // console.log(e.features[0].properties);
     // new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(e.features[0].properties.name).addTo(map);
   });
+  map.on('dblclick', fillLayerId, (e) => {
+    if (e.features?.[0]?.properties) {
+      emit('dblclick', e.features?.[0]?.properties);
+    }
+  });
+
   render();
 });
 onUnmounted(async () => {

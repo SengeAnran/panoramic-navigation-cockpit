@@ -1,7 +1,7 @@
 <template>
   <Map ref="mapRef">
     <RaterLayer :tiles="tiles" :tileSize="256" :maxzoom="16" />
-    <OutPolygon :key="currentArea" :code="currentArea" @click="handleClick" />
+    <OutPolygon :key="currentArea" :code="currentArea" @dblclick="handleClick" />
     <DemoAreas v-if="showArea" :codes="demoArea" />
     <OdLine :data="odLines" />
     <template v-if="showCompany">
@@ -73,11 +73,11 @@ function back() {
 }
 onMounted(async () => {
   const map = await mapRef.value.mapPromise;
-  map.on('dblclick', back);
+  map.on('contextmenu', back);
 });
 onUnmounted(async () => {
   const map = await mapRef.value.mapPromise;
-  map.off('dblclick', back);
+  map.off('contextmenu', back);
 });
 const projectList = shallowRef();
 const companyList = shallowRef();
