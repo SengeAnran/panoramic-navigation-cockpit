@@ -1,6 +1,6 @@
 <template>
-  <div class="page">
-    <ContrastSvgBox v-if="showSvgBox" :data="contrastData" :index="8888" :defaultWidth="3840" :defaultHeight="1080" />
+  <div class="content">
+    <ContrastSvgBox v-if="showSvgBox" :data="contrastData" :index="8888" :defaultWidth="1735" :defaultHeight="1080" />
     <div class="title"></div>
     <div class="close" @click="close"></div>
   </div>
@@ -61,10 +61,10 @@ function close() {
 </script>
 
 <style lang="scss" scoped>
-.page {
+.content {
+  width: 1735px;
+  height: 1080px;
   position: relative;
-  width: 100%;
-  height: 100%;
   .title {
     position: absolute;
     top: 23px;
