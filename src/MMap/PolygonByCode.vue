@@ -29,7 +29,9 @@ onMounted(async () => {
   const filename = `${props.code}${props.full ? '_full' : ''}.json`;
   const data = await fetch(`/map/geojson/${filename}`)
     .then((res) => res.json())
-    .catch(() => undefined);
+    .catch(() => {
+      console.log(filename);
+    });
   outData.value = data;
 });
 </script>

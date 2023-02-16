@@ -125,15 +125,17 @@ watchEffect(async () => {
     keyWords: keyWords.length ? keyWords[0] : '',
   };
   const data = await getSystemList(params);
-  // console.log(data);
-  systemPoints.value = data.map((d) => {
-    const system = d.areas[0];
-    return {
-      lng: +system.longitude,
-      lat: +system.latitude,
-      _: d,
-    };
-  });
+  console.log(data);
+  systemPoints.value = data
+    .filter((d) => d.areas?.length)
+    .map((d) => {
+      const system = d.areas[0];
+      return {
+        lng: +system.longitude,
+        lat: +system.latitude,
+        _: d,
+      };
+    });
   companyPoints.value = data
     .map((d) => d.companies)
     .flat()

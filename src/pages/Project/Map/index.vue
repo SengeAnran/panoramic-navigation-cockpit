@@ -55,9 +55,9 @@ import 'element-plus/es/components/message/style/css';
 const store = useStore();
 const mapRef = ref();
 const currentArea = ref(100000);
-const currentAreaDetail = computed(() => {
-  return areaProps[currentArea.value];
-});
+// const currentAreaDetail = computed(() => {
+//   return areaProps[currentArea.value];
+// });
 
 function handleClick(item) {
   console.log('handleClick click');
@@ -95,12 +95,12 @@ watchEffect(async () => {
   const key = '物联网智能感知终端平台系统与应用验证';
   // const key = undefined;
   const res = await getProjectList({
-    projectTypes,
+    projectTypes: ['GXGJJS'],
     key,
-    area: {
-      areaId: currentAreaDetail.value.adcode,
-      level: currentAreaDetail.value?.level,
-    },
+    // area: {
+    //   areaId: currentAreaDetail.value.adcode,
+    //   level: currentAreaDetail.value?.level,
+    // },
   }).catch((err) => {
     // console.log(err.message);
     ElMessage.error({

@@ -1,6 +1,6 @@
 <template>
   <Image src="/b.jpg" :id="patternID" />
-  <PolygonByCode @click="handleClick" :code="code" full autoFitBound :fillPaint="fillPaint" :linePaint="linePaint" />
+  <PolygonByCode @dblclick="handleClick" :code="code" full autoFitBound :fillPaint="fillPaint" :linePaint="linePaint" />
   <Wall :data="wallData" />
 </template>
 <script setup>
@@ -14,7 +14,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['click']);
 function handleClick(properties) {
-  emit('click', properties);
+  emit('dblclick', properties);
 }
 
 const wallData = shallowRef();
