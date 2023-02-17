@@ -71,11 +71,18 @@ onMounted(async () => {
     }
   }
   .label-list {
+    padding-left: 18px;
+    display: flex;
     .label {
-      font-size: 18px;
+      background: #46e9feaa;
+      color: #000;
+      height: 30px;
+      padding: 0 18px;
+      line-height: 30px;
+      font-size: 16px;
       font-family: Source Han Sans CN;
-      font-weight: 400;
-      color: #46e9fe;
+      font-weight: 500;
+      color: #0b203b;
     }
   }
 }
