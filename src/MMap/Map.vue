@@ -60,6 +60,8 @@ onUnmounted(async () => {
     position: absolute;
     content: '';
     background: url('./map-mask.png');
+    background-size: 110% 110%;
+    background-position: center;
     top: 0;
     left: 0;
     right: 0;

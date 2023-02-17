@@ -40,6 +40,8 @@ function changeActive(index) {
     height: 100%;
     background: url('./img/mask.png') center no-repeat;
     pointer-events: none;
+    background-position: center center;
+    background-size: 110% 110%;
     //background-size: 100% 100%;
   }
   .change {
