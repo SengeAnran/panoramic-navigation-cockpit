@@ -6,6 +6,7 @@
       <div class="btn" @click="showRes()"></div>
       <div class="mask"></div>
       <div class="search-results-box" v-if="showSearchRes">
+        <SelectRoot :data="systemListSmall" />
         <div class="atlas-switch">
           <div class="type-name theme-font-style">{{ atlasType }}</div>
           <div v-if="atlasType !== '关系图谱'" @click="changeAtlas('关系图谱')" class="icon-top icon"></div>
@@ -40,6 +41,7 @@ import {
 } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 import { initNodeTree } from './constants';
 import { getGraphCompare, getGraphSystems } from '@/api/search';
+import SelectRoot from './SelectRoot';
 // import router from '@/router';
 const state = useStore();
 const showSearchRes = ref(false);
