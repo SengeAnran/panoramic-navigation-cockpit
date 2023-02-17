@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import * as d3 from 'd3-force-3d';
 import chroma from 'chroma-js';
+import Event from 'eventemitter3';
 import NodeControls from './NodeControls';
 import tubeVert from './tube.vert';
 import tubeFrag from './tube.frag';
@@ -70,8 +71,9 @@ function getNodes(data) {
   }
   return Object.values(getNodeMap(data));
 }
-export default class {
+export default class extends Event {
   constructor(data) {
+    super();
     this.formatData(data);
     this.group = new THREE.Group();
     // this.group.position.x = 20;
@@ -224,9 +226,11 @@ export default class {
 
     const controls = new NodeControls(this.nodes, globe.camera, globe.renderer.domElement);
     this.controls = controls;
-    // controls.addEventListener('click', (event) => {
-    //   console.log('click', event);
-    // });
+    controls.addEventListener('click', (event) => {
+      const { object } = event;
+      // console.log('click', this.data.nodes[object]);
+      this.emit('click', this.data.nodes[object]);
+    });
 
     controls.addEventListener('mouseover', (event) => {
       // console.log('mouseover', event.object, this.cssObj);
