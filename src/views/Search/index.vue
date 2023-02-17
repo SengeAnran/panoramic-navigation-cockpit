@@ -196,7 +196,7 @@ function clickVoice() {
   z-index: 13;
   position: absolute;
   top: 82px;
-  left: 2369px;
+  left: 2831px;
   height: 41px;
   display: flex;
   img {

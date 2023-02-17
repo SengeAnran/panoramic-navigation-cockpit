@@ -38,7 +38,7 @@ onBeforeMount(() => {
 .time {
   display: flex;
   position: absolute;
-  left: 3575px;
+  right: 50px;
   top: 33px;
   color: #abbacb;
   .hour {

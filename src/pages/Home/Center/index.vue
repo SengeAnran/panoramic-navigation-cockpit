@@ -47,7 +47,7 @@ function changeActive(index) {
     position: absolute;
     padding-top: 5px;
     //padding-left: 5px;
-    left: 1270px;
+    left: 1649px;
     top: 82px;
     width: 202px;
     height: 41px;

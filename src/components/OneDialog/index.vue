@@ -1,8 +1,8 @@
 <template>
   <div class="dialog">
     <div class="close" @click="closeDialog()"></div>
-    <Left />
     <CenterContent />
+    <Left />
     <Right />
   </div>
 </template>

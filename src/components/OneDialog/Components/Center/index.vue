@@ -16,10 +16,10 @@ const nodeInfo = computed(() => {
 
 <style lang="scss" scoped>
 .dialog-center {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
+  //position: absolute;
+  //left: 50%;
+  //top: 0;
+  //transform: translateX(-50%);
   h3 {
     font-size: 50px;
     margin: 0;
