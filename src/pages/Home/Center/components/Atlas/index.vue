@@ -55,6 +55,7 @@ const atlasType = ref('关系图谱');
 const systemList = ref([]);
 const systemListSmall = ref([]);
 const contrastData = reactive({
+  // 中间图谱展示数据
   name: ' ',
   children: [],
 });
@@ -72,7 +73,8 @@ watch(
 );
 watch(
   () => state.getters.query,
-  function () {
+  function (val) {
+    console.log('ssss', val);
     getDataList();
   },
   {
@@ -129,6 +131,7 @@ async function checkOne(item, index, click) {
     return;
   }
   if (atlasType.value === '对比图谱') {
+    // 对比图谱添加数据
     contrastData.children = [];
     if (systemListSmall.value.filter((i) => i.check).length === 2) {
       // 选择两个从接口获取数据

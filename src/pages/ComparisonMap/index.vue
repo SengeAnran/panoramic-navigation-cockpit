@@ -22,7 +22,8 @@ onBeforeMount(() => {
   height: 1080px;
   display: flex;
   justify-content: space-around;
-  background: url('./img/bg.png') no-repeat;
+  background: url('./img/bg_01.svg') no-repeat;
+  background-size: 100% 100%;
   .center {
     overflow: hidden;
     background-color: #242b46;

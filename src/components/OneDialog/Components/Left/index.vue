@@ -34,6 +34,10 @@ function getNodeData() {
 
 <style lang="scss" scoped>
 .dialog-left {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-33%);
   h3 {
     font-size: 50px;
     margin: 0;

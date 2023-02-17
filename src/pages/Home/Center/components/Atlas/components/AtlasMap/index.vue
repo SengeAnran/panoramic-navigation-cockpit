@@ -64,7 +64,7 @@ async function clickOne(node) {
     const data = { url, video_url, topicPattern: 'TWIN' };
     console.log(data);
     await changeToggle(data);
-    router.push({ name: 'compareMap' });
+    router.push({ name: '对比图谱' });
   }
 }
 </script>
