@@ -140,9 +140,9 @@ async function checkOne(item, index, click) {
       const checkList = systemListSmall.value.filter((i) => i.check);
       state.commit('atlasMap/SET_COMPARISON_MAP_INFO', checkList);
       // router.push('/compareMap');
+      console.log('checkList', checkList);
       const data = {
-        systemA: checkList[0].name,
-        systemB: checkList[1].name,
+        system: [checkList[0].sys_id, checkList[1].sys_id],
       };
       const res = await getGraphCompare(data);
       initNodeTree(res.systemANodes, true);

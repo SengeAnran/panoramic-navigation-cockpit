@@ -13,7 +13,7 @@ const routes = [
     redirect: { name: appList[0]?.name },
   },
   {
-    path: '/compare-Map',
+    path: '/compare-map',
     name: 'compareMap',
     component: ComparisonMap,
   },
