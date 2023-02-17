@@ -208,14 +208,14 @@ function moveRight() {
   position: absolute;
   top: 0;
   left: 920px;
-  width: 1999px;
+  width: 2875px;
   //height: 100%;
   height: 961px;
   //background: pink;
   .search-results {
     position: absolute;
     bottom: -70px;
-    left: 93px;
+    left: 144px;
     .btn {
       position: absolute;
       top: -78px;
@@ -295,7 +295,7 @@ function moveRight() {
       .atlas-items {
         //background-color: pink;
         position: relative;
-        width: 1184px;
+        width: 1993px;
         overflow-x: scroll;
         overflow-y: hidden;
         margin-left: 112px;

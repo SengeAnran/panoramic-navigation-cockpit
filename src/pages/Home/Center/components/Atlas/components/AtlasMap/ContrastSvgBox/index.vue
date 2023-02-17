@@ -36,7 +36,7 @@ const props = defineProps({
   defaultWidth: {
     // 默认展示宽度
     type: Number,
-    default: 1999,
+    default: 2875,
   },
   defaultHeight: {
     // 默认展示高度
@@ -147,11 +147,14 @@ function init() {
     widthMultiple = 1; // 屏宽系数
   treeHeight = d3.hierarchy(props.data).height;
   const treeWidth = getTreeMax(props.data.children);
-  if (treeHeight > 3) {
-    heightMultiple = treeHeight / 2 + 2 / 2;
+  // if (treeHeight > 3) {
+  //   heightMultiple = treeHeight / 2 + 2 / 2;
+  // }
+  if (treeHeight > 4) {
+    heightMultiple = treeHeight / 3 + 2 / 2;
   }
-  if (treeWidth > 9) {
-    widthMultiple = treeWidth / 10;
+  if (treeWidth > 10) {
+    widthMultiple = treeWidth / 12;
   }
 
   multiple = Math.max(widthMultiple, heightMultiple);
