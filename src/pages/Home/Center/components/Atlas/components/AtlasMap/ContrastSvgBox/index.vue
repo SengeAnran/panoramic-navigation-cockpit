@@ -126,7 +126,7 @@ const nodeOption2 = {
   height: 32,
 };
 const margin = {
-  top: 40,
+  top: 70,
   right: 30,
   bottom: 33,
   left: 30,
@@ -154,7 +154,7 @@ function init() {
     heightMultiple = treeHeight / 3 + 2 / 2;
   }
   if (treeWidth > 10) {
-    widthMultiple = treeWidth / 12;
+    widthMultiple = treeWidth / 11;
   }
 
   multiple = Math.max(widthMultiple, heightMultiple);
@@ -227,16 +227,19 @@ function init() {
         },
       ],
     };
-    sameData.children = props.data.children[2].children;
-    const optionSame = {
-      data: props.data.children[2],
-      position: 'center',
-      rootNode: {
-        x: innerWidth / 4,
-        y: 0,
-      },
-    };
-    render(optionSame);
+    console.log('props.data', props.data);
+    if (props.data.children[2] && props.data.children[2].children) {
+      sameData.children = props.data.children[2].children;
+      const optionSame = {
+        data: props.data.children[2],
+        position: 'center',
+        rootNode: {
+          x: innerWidth / 4,
+          y: 0,
+        },
+      };
+      render(optionSame);
+    }
     // renderSame(sameData);
     const optionRoot = {
       data: data,

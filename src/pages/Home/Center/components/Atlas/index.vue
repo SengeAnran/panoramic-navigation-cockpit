@@ -12,8 +12,8 @@
           <div v-if="atlasType !== '关系图谱'" @click="changeAtlas('关系图谱')" class="icon-top icon"></div>
           <div v-else class="icon-bottom icon" @click="changeAtlas('对比图谱')"></div>
         </div>
-        <div v-if="systemListSmall.length > 3" class="left-btn btn" @click="moveRight()"></div>
-        <div v-if="systemListSmall.length > 3" class="right-btn btn" @click="moveLeft()"></div>
+        <div v-if="systemListSmall.length > 5" class="left-btn btn" @click="moveRight()"></div>
+        <div v-if="systemListSmall.length > 5" class="right-btn btn" @click="moveLeft()"></div>
         <div class="atlas-items" ref="atlasItems">
           <div class="box">
             <div class="atlas-item" v-for="(item, index) in systemListSmall" :key="index">
@@ -147,7 +147,9 @@ async function checkOne(item, index, click) {
       const res = await getGraphCompare(data);
       initNodeTree(res.systemANodes, true);
       initNodeTree(res.systemBNodes, true);
-      initNodeTree(res.commonNodes, true, true);
+      if (res.commonNodes) {
+        initNodeTree(res.commonNodes, true, true);
+      }
       const systemA = {
         name: res.systemANodes[0].system || checkList[0].name,
         children: res.systemANodes,
@@ -158,7 +160,7 @@ async function checkOne(item, index, click) {
       };
       const sameNode = {
         name: '相同节点',
-        children: [res.commonNodes],
+        children: res.commonNodes ? [res.commonNodes] : [],
       };
       contrastData.children = [systemA, systemB, sameNode];
     } else {

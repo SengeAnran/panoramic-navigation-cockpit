@@ -64,7 +64,10 @@ async function clickOne(node) {
     const data = { url, video_url, topicPattern: 'TWIN' };
     console.log(data);
     await changeToggle(data);
-    window.open('/compare-map', '_blank');
+
+    const openUrl = '/compare-map?data=' + JSON.stringify(state.getters.comparisonMapInfo);
+    console.log(openUrl);
+    window.open(openUrl, '_blank');
     // router.push({ name: 'compareMap' });
   }
 }

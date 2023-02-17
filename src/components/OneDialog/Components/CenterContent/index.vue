@@ -1,5 +1,5 @@
 <template>
-  <div class="dialog-left">
+  <div class="dialog-center">
     <h3 class="theme-font-style">系统图谱</h3>
     <div class="show-box">
       <SvgBox :data="systemList" :index="7777" />
@@ -33,11 +33,11 @@ function getNodeData() {
 </script>
 
 <style lang="scss" scoped>
-.dialog-left {
+.dialog-center {
   position: absolute;
   left: 50%;
   top: 0;
-  transform: translateX(-33%);
+  transform: translateX(-50%);
   h3 {
     font-size: 50px;
     margin: 0;
@@ -46,12 +46,12 @@ function getNodeData() {
   }
   .show-box {
     cursor: pointer;
-    width: 979px;
+    width: 1735px;
     height: 749px;
-    border-radius: 20px;
-    border: 1px solid #547eff;
-    box-shadow: 0px 0px 40px 0px #1d4d8d;
-    background: #222f4e;
+    //border-radius: 20px;
+    //border: 1px solid #547eff;
+    //box-shadow: 0px 0px 40px 0px #1d4d8d;
+    //background: #222f4e;
   }
 }
 </style>

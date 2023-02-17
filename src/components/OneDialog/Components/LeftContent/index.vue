@@ -1,6 +1,6 @@
 <template>
-  <div class="dialog-center">
-    <h3 class="theme-font-style">{{ nodeInfo.name }}</h3>
+  <div class="dialog-left">
+    <h3 class="theme-font-style">{{ nodeInfo.node_name || nodeInfo.name }}</h3>
     <div class="show-box"></div>
   </div>
 </template>
@@ -15,7 +15,7 @@ const nodeInfo = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-.dialog-center {
+.dialog-left {
   //position: absolute;
   //left: 50%;
   //top: 0;
@@ -36,8 +36,8 @@ const nodeInfo = computed(() => {
   }
   .show-box {
     cursor: pointer;
-    width: 1332px;
-    height: 749px;
+    width: 1440px;
+    height: 809px;
     border: 1px solid #547eff;
     box-shadow: 0px 0px 40px 0px #1d4d8d;
     background: #222f4e url('./bg.png') no-repeat left top;

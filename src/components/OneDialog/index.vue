@@ -1,20 +1,23 @@
 <template>
   <div class="dialog">
     <div class="close" @click="closeDialog()"></div>
+    <LeftContent />
     <CenterContent />
-    <Left />
     <Right />
   </div>
 </template>
 
 <script setup>
 import { useStore } from 'vuex';
-import Left from './Components/Left';
-import CenterContent from './Components/Center';
+import CenterContent from './Components/CenterContent';
+import LeftContent from './Components/LeftContent';
 import Right from './Components/Right';
+import { changeToggle } from '@/api/atlas';
 
 const state = useStore();
 function closeDialog() {
+  const data = { topicPattern: 'ORDINARY' };
+  changeToggle(data);
   state.commit('SET_CONTENT_OPACITY', false);
   state.commit('SET_SHOW_ONE_DIALOG', false);
   state.commit('RESET_MAIN_TITLE');
@@ -29,7 +32,7 @@ function closeDialog() {
   left: 0;
   width: 100%;
   height: 952px;
-  padding: 0 228px 95px;
+  padding: 0 32px 95px;
   .close {
     cursor: pointer;
     position: absolute;

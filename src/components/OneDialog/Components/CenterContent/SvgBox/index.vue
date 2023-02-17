@@ -75,8 +75,8 @@ let innerWidth, // 内宽
   innerHeight, // 内高
   svg,
   treeHeight, // 树高
-  defaultWidth = 979, // 默认展示宽度
-  defaultHeight = 748; // 默认展示高度
+  defaultWidth = 1735, // 默认展示宽度
+  defaultHeight = 508; // 默认展示高度
 const svgClass = ref('');
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
@@ -133,7 +133,7 @@ const nodeOption2 = {
   height: 32,
 };
 const margin = {
-  top: 180,
+  top: 30,
   right: 30,
   bottom: 33,
   left: 30,
@@ -148,11 +148,11 @@ function init() {
     widthMultiple = 1; // 屏宽系数
   treeHeight = d3.hierarchy(props.data).height;
   const treeWidth = getTreeMax(props.data);
-  if (treeHeight > 3) {
-    heightMultiple = treeHeight / 3;
+  if (treeHeight > 4) {
+    heightMultiple = treeHeight / 4;
   }
-  if (treeWidth > 3) {
-    widthMultiple = treeWidth / 3;
+  if (treeWidth > 5) {
+    widthMultiple = treeWidth / 5;
   }
   multiple = Math.max(widthMultiple, heightMultiple);
   svg = d3.select(`.svg-${props.index}`);

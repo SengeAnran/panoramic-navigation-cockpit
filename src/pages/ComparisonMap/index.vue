@@ -26,7 +26,7 @@ onBeforeMount(() => {
   background-size: 100% 100%;
   .center {
     overflow: hidden;
-    background-color: #242b46;
+    //background-color: #242b46;
   }
 }
 </style>

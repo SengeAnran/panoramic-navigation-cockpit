@@ -38,7 +38,7 @@ async function handleClick(node) {
   state.commit('SET_CONTENT_OPACITY', true);
   // const rootId = getTreeRootId(node);
   // console.log(rootId, node.data);
-  state.commit('atlasMap/SET_DIALOG_INFO', { rootId: node.sys_id, ...node.data });
+  state.commit('atlasMap/SET_DIALOG_INFO', { rootId: node.sys_id, ...node });
   state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
   state.commit('SET_SHOW_ONE_DIALOG', true);
   state.commit('SET_MAIN_TITLE', node.system);

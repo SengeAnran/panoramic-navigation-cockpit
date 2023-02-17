@@ -10,19 +10,14 @@
 import ContrastSvgBox from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox';
 import { getGraphCompare } from '@/api/search';
 import { initNodeTree } from '@/pages/Home/Center/components/Atlas/constants';
-import { onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue';
 import { useStore } from 'vuex';
-import { useRoute } from 'vue-router';
-import { changeToggle } from '@/api/atlas';
 // import router from '@/router';
 const state = useStore();
-const route = useRoute();
 const showSvgBox = ref(false);
-// const comparisonMapInfo =  computed(() => {
-//   return state.getters.comparisonMapInfo;
-// });
-const comparisonMapInfo = ref(JSON.parse(route.query.data || ''));
-console.log(comparisonMapInfo);
+const comparisonMapInfo = computed(() => {
+  return state.getters.comparisonMapInfo;
+});
 const contrastData = reactive({
   name: '公积金',
   children: [],
@@ -35,7 +30,8 @@ async function init() {
   state.commit('SET_HIDE_PAGE_TITLE', true);
   console.log(comparisonMapInfo.value);
   const data = {
-    system: [comparisonMapInfo.value[0].sys_id, comparisonMapInfo.value[1].sys_id],
+    systemA: comparisonMapInfo.value[0].name,
+    systemB: comparisonMapInfo.value[1].name,
   };
   const res = await getGraphCompare(data);
   initNodeTree(res.systemANodes, true);
@@ -60,8 +56,6 @@ onBeforeUnmount(() => {
   state.commit('SET_HIDE_PAGE_TITLE', false);
 });
 function close() {
-  const data = { topicPattern: 'ORDINARY' };
-  changeToggle(data);
   window.close();
 }
 </script>

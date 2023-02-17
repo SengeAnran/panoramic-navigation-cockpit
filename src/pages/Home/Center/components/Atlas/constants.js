@@ -53,16 +53,19 @@ function getName(name) {
       return i.length > 5 ? i.slice(0, 4) + '..' : i;
     })
     .join('-');
+
   return nodeName;
 }
 // 对接口数据初始化树属性
 export function initNodeTree(arr, noCheck, center = false) {
   function allChildren(node) {
-    node.name = center ? getName(node.node_name) : node.node_name || '';
-    if (node.children) {
-      for (let i = 0; i < node.children.length; i++) {
-        // node.children[i].name = node.children[i].node_name;
-        allChildren(node.children[i]);
+    if (node) {
+      node.name = center ? getName(node.node_name) : node.node_name || '';
+      if (node.children) {
+        for (let i = 0; i < node.children.length; i++) {
+          // node.children[i].name = node.children[i].node_name;
+          allChildren(node.children[i]);
+        }
       }
     }
     return;

@@ -10,7 +10,7 @@
 <style lang="scss" scoped>
 .dialog-right {
   position: absolute;
-  right: 228px;
+  right: 33px;
   top: 0;
   h3 {
     font-size: 50px;
@@ -19,8 +19,8 @@
     margin-bottom: 46px;
   }
   .show-box {
-    width: 979px;
-    height: 749px;
+    width: 1440px;
+    height: 810px;
     border-radius: 20px;
     border: 1px solid #547eff;
     box-shadow: 0px 0px 40px 0px #1d4d8d;
