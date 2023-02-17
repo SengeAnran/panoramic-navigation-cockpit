@@ -17,6 +17,8 @@ import {
 } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 import { useStore } from 'vuex';
 import { changeToggle } from '@/api/atlas';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 const props = defineProps({
   data: {
     type: Object,
@@ -44,7 +46,6 @@ async function clickOne(node) {
     console.log('需要单展示啦！');
     const { url, video_url } = node.data.meta || {};
     const data = { url, video_url, topicPattern: 'SINGLE' };
-    console.log(data);
     const res = await changeToggle(data);
     console.log(res);
     state.commit('SET_CONTENT_OPACITY', true);
@@ -62,8 +63,8 @@ async function clickOne(node) {
     const { url, video_url } = node.data.meta || {};
     const data = { url, video_url, topicPattern: 'TWIN' };
     console.log(data);
-    const res = await changeToggle(data);
-    console.log(res);
+    await changeToggle(data);
+    router.push({ name: 'compareMap' });
   }
 }
 </script>

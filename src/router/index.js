@@ -3,7 +3,7 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import appList from './app-list';
 import PageLayout from '@/page-layout';
-
+import ComparisonMap from '@/pages/ComparisonMap';
 const routes = [
   {
     path: '/',
@@ -11,6 +11,11 @@ const routes = [
     component: PageLayout,
     children: appList,
     redirect: { name: appList[0]?.name },
+  },
+  {
+    path: '/compare-Map',
+    name: 'compareMap',
+    component: ComparisonMap,
   },
   {
     path: '/test-components',
