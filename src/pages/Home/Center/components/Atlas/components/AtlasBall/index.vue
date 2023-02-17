@@ -1,21 +1,30 @@
 <template>
   <Globe>
     <PointSphere />
-    <Force :params="forceParam" :key="JSON.stringify(forceParam)" />
+    <Force :data="forceData" :key="JSON.stringify(forceData)" />
   </Globe>
 </template>
 <script setup>
+// import { computed, watch } from 'vue';
 import { computed } from 'vue';
-import { useStore } from 'vuex';
+// import { useStore } from 'vuex';
+import { deepClone } from '@/utils';
 import Globe from './Globe';
 import PointSphere from './PointSphere';
 import Force from './Force';
-const store = useStore();
 
-const forceParam = computed(() => {
-  const query = store.getters.query?.length ? store.getters.query : [];
-  return {
-    keys: query.map((d) => d.name),
-  };
+// const store = useStore();
+
+const props = defineProps({
+  data: null,
+});
+const forceData = computed(() => {
+  if (!Array.isArray(props.data)) {
+    return null;
+  }
+  if (props.data.every((d) => !d.check)) {
+    return deepClone(props.data);
+  }
+  return deepClone(props.data?.filter((d) => d.check));
 });
 </script>

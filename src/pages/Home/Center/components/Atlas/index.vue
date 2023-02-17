@@ -1,6 +1,6 @@
 <template>
   <div class="atlas">
-    <AtlasBall v-if="atlasType === '关系图谱'" />
+    <AtlasBall v-if="atlasType === '关系图谱'" :data="systemListSmall" />
     <AtlasMap v-else @showAll="showAll" :data="contrastData" />
     <div class="search-results">
       <div class="btn" @click="showRes()"></div>
