@@ -12,7 +12,7 @@ import { getGraphCompare } from '@/api/search';
 import { initNodeTree } from '@/pages/Home/Center/components/Atlas/constants';
 import { computed, onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue';
 import { useStore } from 'vuex';
-import router from '@/router';
+// import router from '@/router';
 const state = useStore();
 const showSvgBox = ref(false);
 const comparisonMapInfo = computed(() => {
@@ -56,7 +56,7 @@ onBeforeUnmount(() => {
   state.commit('SET_HIDE_PAGE_TITLE', false);
 });
 function close() {
-  router.back();
+  window.close();
 }
 </script>
 

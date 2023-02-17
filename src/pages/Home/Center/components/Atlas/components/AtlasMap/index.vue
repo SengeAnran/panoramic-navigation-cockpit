@@ -17,8 +17,8 @@ import {
 } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 import { useStore } from 'vuex';
 import { changeToggle } from '@/api/atlas';
-import { useRouter } from 'vue-router';
-const router = useRouter();
+// import { useRouter } from 'vue-router';
+// const router = useRouter();
 const props = defineProps({
   data: {
     type: Object,
@@ -64,7 +64,8 @@ async function clickOne(node) {
     const data = { url, video_url, topicPattern: 'TWIN' };
     console.log(data);
     await changeToggle(data);
-    router.push({ name: '对比图谱' });
+    window.open('/compare-map', '_blank');
+    // router.push({ name: 'compareMap' });
   }
 }
 </script>
