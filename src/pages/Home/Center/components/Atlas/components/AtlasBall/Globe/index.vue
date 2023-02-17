@@ -24,7 +24,7 @@ onUnmounted(async () => {
 .stage {
   position: absolute;
   top: 0;
-  left: 71%;
+  left: 50%;
   width: 4680px;
   height: 1080px;
   transform: translateX(-50%);
