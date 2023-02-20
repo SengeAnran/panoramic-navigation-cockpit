@@ -222,3 +222,31 @@ export function getTreeMax(data) {
   num.push(tree.count().value);
   return Math.max(...num);
 }
+
+// 获取树的最大宽度
+export function lookViewNode(data, url) {
+  console.log('lookViewNode', data, url);
+  return lookNodeByUrl(data, url);
+}
+// 第一次加载树形图时最多展示depth层（多的隐藏）
+export function lookNodeByUrl(nodes, url) {
+  let res;
+  nodes.forEach((i) => {
+    let urlArr = [];
+    if (i.data.meta && i.data.meta.url) {
+      if (!(i.data.meta.url instanceof Array)) {
+        urlArr = [i.data.meta.url];
+      } else {
+        urlArr = i.data.meta.url;
+      }
+      // console.log(urlArr);
+      urlArr.forEach((item) => {
+        if (item === url) {
+          res = i.data;
+        }
+      });
+    }
+  });
+
+  return res;
+}

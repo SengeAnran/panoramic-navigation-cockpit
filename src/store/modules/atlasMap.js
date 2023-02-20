@@ -5,6 +5,7 @@ export default {
     dialogShowFirstTime: true, // 第一次展示
     dialogInfo: {}, // 弹窗信息
     comparisonMapInfo: [], // 对比图展示窗口信息
+    viewNodeUrl: '', // 点击浏览的url
   },
   mutations: {
     SET_SHOW_FIRST_TIME(state, value) {
@@ -18,6 +19,12 @@ export default {
     },
     SET_COMPARISON_MAP_INFO(state, value) {
       state.comparisonMapInfo = value || [];
+    },
+    SET_VIEW_NODE_URL(state, data) {
+      state.viewNodeUrl = data;
+    },
+    RESET_VIEW_NODE_URL(state) {
+      state.viewNodeUrl = '';
     },
   },
   getters: {},

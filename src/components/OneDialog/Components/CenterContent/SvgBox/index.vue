@@ -42,12 +42,29 @@ import {
 import { defineProps, nextTick, onMounted, ref, watch } from 'vue';
 import * as d3 from 'd3';
 import { useStore } from 'vuex';
-import { getTreeMax } from './constant';
+import { getTreeMax, lookViewNode } from './constant';
 import { computed } from 'vue';
+import { changeToggle } from '@/api/atlas';
 const state = useStore();
 const nodeInfo = computed(() => {
   return state.getters.dialogInfo;
 });
+const viewNodeUrl = computed(() => {
+  return state.getters.viewNodeUrl;
+});
+watch(
+  () => viewNodeUrl.value,
+  (val) => {
+    if (val) {
+      nextTick(() => {
+        const node = lookViewNode(nodes.value, val);
+        if (node) {
+          state.commit('atlasMap/SET_DIALOG_INFO', node);
+        }
+      });
+    }
+  },
+);
 watch(
   () => nodeInfo.value.node_id,
   (val) => {
@@ -141,6 +158,7 @@ const margin = {
 const midValue = 300; // left 和right 相距距离
 
 const gSvg = ref('');
+const nodes = ref({});
 // 初始化
 function init() {
   let multiple = 1,
@@ -225,6 +243,7 @@ function render(option) {
   root.x = rootNode.x; // 设置根节点初始位置
   // root.y = rootNode.y;
   const node = root.descendants(); // x: 181.75 y: 0
+  nodes.value = node;
   const path = root.links();
   // console.log(node, path);
   const newCircles = []; // 连线两端点坐标列表
@@ -330,6 +349,19 @@ function render(option) {
         console.log('需要单展示啦！');
         state.commit('SET_CONTENT_OPACITY', true);
         state.commit('atlasMap/SET_DIALOG_INFO', d.data);
+        console.log('需要单展示啦！');
+        let { url, video_url } = d.data.meta || {};
+        // 兼容字符串格式数据
+        if (!(url instanceof Array)) {
+          url = [url];
+        }
+        if (!(video_url instanceof Array)) {
+          video_url = [video_url];
+        }
+        const data = { url, video_url, topicPattern: 'SINGLE' };
+        if (url) {
+          changeToggle(data);
+        }
         state.commit('SET_MAIN_TITLE', getRootInfo(d).name);
       }
     })

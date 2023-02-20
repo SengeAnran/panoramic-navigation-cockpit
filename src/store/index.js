@@ -114,6 +114,7 @@ export default createStore({
   modules: { theme, map, atlasMap },
   plugins: process.env.NODE_ENV === 'development' ? [createLogger()] : [],
   getters: {
+    viewNodeUrl: (state) => state.atlasMap.viewNodeUrl,
     intervalTime: (state) => state.intervalTime,
     bottomOpacity: (state) => state.bottomOpacity,
     contentOpacity: (state) => state.contentOpacity,

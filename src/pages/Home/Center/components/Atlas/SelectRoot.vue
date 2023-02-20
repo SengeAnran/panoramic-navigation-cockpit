@@ -8,7 +8,7 @@
 </template>
 <script setup>
 import { computed } from 'vue';
-
+const emit = defineEmits('reduceItem');
 const props = defineProps({
   data: Array,
 });
@@ -17,6 +17,7 @@ const selected = computed(() => {
 });
 function handleClick(item) {
   item.check = !item.check;
+  emit('reduceItem');
 }
 </script>
 <style lang="scss" scoped>

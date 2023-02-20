@@ -44,7 +44,14 @@ async function clickOne(node) {
   if (node.depth && !node.data.counterpart && node.position !== 'center') {
     // 单系统结果展示
     console.log('需要单展示啦！');
-    const { url, video_url } = node.data.meta || {};
+    let { url, video_url } = node.data.meta || {};
+    // 兼容字符串格式数据
+    if (!(url instanceof Array)) {
+      url = [url];
+    }
+    if (!(video_url instanceof Array)) {
+      video_url = [video_url];
+    }
     const data = { url, video_url, topicPattern: 'SINGLE' };
     const res = await changeToggle(data);
     console.log(res);

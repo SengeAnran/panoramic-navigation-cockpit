@@ -288,8 +288,10 @@ function render(option) {
     center: [innerWidth / 2, innerWidth / 4], // f(x + w/4, y + h/4)
   };
   root = d3.tree().size(regionSize[position])(root);
-  root.x = rootNode.x; // 设置根节点初始位置
-  root.y = rootNode.y;
+  if (props.data.children.length > 1) {
+    root.x = rootNode.x; // 设置根节点初始位置
+    root.y = rootNode.y;
+  }
   const node = root.descendants(); // x: 181.75 y: 0
   const path = root.links();
   // console.log(node, path);

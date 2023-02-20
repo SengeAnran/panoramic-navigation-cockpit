@@ -6,7 +6,7 @@
       <div class="btn" @click="showRes()"></div>
       <div class="mask"></div>
       <div class="search-results-box" v-if="showSearchRes">
-        <SelectRoot :data="systemListSmall" />
+        <SelectRoot :data="systemListSmall" @reduceItem="checkOne('', true)" />
         <div class="atlas-switch">
           <div class="type-name theme-font-style">{{ atlasType }}</div>
           <div v-if="atlasType !== '关系图谱'" @click="changeAtlas('关系图谱')" class="icon-top icon"></div>
@@ -19,7 +19,7 @@
             <div class="atlas-item" v-for="(item, index) in systemListSmall" :key="index">
               <SvgBox :data="item" :index="index" />
               <div class="system-name theme-font-style">{{ item.name }}</div>
-              <input type="checkbox" v-model="item.check" @change="checkOne(item, index, true)" />
+              <input type="checkbox" v-model="item.check" @change="checkOne(index, true)" />
             </div>
           </div>
         </div>
@@ -110,7 +110,7 @@ function getSystemListSmall() {
   moveStart();
 }
 function showAll() {
-  checkOne('', '', true);
+  checkOne('', true);
 }
 function changeAtlas(typeName) {
   atlasType.value = typeName;
@@ -122,7 +122,7 @@ function changeAtlas(typeName) {
 function showRes() {
   showSearchRes.value = !showSearchRes.value;
 }
-async function checkOne(item, index, click) {
+async function checkOne(index, click) {
   // 控制对比图谱只能选择两个进行对比
   if (
     atlasType.value === '对比图谱' &&
@@ -139,7 +139,6 @@ async function checkOne(item, index, click) {
       // 选择两个从接口获取数据
       const checkList = systemListSmall.value.filter((i) => i.check);
       state.commit('atlasMap/SET_COMPARISON_MAP_INFO', checkList);
-      // router.push('/compareMap');
       console.log('checkList', checkList);
       const data = {
         system: [checkList[0].sys_id, checkList[1].sys_id],
@@ -164,7 +163,7 @@ async function checkOne(item, index, click) {
       };
       contrastData.children = [systemA, systemB, sameNode];
     } else {
-      // 单个使用已有的数据展示
+      // 单个系统使用已有的数据展示
       systemListSmall.value.forEach((item, index) => {
         if (item.check) {
           contrastData.children.push(deepClone(systemList.value[index]));
@@ -174,8 +173,6 @@ async function checkOne(item, index, click) {
     if (click) {
       state.commit('atlasMap/SET_SHOW_FIRST_TIME', true);
     }
-  } else {
-    console.log('关系图谱处理');
   }
 }
 const atlasItems = ref('');
