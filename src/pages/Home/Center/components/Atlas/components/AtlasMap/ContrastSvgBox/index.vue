@@ -1,5 +1,28 @@
 <template>
   <div class="svg-show-box">
+    <svg>
+      <defs>
+        <!--    filter定义SVG滤镜, <filter>标签使用必需的id属性来定义向图形应用哪个滤镜-->
+        <filter id="dropShadow2">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="10" />
+          <feColorMatrix
+            result="matrixOut"
+            in="offOut"
+            type="matrix"
+            values="
+              0 0 0 1 0
+              0 0 1 1 0
+              1 1 1 1 1
+              0 0 0 1 0"
+          />
+          <feOffset dx="0" dy="0" />
+          <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
     <!--    动态class 防止获取冲突-->
     <svg class="svg-box" :class="svgClass"></svg>
   </div>
@@ -18,9 +41,40 @@ import {
   svgLogo,
   getTreeMax,
 } from './constant';
-import { defineProps, nextTick, onMounted, ref, watch } from 'vue';
+import { defineProps, nextTick, onMounted, ref, watch, reactive, computed } from 'vue';
 import * as d3 from 'd3';
 import { useStore } from 'vuex';
+import { changeToggle } from '@/api/atlas';
+import { lookViewNode } from '@/components/OneDialog/Components/CenterContent/SvgBox/constant';
+const state = useStore();
+const nodeInfo = computed(() => {
+  return state.getters.compereNodeInfo;
+});
+const viewNodeUrl = computed(() => {
+  return state.getters.viewNodeUrl;
+});
+const nodes = reactive({
+  left: '',
+  right: '',
+  center: '',
+});
+watch(
+  () => viewNodeUrl.value,
+  (val) => {
+    if (val) {
+      nextTick(() => {
+        const nodeList = [];
+        Object.keys(nodes).map((i) => {
+          const node = lookViewNode(nodes[i], val);
+          if (node) {
+            nodeList.push(node);
+          }
+        });
+        state.commit('atlasMap/SET_COMPERE_NODE_INFO', nodeList);
+      });
+    }
+  },
+);
 const props = defineProps({
   data: {
     type: Object,
@@ -42,6 +96,11 @@ const props = defineProps({
     // 默认展示高度
     type: Number,
     default: 750,
+  },
+  canClick: {
+    // 能否点击节点切换页面
+    type: Boolean,
+    default: false,
   },
 });
 const emit = defineEmits(['clickOne']);
@@ -102,6 +161,17 @@ watch(
   },
   { immediate: true, deep: true },
 );
+const nodeIdList = computed(() => {
+  return nodeInfo.value.map((i) => i.node_id);
+});
+watch(
+  () => nodeIdList.value,
+  (val) => {
+    if (val && val.length > 0) {
+      addActive(val);
+    }
+  },
+);
 function showMain() {
   for (let i = 0; i < props.data.children.length; i++) {
     hideAllChildren(props.data.children[i]);
@@ -136,7 +206,6 @@ let sameData = {
   name: '相同节点',
   children: [],
 };
-const state = useStore();
 // let multiple = 1,
 //   heightMultiple = 1, // 屏高系数
 //   widthMultiple = 1; // 屏宽系数
@@ -250,8 +319,13 @@ function init() {
     };
     renderRoot(optionRoot);
   }
+  addActive(nodeInfo.value.node_id); // 加当前节点效果
 }
-
+const gSvg = reactive({
+  left: '',
+  right: '',
+  center: '',
+});
 /**
  * 画左右下树状图
  * @param {Object} option {
@@ -267,6 +341,7 @@ function init() {
 function render(option) {
   const { data, position, rootNode } = option;
   const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`).attr('class', 'chart-g');
+  gSvg[position] = g; // 将不同朝向的树记录好
   let root = d3.hierarchy(data);
   // if (position === 'center') {
   //   let heightMultiple = 1,
@@ -293,6 +368,7 @@ function render(option) {
     root.y = rootNode.y;
   }
   const node = root.descendants(); // x: 181.75 y: 0
+  nodes[position] = node;
   const path = root.links();
   // console.log(node, path);
   const newCircles = []; // 连线两端点坐标列表
@@ -396,6 +472,14 @@ function render(option) {
     .join('text')
     .on('click', (e, d) => {
       // console.log(e.target.__data__); // 点击的节点
+      if (props.canClick) {
+        state.commit('atlasMap/SET_COMPERE_NODE_INFO', [d.data]);
+        const { url, video_url } = d.data.meta || {};
+        const data = { url, video_url, topicPattern: 'TWIN' };
+        console.log(data);
+        changeToggle(data);
+        return;
+      }
       emit('clickOne', { ...d, position });
     })
     .attr('text-anchor', 'middle') // 位置
@@ -613,6 +697,28 @@ function renderRoot(option) {
     .attr('fill', 'white');
   // .attr('writing-mode', 'vertical-rl') // 文本竖过来
   // .attr('text-orientation', 'upright');
+}
+// 给当前显示元素加选中色;
+function addActive(data) {
+  if (!gSvg.left && !gSvg.center && !gSvg.right) {
+    return;
+  }
+  Object.keys(gSvg).map((i) => {
+    const allRect = gSvg[i].selectAll('.rect-box');
+    let activeIndex = [];
+    allRect.nodes().forEach((i, index) => {
+      if (data.findIndex((value) => value === i.__data__.data.node_id) !== -1) {
+        activeIndex.push(index);
+      }
+    });
+    const nodes = allRect.nodes();
+    nodes.forEach((i) => {
+      i.setAttribute('filter', '');
+    });
+    activeIndex.forEach((i) => {
+      nodes[i].setAttribute('filter', 'url(#dropShadow2)');
+    });
+  });
 }
 </script>
 
