@@ -228,7 +228,7 @@ export function lookViewNode(data, url) {
   console.log('lookViewNode', data, url);
   return lookNodeByUrl(data, url);
 }
-// 第一次加载树形图时最多展示depth层（多的隐藏）
+//
 export function lookNodeByUrl(nodes, url) {
   let res;
   nodes.forEach((i) => {

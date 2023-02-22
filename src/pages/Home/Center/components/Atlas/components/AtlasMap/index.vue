@@ -52,6 +52,16 @@ async function clickOne(node) {
     if (!(video_url instanceof Array)) {
       video_url = [video_url];
     }
+    url = url.filter((i) => {
+      if (i) {
+        return i;
+      }
+    });
+    video_url = video_url.filter((i) => {
+      if (i) {
+        return i;
+      }
+    });
     const data = { url, video_url, topicPattern: 'SINGLE' };
     const res = await changeToggle(data);
     console.log(res);
@@ -71,8 +81,8 @@ async function clickOne(node) {
     const data = { url, video_url, topicPattern: 'TWIN' };
     console.log(data);
     await changeToggle(data);
-
-    const openUrl = '/compare-map?data=' + JSON.stringify(state.getters.comparisonMapInfo);
+    const params = { comparisonMapInfo: state.getters.comparisonMapInfo, nodeNames: node.nodeNames };
+    const openUrl = '/compare-map?data=' + JSON.stringify(params);
     console.log(openUrl);
     window.open(openUrl, '_blank');
     // router.push({ name: 'compareMap' });

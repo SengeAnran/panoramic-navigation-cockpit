@@ -10,7 +10,7 @@
 
 <script setup>
 import centerContent from './Center';
-import { onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue';
 import Socket from '@/utils/Soket';
 import { useStore } from 'vuex';
 const state = useStore();
@@ -29,6 +29,21 @@ onBeforeUnmount(() => {
     stocket.value.destroySocket();
   }
 });
+
+const urlList = computed(() => {
+  const list = [];
+  state.getters.compereNodeInfo.forEach((i) => {
+    if (i.meta && i.meta.url) {
+      i.meta.url.forEach((item) => {
+        if (item && list.findIndex((j) => j === item) === -1) {
+          list.push(item);
+        }
+      });
+    }
+  });
+  // console.log(list);
+  return list;
+});
 function initStocket() {
   const { protocol, host } = location;
   const url = `${protocol === 'http:' ? 'ws' : 'wss'}://${host}/socket/api/ws`;
@@ -39,7 +54,7 @@ function initStocket() {
     stocket.value.emit('socket-broadcast', { id: 123, url: '12344' });
   }, 1000);
   stocket.value.on('notifyUrl', (res) => {
-    if (res && res.url && res.url !== state.getters.dialogInfo.meta.url) {
+    if (res && res.url && urlList.value.some((i) => i === res.url)) {
       state.commit('atlasMap/SET_VIEW_NODE_URL', res.url);
     }
   });

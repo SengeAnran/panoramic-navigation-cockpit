@@ -1,8 +1,8 @@
 <template>
   <div class="left-title sys-title">{{ sysTitles[0] }}</div>
   <div class="right-title sys-title">{{ sysTitles[1] }}</div>
-  <div class="left-node-name node-name">节点名称</div>
-  <div class="right-node-name node-name">节点名称</div>
+  <div class="left-node-name node-name">{{ nodeNameLeft }}</div>
+  <div class="right-node-name node-name">{{ nodeNameRight }}</div>
   <div class="content">
     <ContrastSvgBox
       v-if="showSvgBox"
@@ -21,39 +21,75 @@
 import ContrastSvgBox from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox';
 import { getGraphCompare } from '@/api/search';
 import { initNodeTree } from '@/pages/Home/Center/components/Atlas/constants';
-import { onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, reactive, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import { changeToggle } from '@/api/atlas';
 // import router from '@/router';
-const sysTitles = ref([]);
+const sysTitles = ref(['', '']);
 const state = useStore();
 const route = useRoute();
 const showSvgBox = ref(false);
-// const comparisonMapInfo =  computed(() => {
-//   return state.getters.comparisonMapInfo;
-// });
-const comparisonMapInfo = ref(JSON.parse(route.query.data || ''));
-console.log('comparisonMapInfo', comparisonMapInfo);
+const compereNodeInfo = computed(() => {
+  return state.getters.compereNodeInfo;
+});
+const query = JSON.parse(route.query.data || '');
+const comparisonMapInfo = ref(query.comparisonMapInfo);
+if (comparisonMapInfo.value) {
+  comparisonMapInfo.value[0].node_name = query.nodeNames[0];
+  comparisonMapInfo.value[1].node_name = query.nodeNames[1];
+}
 const contrastData = reactive({
-  name: '公积金',
+  name: '',
   children: [],
 });
 onBeforeMount(() => {
   init();
+  state.commit('atlasMap/SET_COMPERE_NODE_INFO', comparisonMapInfo.value);
+});
+// 左节点树展示节点的节点名称
+const nodeNameLeft = computed(() => {
+  let leftNode = '';
+  compereNodeInfo.value.forEach((i) => {
+    if (i.sys_id === comparisonMapInfo.value[0].sys_id) {
+      leftNode = i.node_name;
+    }
+  });
+  if (!leftNode && compereNodeInfo.value[0].system instanceof Array && compereNodeInfo.value[0].system.length === 2) {
+    // 相同图谱树相同节点
+    leftNode = compereNodeInfo.value[0].node_name[0];
+  }
+  return leftNode;
+});
+// 右节点树展示节点的节点名称
+const nodeNameRight = computed(() => {
+  let rightNode = '';
+  compereNodeInfo.value.forEach((i) => {
+    if (i.sys_id === comparisonMapInfo.value[1].sys_id) {
+      rightNode = i.node_name;
+    }
+  });
+  if (!rightNode && compereNodeInfo.value[0].system instanceof Array && compereNodeInfo.value[0].system.length === 2) {
+    // 相同图谱树相同节点
+    rightNode = compereNodeInfo.value[0].node_name[1];
+  }
+  return rightNode;
 });
 async function init() {
   state.commit('atlasMap/SET_SHOW_FIRST_TIME', true);
   state.commit('SET_HIDE_PAGE_TITLE', true);
   console.log(comparisonMapInfo.value);
-  sysTitles.value = [comparisonMapInfo.value[0].system, comparisonMapInfo.value[1].system];
+  sysTitles.value[0] = comparisonMapInfo.value[0].system;
+  sysTitles.value[1] = comparisonMapInfo.value[1].system;
   const data = {
     system: [comparisonMapInfo.value[0].sys_id, comparisonMapInfo.value[1].sys_id],
   };
   const res = await getGraphCompare(data);
   initNodeTree(res.systemANodes, true);
   initNodeTree(res.systemBNodes, true);
-  initNodeTree(res.commonNodes, true);
+  if (res.commonNodes) {
+    initNodeTree(res.commonNodes, true, true);
+  }
   const systemA = {
     name: res.systemANodes[0].system || comparisonMapInfo.value[0].name,
     children: res.systemANodes,
@@ -105,7 +141,7 @@ function close() {
   position: absolute;
   top: 152px;
 
-  transform: translateX(-50%);
+  //transform: translateX(-50%);
   font-size: 48px;
   font-family: YouSheBiaoTiHei;
   font-weight: 400;
@@ -118,10 +154,10 @@ function close() {
   text-shadow: none !important;
 }
 .left-node-name {
-  left: 1727px;
+  left: 1634px;
 }
 .right-node-name {
-  left: 6369px;
+  left: 6292px;
 }
 
 .content {

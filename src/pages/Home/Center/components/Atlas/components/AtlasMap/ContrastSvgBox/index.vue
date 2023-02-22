@@ -167,7 +167,7 @@ const nodeIdList = computed(() => {
 watch(
   () => nodeIdList.value,
   (val) => {
-    if (val && val.length > 0) {
+    if (val && val.length > 0 && props.canClick) {
       addActive(val);
     }
   },
@@ -319,13 +319,14 @@ function init() {
     };
     renderRoot(optionRoot);
   }
-  addActive(nodeInfo.value.node_id); // 加当前节点效果
+  // addActive(nodeInfo.value.node_id); // 加当前节点效果
 }
 const gSvg = reactive({
   left: '',
   right: '',
   center: '',
 });
+
 /**
  * 画左右下树状图
  * @param {Object} option {
@@ -360,7 +361,7 @@ function render(option) {
   const regionSize = {
     left: [(innerHeight * 2) / 3, innerWidth / 4], // f(w/2 - y, x)
     right: [(innerHeight * 2) / 3, innerWidth / 4], // f(w/2 + y, x)
-    center: [innerWidth / 2, innerWidth / 4], // f(x + w/4, y + h/4)
+    center: [innerWidth / 2, innerHeight / 3], // f(x + w/4, y + h/3)
   };
   root = d3.tree().size(regionSize[position])(root);
   if (props.data.children.length > 1) {
@@ -473,14 +474,58 @@ function render(option) {
     .on('click', (e, d) => {
       // console.log(e.target.__data__); // 点击的节点
       if (props.canClick) {
-        state.commit('atlasMap/SET_COMPERE_NODE_INFO', [d.data]);
+        let info = [];
+        // console.log(d.data.counterpart);
+        if (d.data.counterpart) {
+          if (position === 'left') {
+            const nodeData = findNodeById('right', d.data.counterpart);
+            if (nodeData) {
+              info = [d.data, nodeData];
+            } else {
+              info = [d.data];
+            }
+          } else {
+            const nodeData = findNodeById('left', d.data.counterpart);
+            if (nodeData) {
+              info = [nodeData, d.data];
+            } else {
+              info = [d.data];
+            }
+          }
+        } else {
+          info = [d.data];
+        }
+        // console.log(info);
+        state.commit('atlasMap/SET_COMPERE_NODE_INFO', info);
+        // console.log(position, nodes[position]);
         const { url, video_url } = d.data.meta || {};
         const data = { url, video_url, topicPattern: 'TWIN' };
-        console.log(data);
+        // console.log(data);
         changeToggle(data);
         return;
       }
-      emit('clickOne', { ...d, position });
+      let nodeNames = [];
+
+      if (position === 'center') {
+        nodeNames = d.data.node_name;
+      }
+      if (d.data.counterpart) {
+        if (position === 'left') {
+          nodeNames = [d.data.node_name];
+          const nodeName = findNodeNameById('right', d.data.counterpart);
+          if (nodeName) {
+            nodeNames.push(nodeName);
+          }
+        } else {
+          const nodeName = findNodeNameById('left', d.data.counterpart);
+          if (nodeName) {
+            nodeNames.push(nodeName);
+          }
+          nodeNames.push(d.data.node_name);
+        }
+      }
+      console.log(nodeNames);
+      emit('clickOne', { ...d, position, nodeNames });
     })
     .attr('text-anchor', 'middle') // 位置
     .attr('x', (d) =>
@@ -707,7 +752,7 @@ function addActive(data) {
     const allRect = gSvg[i].selectAll('.rect-box');
     let activeIndex = [];
     allRect.nodes().forEach((i, index) => {
-      if (data.findIndex((value) => value === i.__data__.data.node_id) !== -1) {
+      if (data instanceof Array && data.findIndex((value) => value === i.__data__.data.node_id) !== -1) {
         activeIndex.push(index);
       }
     });
@@ -719,6 +764,24 @@ function addActive(data) {
       nodes[i].setAttribute('filter', 'url(#dropShadow2)');
     });
   });
+}
+function findNodeNameById(position, id) {
+  const index = nodes[position].findIndex((i) => {
+    return i.data.node_id == id;
+  });
+  if (index === -1) {
+    return;
+  }
+  return nodes[position][index].data.node_name;
+}
+function findNodeById(position, id) {
+  const index = nodes[position].findIndex((i) => {
+    return i.data.node_id == id;
+  });
+  if (index === -1) {
+    return;
+  }
+  return nodes[position][index].data;
 }
 </script>
 

@@ -48,7 +48,7 @@ export function getInitTree(data) {
 // 相同节点树节点节点名称预处理
 function getName(name) {
   let nodeName = name;
-  nodeName = JSON.parse(nodeName)
+  nodeName = nodeName
     .map((i) => {
       return i.length > 5 ? i.slice(0, 4) + '..' : i;
     })
