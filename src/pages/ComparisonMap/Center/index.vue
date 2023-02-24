@@ -36,6 +36,7 @@ const compereNodeInfo = computed(() => {
 const query = JSON.parse(route.query.data || '');
 const comparisonMapInfo = ref(query.comparisonMapInfo);
 if (comparisonMapInfo.value) {
+  console.log(query.nodeNames[0], query.nodeNames[1]);
   comparisonMapInfo.value[0].node_name = query.nodeNames[0];
   comparisonMapInfo.value[1].node_name = query.nodeNames[1];
 }
@@ -55,7 +56,13 @@ const nodeNameLeft = computed(() => {
       leftNode = i.node_name;
     }
   });
-  if (!leftNode && compereNodeInfo.value[0].system instanceof Array && compereNodeInfo.value[0].system.length === 2) {
+  if (
+    !leftNode &&
+    compereNodeInfo.value[0] &&
+    compereNodeInfo.value[0].system &&
+    compereNodeInfo.value[0].system instanceof Array &&
+    compereNodeInfo.value[0].system.length === 2
+  ) {
     // 相同图谱树相同节点
     leftNode = compereNodeInfo.value[0].node_name[0];
   }
@@ -69,7 +76,13 @@ const nodeNameRight = computed(() => {
       rightNode = i.node_name;
     }
   });
-  if (!rightNode && compereNodeInfo.value[0].system instanceof Array && compereNodeInfo.value[0].system.length === 2) {
+  if (
+    !rightNode &&
+    compereNodeInfo.value[0] &&
+    compereNodeInfo.value[0].system &&
+    compereNodeInfo.value[0].system instanceof Array &&
+    compereNodeInfo.value[0].system.length === 2
+  ) {
     // 相同图谱树相同节点
     rightNode = compereNodeInfo.value[0].node_name[1];
   }

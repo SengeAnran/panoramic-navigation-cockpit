@@ -4,7 +4,10 @@
       <defs>
         <!--    filter定义SVG滤镜, <filter>标签使用必需的id属性来定义向图形应用哪个滤镜-->
         <filter id="dropShadow">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="10" />
+          <!--    该滤镜对输入图像进行高斯模糊，属性stdDeviation中指定的数量定义了钟形。      stdDeviation 模糊程度-->
+          <feGaussianBlur in="SourceAlpha" stdDeviation="15" />
+          <!--该滤镜基于转换矩阵对颜色进行变换。
+          每一像素的颜色值 (一个表示为 [红，绿，蓝，透明度] 的矢量) 都经过矩阵乘法 (matrix multiplated) 计算出的新颜色。-->
           <feColorMatrix
             result="matrixOut"
             in="offOut"
@@ -15,7 +18,10 @@
               1 1 1 1 1
               0 0 0 1 0"
           />
+          <!--     feOffset 偏移量     -->
           <feOffset dx="0" dy="0" />
+          <!--feMerge滤镜允许同时应用滤镜效果而不是按顺序应用滤镜效果。
+          利用result存储别的滤镜的输出可以实现这一点，然后在一个 <feMergeNode>子元素中访问它。-->
           <feMerge>
             <feMergeNode />
             <feMergeNode in="SourceGraphic" />
@@ -150,7 +156,7 @@ const nodeOption2 = {
   height: 32,
 };
 const margin = {
-  top: 30,
+  top: 40,
   right: 30,
   bottom: 33,
   left: 30,
@@ -528,9 +534,11 @@ function addActive(data) {
   const nodes = allRect.nodes();
   nodes.forEach((i) => {
     i.setAttribute('filter', '');
+    i.setAttribute('stroke', '#3B78F2');
   });
   if (activeIndex || activeIndex === 0) {
     nodes[activeIndex].setAttribute('filter', 'url(#dropShadow)');
+    nodes[activeIndex].setAttribute('stroke', 'white');
     // nodes[activeIndex].setAttribute('stroke', 'white');
   }
 }

@@ -54,7 +54,8 @@ function initStocket() {
     stocket.value.emit('socket-broadcast', { id: 123, url: '12344' });
   }, 1000);
   stocket.value.on('notifyUrl', (res) => {
-    if (res && res.url && urlList.value.some((i) => i === res.url)) {
+    if (res && res.url && !urlList.value.some((i) => i === res.url)) {
+      // console.log(res.url);
       state.commit('atlasMap/SET_VIEW_NODE_URL', res.url);
     }
   });

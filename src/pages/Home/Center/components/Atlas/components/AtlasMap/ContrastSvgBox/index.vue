@@ -4,7 +4,7 @@
       <defs>
         <!--    filter定义SVG滤镜, <filter>标签使用必需的id属性来定义向图形应用哪个滤镜-->
         <filter id="dropShadow2">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="10" />
+          <feGaussianBlur in="SourceAlpha" stdDeviation="15" />
           <feColorMatrix
             result="matrixOut"
             in="offOut"
@@ -361,7 +361,7 @@ function render(option) {
   const regionSize = {
     left: [(innerHeight * 2) / 3, innerWidth / 4], // f(w/2 - y, x)
     right: [(innerHeight * 2) / 3, innerWidth / 4], // f(w/2 + y, x)
-    center: [innerWidth / 2, innerHeight / 3], // f(x + w/4, y + h/3)
+    center: [innerWidth / 2, (innerHeight * 4) / 8], // f(x + w/4, y + h*3/8)
   };
   root = d3.tree().size(regionSize[position])(root);
   if (props.data.children.length > 1) {
@@ -759,9 +759,11 @@ function addActive(data) {
     const nodes = allRect.nodes();
     nodes.forEach((i) => {
       i.setAttribute('filter', '');
+      i.setAttribute('stroke', '#3B78F2');
     });
     activeIndex.forEach((i) => {
       nodes[i].setAttribute('filter', 'url(#dropShadow2)');
+      nodes[activeIndex].setAttribute('stroke', 'white');
     });
   });
 }
