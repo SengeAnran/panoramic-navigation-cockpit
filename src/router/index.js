@@ -4,6 +4,7 @@ import 'nprogress/nprogress.css';
 import appList from './app-list';
 import PageLayout from '@/page-layout';
 import ComparisonMap from '@/pages/ComparisonMap';
+import OneMap from '@/pages/OneMap';
 const routes = [
   {
     path: '/',
@@ -16,6 +17,11 @@ const routes = [
     path: '/compare-map',
     name: 'compareMap',
     component: ComparisonMap,
+  },
+  {
+    path: '/one-map',
+    name: 'oneMap',
+    component: OneMap,
   },
   {
     path: '/test-components',

@@ -11,10 +11,10 @@
 <script setup>
 import ContrastSvgBox from './ContrastSvgBox/index';
 import { ref } from 'vue';
-import {
-  getRootInfo,
-  getTreeRootId,
-} from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
+// import {
+//   // getRootInfo,
+//   // getTreeRootId,
+// } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 import { useStore } from 'vuex';
 import { changeToggle } from '@/api/atlas';
 // import { useRouter } from 'vue-router';
@@ -63,15 +63,22 @@ async function clickOne(node) {
       }
     });
     const data = { url, video_url, topicPattern: 'SINGLE' };
-    const res = await changeToggle(data);
-    console.log(res);
-    state.commit('SET_CONTENT_OPACITY', true);
-    const rootId = getTreeRootId(node);
-    console.log(rootId, node.data);
-    state.commit('atlasMap/SET_DIALOG_INFO', { rootId, ...node.data });
-    state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
-    state.commit('SET_SHOW_ONE_DIALOG', true);
-    state.commit('SET_MAIN_TITLE', getRootInfo(node).name);
+    await changeToggle(data);
+    const query = { ...node.data, children: [] };
+    const openUrl = '/one-map?data=' + JSON.stringify(query);
+    window.open(openUrl, '_blank');
+    // console.log(res);
+    // state.commit('SET_CONTENT_OPACITY', true);
+    // const rootId = getTreeRootId(node);
+    // const sysTitle = getRootInfo(node);
+
+    // console.log(query, JSON.stringify(query));
+
+    // state.commit('atlasMap/SET_DIALOG_INFO', { rootId, ...node.data });
+    // state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
+    // state.commit('SET_SHOW_ONE_DIALOG', true);
+    // state.commit('SET_MAIN_TITLE', getRootInfo(node).name);
+
     return;
   }
   if (node.depth && (node.data.counterpart || node.position === 'center')) {
