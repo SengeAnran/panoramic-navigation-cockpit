@@ -23,7 +23,7 @@ onMounted(() => {
 });
 function getNodeData() {
   const data = {
-    id: nodeInfo.value.node_id,
+    id: nodeInfo.value.sys_id,
   };
   getNodeById(data).then((res) => {
     res && initNodeTree(res, true);
