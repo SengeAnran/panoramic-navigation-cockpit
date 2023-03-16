@@ -33,7 +33,7 @@ async function getDataList() {
     return {
       position: 'right',
       type: 'heightWord',
-      name: i.label,
+      name: i,
       checked: false,
     };
   });

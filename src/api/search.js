@@ -11,6 +11,15 @@ export const getBusAreTecDirectory = () => {
     url: '/api/directory/getList',
   });
 };
+
+// 获取业务-技术-地域导览列表
+export const getDirectoryList = (data) => {
+  return axios.request({
+    method: 'POST',
+    url: '/api/directory/getList',
+    data,
+  });
+};
 // 获取业务导览列表
 export const getBusinessDirectory = (data) => {
   return axios.request({

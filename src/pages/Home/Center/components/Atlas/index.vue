@@ -86,13 +86,32 @@ watch(
 );
 // 获取检索结果
 async function getDataList() {
+  let queryLabels = [],
+    searchWords = [],
+    hotWords = [];
+  state.getters.query.forEach((i) => {
+    if (i.type === 'heightWord') {
+      hotWords.push(i.name);
+      return;
+    }
+    if (i.type === 'search') {
+      queryLabels.push(i.name);
+      return;
+    }
+    const index = queryLabels.findIndex((j) => j.dimension === i.type);
+    if (index === -1) {
+      queryLabels.push({
+        dimension: i.type,
+        labels: [i.name],
+      });
+      return;
+    }
+    queryLabels[index].labels.push(i.name);
+  });
   const data = {
-    query: state.getters.query.map((i) => {
-      return {
-        theme: i.type,
-        word: i.name,
-      };
-    }),
+    queryLabels,
+    searchWords,
+    hotWords,
     mode: 'specific',
   };
   const res = await getGraphSystems(data);

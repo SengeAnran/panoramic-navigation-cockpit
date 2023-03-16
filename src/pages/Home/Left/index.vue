@@ -37,26 +37,26 @@
 // import * as d3 from 'd3';
 import { ref, reactive, onMounted, nextTick, watch } from 'vue';
 import { useStore } from 'vuex';
-import { getAreaDirectory, getBusinessDirectory, getTechnicalDirectory } from '@/api/search';
+import { getDirectoryList } from '@/api/search';
 const state = useStore();
 const seletType = reactive({
-  name: '业务导览',
-  eglishName: 'BUSINESS GUIDE',
+  name: '',
+  eglishName: '',
 });
 const showOption = ref(false);
 const optionType = ref([
-  {
-    name: '业务导览',
-    eglishName: 'BUSINESS GUIDE',
-  },
-  {
-    name: '技术导览',
-    eglishName: 'technology GUIDE'.toUpperCase(),
-  },
-  {
-    name: '地域导览',
-    eglishName: 'region GUIDE'.toUpperCase(),
-  },
+  // {
+  //   name: '业务导览',
+  //   eglishName: 'BUSINESS GUIDE',
+  // },
+  // {
+  //   name: '技术导览',
+  //   eglishName: 'technology GUIDE'.toUpperCase(),
+  // },
+  // {
+  //   name: '地域导览',
+  //   eglishName: 'region GUIDE'.toUpperCase(),
+  // },
 ]);
 // 改变导览类型
 function changeType(index) {
@@ -67,11 +67,27 @@ function changeType(index) {
 }
 onMounted(() => {
   getDataList();
+  getDataAll();
   list.value.addEventListener('scroll', function () {
     setPosition();
   });
 });
-
+function getType() {
+  getDirectoryList({}).then((res) => {
+    if (res && res.length > 0) {
+      optionType.value = res.map((i) => {
+        return {
+          name: i.name,
+          eglishName: '',
+        };
+      });
+      seletType.name = optionType.value[0].name;
+      seletType.eglishName = optionType.value[0].eglishName;
+      getDataList();
+    }
+  });
+}
+getType();
 // const activeIndex = ref(-2);
 const dataList = ref([
   // {
@@ -80,95 +96,25 @@ const dataList = ref([
   //   imgUrl: require('./img/icon_jy.png'),
   //   activeImgUrl: require('./img/icon_jy_active.png'),
   // },
-  // {
-  //   name: '医疗',
-  //   eglishName: 'medical care'.toUpperCase(),
-  //   imgUrl: require('./img/icon_yl.png'),
-  //   activeImgUrl: require('./img/icon_yl_active.png'),
-  // },
-  // {
-  //   name: '交通',
-  //   eglishName: 'traffic'.toUpperCase(),
-  //   imgUrl: require('./img/icon_jt.png'),
-  //   activeImgUrl: require('./img/icon_jt_active.png'),
-  // },
-  // {
-  //   name: '养老',
-  //   eglishName: 'Providing for the aged'.toUpperCase(),
-  //   imgUrl: require('./img/icon_yliao.png'),
-  //   activeImgUrl: require('./img/icon_yliao_active.png'),
-  // },
-  // {
-  //   name: '治安',
-  //   eglishName: 'public security'.toUpperCase(),
-  //   imgUrl: require('./img/icon_za.png'),
-  //   activeImgUrl: require('./img/icon_za_active.png'),
-  // },
-  // {
-  //   name: '人社',
-  //   eglishName: 'Human society'.toUpperCase(),
-  //   imgUrl: require('./img/icon_rs.png'),
-  //   activeImgUrl: require('./img/icon_jy_active.png'),
-  // },
-  // {
-  //   name: '教育',
-  //   eglishName: 'education'.toUpperCase(),
-  //   imgUrl: require('./img/icon_jy.png'),
-  //   activeImgUrl: require('./img/icon_jy_active.png'),
-  // },
-  // {
-  //   name: '医疗',
-  //   eglishName: 'medical care'.toUpperCase(),
-  //   imgUrl: require('./img/icon_yl.png'),
-  //   activeImgUrl: require('./img/icon_yl_active.png'),
-  // },
-  // {
-  //   name: '交通',
-  //   eglishName: 'traffic'.toUpperCase(),
-  //   imgUrl: require('./img/icon_jt.png'),
-  //   activeImgUrl: require('./img/icon_jt_active.png'),
-  // },
-  // {
-  //   name: '养老',
-  //   eglishName: 'Providing for the aged'.toUpperCase(),
-  //   imgUrl: require('./img/icon_yliao.png'),
-  //   activeImgUrl: require('./img/icon_yliao_active.png'),
-  // },
-  // {
-  //   name: '治安',
-  //   eglishName: 'public security'.toUpperCase(),
-  //   imgUrl: require('./img/icon_za.png'),
-  //   activeImgUrl: require('./img/icon_za_active.png'),
-  // },
-  // {
-  //   name: '人社',
-  //   eglishName: 'Human society'.toUpperCase(),
-  //   imgUrl: require('./img/icon_rs.png'),
-  //   activeImgUrl: require('./img/icon_jy_active.png'),
-  // },
 ]);
+// 一次性获取列表数据
+async function getDataAll() {
+  const res = await getDirectoryList();
+  console.log(res);
+}
 // 获取列表数据
 async function getDataList() {
   let res;
-  switch (seletType.name) {
-    case '业务导览':
-      res = await getBusinessDirectory();
-      break;
-    case '技术导览':
-      res = await getTechnicalDirectory();
-      break;
-    case '地域导览':
-      res = await getAreaDirectory();
-      break;
-    default:
-      res = [];
-  }
-  dataList.value = res.labels.map((i) => {
+  const data = {
+    dimNames: [seletType.name],
+  };
+  res = await getDirectoryList(data);
+  dataList.value = res[0].map((i) => {
     return {
-      name: i,
+      name: i.name,
       checked: false,
       position: 'left',
-      type: res.theme,
+      type: seletType.name,
       eglishName: ''.toUpperCase(),
       imgUrl: require('./img/icon_jy.png'),
       activeImgUrl: require('./img/icon_jy_active.png'),
@@ -179,6 +125,7 @@ async function getDataList() {
     chengeCheckedActive(state.getters.query);
   });
 }
+
 // 选中导览词
 function selectKey(item) {
   // activeIndex.value = index;

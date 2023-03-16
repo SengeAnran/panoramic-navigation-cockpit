@@ -36,8 +36,8 @@ module.exports = {
     port: 5077, // 端口号
     proxy: {
       '/apiProxy': {
-        // target: 'http://192.168.8.188:8088/',
-        target: 'http://172.16.24.1/',
+        target: 'http://192.168.8.188:8088/',
+        // target: 'http://172.16.24.1/',
         changeOrigin: true,
         pathRewrite: { '^/apiProxy': '' },
       },
