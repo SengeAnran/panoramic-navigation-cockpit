@@ -117,12 +117,26 @@ watchEffect(async () => {
   const businessGuide = query.filter((d) => d.type === 'field').map((d) => d.name);
   const hotWords = query.filter((d) => d.type === 'heightWord').map((d) => d.name);
   const keyWords = query.filter((d) => d.type === 'search').map((d) => d.name);
-
+  let queryDims = [];
+  query
+    .filter((d) => d.type !== 'search' && d.type !== 'heightWord' && d.type !== 'field')
+    .forEach((d) => {
+      const index = queryDims.findIndex((j) => j.dimension === d.type);
+      if (index === -1) {
+        queryDims.push({
+          top: d.type,
+          seconds: [d.name],
+        });
+      } else {
+        queryDims[index].seconds.push(d.name);
+      }
+    });
   const params = {
-    areaCode: currentArea.value === 100000 ? undefined : currentArea.value,
+    areaCode: currentArea.value === 100000 ? [] : [currentArea.value],
     businessGuide: businessGuide.length ? businessGuide[0] : '',
-    hotWords: hotWords.length ? hotWords[0] : '',
-    keyWords: keyWords.length ? keyWords[0] : '',
+    hotWords: hotWords.length ? hotWords : [],
+    keys: keyWords.length ? keyWords : [],
+    queryDims: queryDims,
   };
   const data = await getSystemList(params);
   console.log(data);
