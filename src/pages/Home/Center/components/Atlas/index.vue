@@ -63,10 +63,8 @@ const contrastData = reactive({
 });
 watch(
   () => systemList.value,
-  (val) => {
-    if (val.length > 0) {
-      getSystemListSmall();
-    }
+  () => {
+    getSystemListSmall();
   },
   {
     deep: true,
@@ -125,6 +123,9 @@ function getSystemListSmall() {
     const tree = deepClone(systemList.value[i]);
     delChildrenOnFirst(tree, 3);
     systemListSmall.value.push(tree);
+  }
+  if (systemListSmall.value.length === 0) {
+    return;
   }
   moveStart();
 }
