@@ -6,7 +6,7 @@
       :maxzoom="16"
     />
     <OutPolygon :key="currentArea" :code="currentArea" @dblclick="handleClick" />
-    <OdLine :data="odLines" />
+    <OdLine :data="odLines" v-if="showCompany && showSystem" />
     <template v-if="showCompany">
       <Marker
         v-for="(item, index) in companyPoints"
@@ -27,13 +27,18 @@
         @openPopup="handleOpen(item)"
         @closePopup="handleClose(item)"
         :markerOptions="{ offset: [0, -27] }"
-        :popupOptions="{ className: 'opacity-popup', maxWidth: 'none', anchor: 'left', closeButton: false }"
+        :popupOptions="{
+          className: 'opacity-popup',
+          maxWidth: 'none',
+          anchor: 'left',
+          closeButton: false,
+        }"
       >
         <template #icon>
           <MarkerIcon type="system" />
         </template>
         <template #popup>
-          <SystemPopup :point="item._" />
+          <SystemPopup :point="item._" @open="openSingleDetail" />
         </template>
       </Marker>
     </template>
@@ -108,20 +113,46 @@ function handleOpen(item) {
 function handleClose() {
   odLines.value = undefined;
 }
+function openSingleDetail(detail) {
+  // const mock = {
+  //   node_id: '3a0a0169-6b2b-a154-209a-b1821ef25eed',
+  //   node_type: 'page',
+  //   node_name: '政务公开',
+  //   meta: {
+  //     url: 'https://www.zj.gov.cn/col/col1543574/index.html',
+  //     video_url: '',
+  //   },
+  //   system: '浙江政务服务网',
+  //   sys_id: '3a0a015b-fc76-4b11-1b6f-20cea2e2db40',
+  //   children: [],
+  //   name: '政务公开',
+  // };
+  const query = {
+    sys_id: detail.id,
+    system: detail.systemName,
+    meta: {
+      url: detail.rootUrl,
+      video_url: detail.rootVideoUrl,
+    },
+  };
+  // console.log(detail);
+  const openUrl = '/one-map?data=' + JSON.stringify(query);
+  window.open(openUrl, '_blank');
+}
+
 watchEffect(async () => {
   systemPoints.value = undefined;
   companyPoints.value = undefined;
   odLines.value = undefined;
   const query = store.getters.query?.length ? store.getters.query : [];
-  // console.log(query);
-  const businessGuide = query.filter((d) => d.type === 'field').map((d) => d.name);
+  // console.log('query', query);
   const hotWords = query.filter((d) => d.type === 'heightWord').map((d) => d.name);
   const keyWords = query.filter((d) => d.type === 'search').map((d) => d.name);
-  let queryDims = [];
+  const queryDims = [];
   query
     .filter((d) => d.type !== 'search' && d.type !== 'heightWord' && d.type !== 'field')
     .forEach((d) => {
-      const index = queryDims.findIndex((j) => j.dimension === d.type);
+      const index = queryDims.findIndex((j) => j.top === d.type);
       if (index === -1) {
         queryDims.push({
           top: d.type,
@@ -132,14 +163,14 @@ watchEffect(async () => {
       }
     });
   const params = {
-    areaCode: currentArea.value === 100000 ? [] : [currentArea.value],
-    businessGuide: businessGuide.length ? businessGuide[0] : '',
+    areaCode: [currentArea.value],
     hotWords: hotWords.length ? hotWords : [],
     keys: keyWords.length ? keyWords : [],
     queryDims: queryDims,
   };
+  // console.log(params);
   const data = await getSystemList(params);
-  console.log(data);
+  console.log('alterman', data);
   systemPoints.value = data
     .filter((d) => d.areas?.length)
     .map((d) => {

@@ -12,3 +12,7 @@ export const getProjectTypeList = (data) => {
 export const getProjectList = (data) => {
   return axios.post('/api/project/getProjectList', data);
 };
+
+export const getProjectDetail = (id) => {
+  return axios.get(`/api/project/getProjectDetails/${id}`);
+};
