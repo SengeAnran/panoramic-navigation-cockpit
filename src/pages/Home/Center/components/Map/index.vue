@@ -131,6 +131,7 @@ async function openSingleDetail(detail) {
   const query = {
     sys_id: detail.id,
     system: detail.systemName,
+    node_name: detail.systemName,
     meta: {
       url: detail.rootUrl,
       video_url: detail.rootVideoUrl,
