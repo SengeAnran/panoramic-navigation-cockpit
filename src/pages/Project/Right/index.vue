@@ -32,8 +32,8 @@ async function getDataList() {
     return {
       position: 'right',
       type: 'hotWord',
-      name: i.label,
-      value: i.heat,
+      name: i,
+      value: Math.random() * 15,
       checked: false,
     };
   });

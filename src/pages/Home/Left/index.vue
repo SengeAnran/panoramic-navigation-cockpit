@@ -210,7 +210,7 @@ function setPosition() {
     .list-btn {
       cursor: pointer;
       position: absolute;
-      left: 205px;
+      left: 246px;
       top: 20px;
       width: 24px;
       height: 24px;
