@@ -11,7 +11,10 @@
 import SvgBox from './SvgBox';
 import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
-import { getNodeById } from '@/api/atlas';
+import {
+  // changeToggle,
+  getNodeById,
+} from '@/api/atlas';
 import { initNodeTree } from '@/pages/Home/Center/components/Atlas/constants';
 const state = useStore();
 const systemList = ref({});
@@ -28,6 +31,24 @@ function getNodeData() {
   getNodeById(data).then((res) => {
     res && initNodeTree(res, true);
     systemList.value = res;
+    // 从地图跳转无节点数据
+    // if (!nodeInfo.value.name && !nodeInfo.value.node_id) {
+    //   let { url, video_url } = res.children[0]?.meta || {};
+    //   // 兼容字符串格式数据
+    //   if (!(url instanceof Array)) {
+    //     url = [url];
+    //   }
+    //   if (!(video_url instanceof Array)) {
+    //     video_url = [video_url];
+    //   }
+    //   const data = { url, video_url, topicPattern: 'SINGLE' };
+    //   if (url) {
+    //     changeToggle(data);
+    //   }
+    //   if (res?.children[0]) {
+    //     state.commit('atlasMap/SET_DIALOG_INFO', res.children[0]);
+    //   }
+    // }
   });
 }
 </script>
