@@ -28,13 +28,18 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
-defineProps({
+import { getProjectDetail } from '@/api/project';
+const props = defineProps({
   point: null,
 });
 const areaMap = ref();
 onMounted(async () => {
   const { data } = await axios.get('/map/flat.json');
   areaMap.value = data;
+});
+onMounted(async () => {
+  const data = await getProjectDetail(props.point?._?.projectId);
+  console.log(data);
 });
 function getName(code) {
   return areaMap.value?.[code]?.name || code;

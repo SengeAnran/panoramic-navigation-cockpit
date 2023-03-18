@@ -3,7 +3,7 @@
     <RaterLayer :tiles="tiles" :tileSize="256" :maxzoom="16" />
     <OutPolygon :key="currentArea" :code="currentArea" @dblclick="handleClick" />
     <DemoAreas v-if="showArea" :codes="demoArea" />
-    <OdLine :data="odLines" />
+    <OdLine :data="odLines" v-if="showCompany && showProject" />
     <template v-if="showCompany">
       <Marker
         v-for="item in companyList"
@@ -89,18 +89,31 @@ watchEffect(async () => {
   odLines.value = undefined;
   demoArea.value = undefined;
   const query = store.getters.query;
+  debugger;
   const projectTypes = query.filter((d) => d.type === '项目类型').map((d) => d.value);
-  const keys = query.filter((d) => d.type === '项目领域').map((d) => d.value);
+  const keys = query.filter((d) => d.type === 'search').map((d) => d.value);
+  const queryDims = [];
+  query
+    .filter((d) => d.type !== 'search' && d.type !== '项目类型')
+    .forEach((d) => {
+      const index = queryDims.findIndex((j) => j.top === d.type);
+      if (index === -1) {
+        queryDims.push({
+          top: d.type,
+          seconds: [d.name],
+        });
+      } else {
+        queryDims[index].seconds.push(d.name);
+      }
+    });
   console.log(projectTypes, keys);
-  const key = '物联网智能感知终端平台系统与应用验证';
+  // const key = '物联网智能感知终端平台系统与应用验证';
   // const key = undefined;
   const res = await getProjectList({
-    projectTypes: ['GXGJJS'],
-    key,
-    // area: {
-    //   areaId: currentAreaDetail.value.adcode,
-    //   level: currentAreaDetail.value?.level,
-    // },
+    areaCodes: ['' + currentArea.value],
+    projectTypes,
+    keys,
+    queryDims,
   }).catch((err) => {
     // console.log(err.message);
     ElMessage.error({

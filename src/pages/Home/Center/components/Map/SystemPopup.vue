@@ -1,5 +1,5 @@
 <template>
-  <div class="system-popup">
+  <div class="system-popup" @click="handleDetail">
     <h4 class="title">{{ point?.name }}</h4>
     <div class="company-list">
       <div class="company" v-for="item in detail?.companies" :key="item">
@@ -7,8 +7,8 @@
       </div>
     </div>
     <div class="label-list" v-if="detail?.labels">
-      <div class="label" v-for="item in detail?.labels" :key="item.parentLabel">
-        {{ item.parentLabel }}
+      <div class="label" v-for="item in detail?.labels" :key="item">
+        {{ item }}
       </div>
     </div>
   </div>
@@ -20,9 +20,12 @@ import { getSystemDetail } from '@/api/atlas';
 const props = defineProps({
   point: Object,
 });
+const emit = defineEmits(['open']);
 // const emit = defineEmits(['']);
-
 const detail = shallowRef();
+function handleDetail() {
+  emit('open', detail.value);
+}
 onMounted(async () => {
   const data = await getSystemDetail(props.point.id);
   detail.value = data;
@@ -74,7 +77,9 @@ onMounted(async () => {
     padding-left: 18px;
     display: flex;
     .label {
-      background: #46e9feaa;
+      width: 70px;
+      background: url('./label-bg.png');
+      background-size: 100% 100%;
       color: #000;
       height: 30px;
       padding: 0 18px;
@@ -83,6 +88,7 @@ onMounted(async () => {
       font-family: Source Han Sans CN;
       font-weight: 500;
       color: #0b203b;
+      margin-right: 12px;
     }
   }
 }
