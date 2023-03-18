@@ -48,6 +48,7 @@
 <script setup>
 import { shallowRef, onMounted, ref, computed, onBeforeUnmount, watchEffect } from 'vue';
 import { useStore } from 'vuex';
+import { changeToggle } from '@/api/atlas';
 import Map from '@/MMap/Map';
 import RaterLayer from '@/MMap/RaterLayer';
 import Marker from '@/MMap/Marker';
@@ -113,7 +114,7 @@ function handleOpen(item) {
 function handleClose() {
   odLines.value = undefined;
 }
-function openSingleDetail(detail) {
+async function openSingleDetail(detail) {
   // const mock = {
   //   node_id: '3a0a0169-6b2b-a154-209a-b1821ef25eed',
   //   node_type: 'page',
@@ -135,9 +136,20 @@ function openSingleDetail(detail) {
       video_url: detail.rootVideoUrl,
     },
   };
+  const { url, video_url } = query.meta || {};
+  const data = { url, video_url, topicPattern: 'SINGLE' };
+  const res = await changeToggle(data);
+  console.log(res);
+  store.commit('SET_CONTENT_OPACITY', true);
+  // const rootId = getTreeRootId(node);
+  // console.log(rootId, node.data);
+  store.commit('atlasMap/SET_DIALOG_INFO', { rootId: query.sys_id, ...query });
+  store.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
+  store.commit('SET_SHOW_ONE_DIALOG', true);
+  store.commit('SET_MAIN_TITLE', query.system);
   // console.log(detail);
-  const openUrl = '/one-map?data=' + JSON.stringify(query);
-  window.open(openUrl, '_blank');
+  // const openUrl = '/one-map?data=' + JSON.stringify(query);
+  // window.open(openUrl, '_blank');
 }
 
 watchEffect(async () => {
