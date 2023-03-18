@@ -65,6 +65,7 @@ async function clickOne(node) {
     const data = { url, video_url, topicPattern: 'SINGLE' };
     await changeToggle(data);
     const query = { ...node.data, children: [] };
+    console.log(query);
     const openUrl = '/one-map?data=' + JSON.stringify(query);
     window.open(openUrl, '_blank');
     // console.log(res);
