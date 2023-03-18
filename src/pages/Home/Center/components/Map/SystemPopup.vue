@@ -76,6 +76,8 @@ onMounted(async () => {
   .label-list {
     padding-left: 18px;
     display: flex;
+    flex-wrap: wrap;
+    max-width: 400px;
     .label {
       width: 70px;
       background: url('./label-bg.png');
