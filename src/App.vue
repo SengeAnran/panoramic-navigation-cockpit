@@ -39,5 +39,10 @@ function initStocket() {
       state.commit('atlasMap/SET_VIEW_NODE_URL', res.url);
     }
   });
+  stocket.value.on('notifyXpath', (res) => {
+    if (res && res.url && res.url !== state.getters.dialogInfo.meta.url) {
+      state.commit('atlasMap/SET_VIEW_NODE_URL', res.url);
+    }
+  });
 }
 </script>

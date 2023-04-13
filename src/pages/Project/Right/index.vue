@@ -37,6 +37,7 @@ async function getDataList() {
       checked: false,
     };
   });
+  console.log(dataList.value);
   nextTick(() => {
     setWordOption();
   });
@@ -84,11 +85,10 @@ onMounted(() => {
 // 设置热词的位置，大小，透明度
 function setWordOption() {
   // 设置元素滚动时的动态的位置
-  const sortList = dataList.value.sort((a, b) => {
-    a.value - b.value;
-  });
+  const sortList = dataList.value.sort((a, b) => a.value - b.value);
   const maxValue = sortList[0].value;
   const minValue = sortList[sortList.length - 1].value;
+  console.log(sortList, maxValue, minValue);
   // 比例尺
   const fontSizeScale = d3.scaleLinear().domain([minValue, maxValue]).range([20, 48]);
   const opacityScale = d3.scaleLinear().domain([minValue, maxValue]).range([0.2, 1]);
@@ -96,7 +96,7 @@ function setWordOption() {
   for (let i = 0; i < listItem.length; i++) {
     const fontSize = fontSizeScale(dataList.value[i].value);
     const opacity = opacityScale(dataList.value[i].value);
-    const left = Math.random() * 200;
+    const left = Math.random() * 150;
     const top = Math.random() * 400;
     if (dataList.value[i].value === maxValue) {
       // 最大词居中

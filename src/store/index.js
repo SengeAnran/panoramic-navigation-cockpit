@@ -15,6 +15,7 @@ export default createStore({
     userInfo: {},
     orgId: storage.getOrgId() || '', // 数据权限id
     bottomOpacity: false, // 底部透明设置
+    hideBottom: false, // 隐藏底部
     contentOpacity: false, // 主体内容透明设置
     mainTitle: defaultMainTitle, // 页面标题
     showOneDialog: false, // 显示单系统弹窗
@@ -50,6 +51,10 @@ export default createStore({
     // 底部透明设置
     SET_BOTTOM_OPACITY(state, payload) {
       state.bottomOpacity = payload;
+    },
+    // 隐藏底部
+    SET_HIDE_BOTTOM(state, payload) {
+      state.hideBottom = payload;
     },
     // 内容透明设置
     SET_CONTENT_OPACITY(state, payload) {
@@ -117,6 +122,7 @@ export default createStore({
     viewNodeUrl: (state) => state.atlasMap.viewNodeUrl,
     intervalTime: (state) => state.intervalTime,
     bottomOpacity: (state) => state.bottomOpacity,
+    hideBottom: (state) => state.hideBottom,
     contentOpacity: (state) => state.contentOpacity,
     showOneDialog: (state) => state.showOneDialog,
     query: (state) => state.query,

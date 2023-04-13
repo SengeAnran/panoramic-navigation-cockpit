@@ -1,19 +1,22 @@
 <!-- AppName -->
 <template>
-  <div class="AppTitle-root">
+  <div class="AppTitle-root" v-if="!hideBottom">
     <div class="first-name" @click="changeShow()">{{ firstName }}</div>
   </div>
   <ChangeDialog v-if="showChangeDialog" @change="handleChange" />
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import ChangeDialog from './ChangeDialog';
 let showChangeDialog = ref(false);
 const state = useStore();
 
 const firstName = ref('切换');
+const hideBottom = computed(() => {
+  return state.getters.hideBottom;
+});
 function changeShow() {
   showChangeDialog.value = !showChangeDialog.value;
   state.commit('SET_CONTENT_OPACITY', showChangeDialog.value);

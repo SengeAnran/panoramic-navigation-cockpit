@@ -89,7 +89,6 @@ watchEffect(async () => {
   odLines.value = undefined;
   demoArea.value = undefined;
   const query = store.getters.query;
-  debugger;
   const projectTypes = query.filter((d) => d.type === '项目类型').map((d) => d.value);
   const keys = query.filter((d) => d.type === 'search').map((d) => d.value);
   const queryDims = [];

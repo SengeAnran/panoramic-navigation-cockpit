@@ -141,6 +141,7 @@ function changeAtlas(typeName) {
 }
 function showRes() {
   showSearchRes.value = !showSearchRes.value;
+  state.commit('SET_HIDE_BOTTOM', showSearchRes.value);
 }
 async function checkOne(index, click) {
   // 控制对比图谱只能选择两个进行对比

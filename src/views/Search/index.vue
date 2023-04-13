@@ -68,7 +68,7 @@ function initVoice() {
         res.forEach((i) => {
           const data = {
             position: '',
-            type: 'voice',
+            type: 'search',
             name: i,
           };
           state.commit('ADD_QUERY', data);

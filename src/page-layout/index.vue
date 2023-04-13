@@ -4,7 +4,7 @@
   <FitScreen displayType="centerFull" :pageSize="pageSize" />
   <AppTitle v-if="!hidePageTitle" style="z-index: 1" />
   <router-view v-if="!isLoading" />
-  <AppBottom v-if="!hidePageTitle" :class="{ opacity: bottomOpacity }" />
+  <AppBottom v-if="!hidePageTitle || !hideBottom" :class="{ opacity: bottomOpacity }" />
   <Search />
 </template>
 
@@ -23,6 +23,9 @@ const curTheme = computed(() => store.state.theme.curTheme);
 const isLoading = ref(false);
 const bottomOpacity = computed(() => {
   return store.getters.bottomOpacity;
+});
+const hideBottom = computed(() => {
+  return store.getters.hideBottom;
 });
 const hidePageTitle = computed(() => store.state.hidePageTitle);
 // 刷新页面
