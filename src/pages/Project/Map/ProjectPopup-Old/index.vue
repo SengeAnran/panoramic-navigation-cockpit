@@ -3,19 +3,14 @@
     <div class="content">
       <h3 class="project-name">{{ point?._?.projectName }}</h3>
       <div class="delimiter" />
-      <div class="center-section">
-        <div class="item-box">
-          <img src="./icon_01.png" alt="" />
-          <div>牵头单位名称可能会很长</div>
-        </div>
-        <div class="item-box">
-          <img src="./icon_02.png" alt="" />
-          <div>负责人</div>
-        </div>
-      </div>
       <div class="body">
         <div class="companies">
-          <Force @showDetail="showDetail" />
+          <h3 class="title">参与单位</h3>
+          <div class="list">
+            <div class="item" v-for="item in point?._?.companies" :key="item.companyName">
+              {{ item.companyName }}
+            </div>
+          </div>
         </div>
         <div class="delimiter" />
         <div class="areas">
@@ -28,12 +23,9 @@
         </div>
       </div>
     </div>
-    <EnterpriseDetails class="enterprise-details" v-if="showEnterpriseDetails" />
   </div>
 </template>
 <script setup>
-import Force from './Force';
-import EnterpriseDetails from './EnterpriseDetails';
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { getProjectDetail } from '@/api/project';
@@ -41,7 +33,6 @@ const props = defineProps({
   point: null,
 });
 const areaMap = ref();
-const showEnterpriseDetails = ref(false);
 onMounted(async () => {
   const { data } = await axios.get('/map/flat.json');
   areaMap.value = data;
@@ -53,14 +44,9 @@ onMounted(async () => {
 function getName(code) {
   return areaMap.value?.[code]?.name || code;
 }
-function showDetail(data) {
-  console.log(data);
-  showEnterpriseDetails.value = true;
-}
 </script>
 <style lang="scss" scoped>
 .project-popup {
-  position: relative;
   border: 1px solid #46e9fe;
   border-radius: 10px;
   padding: 12px;
@@ -97,24 +83,6 @@ function showDetail(data) {
       margin: 10px 0;
       background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #42c2d9 50%, rgba(255, 255, 255, 0) 100%);
     }
-    .center-section {
-      display: flex;
-      margin: 16px 0;
-      .item-box {
-        font-size: 18px;
-        font-family: Source Han Sans CN;
-        font-weight: 400;
-        color: #00d8ff;
-        display: flex;
-        align-items: center;
-        &:first-child {
-          margin-right: 48px;
-        }
-        img {
-          margin-right: 6px;
-        }
-      }
-    }
     .body {
       display: flex;
       align-items: flex-start;
@@ -125,12 +93,6 @@ function showDetail(data) {
         height: auto;
         align-self: stretch;
         background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #42c2d9 50%, rgba(255, 255, 255, 0) 100%);
-      }
-      .companies {
-        width: 572px;
-        height: 410px;
-        background: rgba(0, 21, 46, 0.8);
-        box-shadow: 0px 11px 28px 2px rgba(16, 38, 70, 0.5), 0px 0px 40px 0px #1d4d8d;
       }
       .companies,
       .areas {

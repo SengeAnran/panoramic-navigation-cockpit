@@ -1,66 +1,21 @@
 <template>
-  <div class="project-popup">
+  <div class="company-popup">
     <div class="content">
-      <h3 class="project-name">{{ point?._?.projectName }}</h3>
+      <h3 class="project-name">企业详情</h3>
       <div class="delimiter" />
-      <div class="center-section">
-        <div class="item-box">
-          <img src="./icon_01.png" alt="" />
-          <div>牵头单位名称可能会很长</div>
-        </div>
-        <div class="item-box">
-          <img src="./icon_02.png" alt="" />
-          <div>负责人</div>
-        </div>
-      </div>
-      <div class="body">
-        <div class="companies">
-          <Force @showDetail="showDetail" />
-        </div>
-        <div class="delimiter" />
-        <div class="areas">
-          <h3 class="title">示范地区</h3>
-          <div class="list">
-            <div class="item" v-for="item in point?._?.areas" :key="item.areaId">
-              {{ getName(item.areaId) }}
-            </div>
-          </div>
-        </div>
-      </div>
+      <div class="body"></div>
     </div>
-    <EnterpriseDetails class="enterprise-details" v-if="showEnterpriseDetails" />
   </div>
 </template>
-<script setup>
-import Force from './Force';
-import EnterpriseDetails from './EnterpriseDetails';
-import { onMounted, ref } from 'vue';
-import axios from 'axios';
-import { getProjectDetail } from '@/api/project';
-const props = defineProps({
-  point: null,
-});
-const areaMap = ref();
-const showEnterpriseDetails = ref(false);
-onMounted(async () => {
-  const { data } = await axios.get('/map/flat.json');
-  areaMap.value = data;
-});
-onMounted(async () => {
-  const data = await getProjectDetail(props.point?._?.projectId);
-  console.log(data);
-});
-function getName(code) {
-  return areaMap.value?.[code]?.name || code;
-}
-function showDetail(data) {
-  console.log(data);
-  showEnterpriseDetails.value = true;
-}
-</script>
+<script setup></script>
 <style lang="scss" scoped>
-.project-popup {
-  position: relative;
+.company-popup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 860px;
+  height: 852px;
+  background: #091c35;
   border: 1px solid #46e9fe;
   border-radius: 10px;
   padding: 12px;
