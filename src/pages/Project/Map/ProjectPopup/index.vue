@@ -28,12 +28,20 @@
         </div>
       </div>
     </div>
-    <EnterpriseDetails class="enterprise-details" v-if="showEnterpriseDetails" />
+    <!--    企业详情-->
+    <EnterpriseDetails
+      @closeView="showEnterpriseDetails = false"
+      class="enterprise-details"
+      v-if="showEnterpriseDetails"
+    />
+    <!--    人才详情-->
+    <TalentDetails @closeView="showTalentDetails = false" class="enterprise-details" v-if="showTalentDetails" />
   </div>
 </template>
 <script setup>
 import Force from './Force';
 import EnterpriseDetails from './EnterpriseDetails';
+import TalentDetails from './TalentDetails';
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { getProjectDetail } from '@/api/project';
@@ -42,6 +50,7 @@ const props = defineProps({
 });
 const areaMap = ref();
 const showEnterpriseDetails = ref(false);
+const showTalentDetails = ref(false);
 onMounted(async () => {
   const { data } = await axios.get('/map/flat.json');
   areaMap.value = data;
@@ -55,7 +64,7 @@ function getName(code) {
 }
 function showDetail(data) {
   console.log(data);
-  showEnterpriseDetails.value = true;
+  showTalentDetails.value = true;
 }
 </script>
 <style lang="scss" scoped>

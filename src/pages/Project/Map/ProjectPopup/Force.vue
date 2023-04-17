@@ -204,7 +204,7 @@ function initChart() {
       },
       borderWidth: 1,
       borderColor: '#fff',
-      color: '#84CC1C',
+      color: '#E89D42',
       value: 25,
     };
     optionData.FirstLevelData[index].symbolSize = 48;

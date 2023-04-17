@@ -1,6 +1,11 @@
 <!-- CommonTable -->
 <template>
-  <div class="CommonTable-root" :class="{ panel: hasPanel }">
+  <div
+    class="CommonTable-root"
+    :class="{ panel: hasPanel }"
+    @mouseover="mouseover = true"
+    @mouseout="mouseover = false"
+  >
     <el-table
       ref="commonTable"
       :data="dataSource"
@@ -10,6 +15,7 @@
       style="width: 100%"
       @selection-change="handleSelectionChange"
       @sort-change="(sortProp) => $emit('sort-change', sortProp)"
+      @row-click="rowClick"
     >
       <el-table-column type="selection" width="50" v-if="hasSelection" />
       <el-table-column label="序号" type="index" :width="indexWidth" :index="indexMethod" v-if="hasIndex" />
@@ -18,11 +24,86 @@
           v-if="column.scopedSlots"
           :key="index"
           :label="column.label"
+          :prop="column.scopedSlots"
           :width="column.width"
           :min-width="column.minWidth"
+          :align="column.align"
+          :sortable="column.sortable"
+          :fixed="column.fixed"
         >
           <template v-slot="scope">
             <slot :scope="scope" :name="column.scopedSlots"></slot>
+          </template>
+        </el-table-column>
+        <!--        二级目录-->
+        <el-table-column
+          v-else-if="column.children"
+          :key="column.label + index"
+          :label="column.label"
+          header-align="center"
+          :width="column.width"
+          :min-width="column.minWidth"
+        >
+          <template v-for="(column, index) in column.children">
+            <el-table-column
+              v-if="column.scopedSlots"
+              :key="'children' + index"
+              :label="column.label"
+              :width="column.width"
+              :min-width="column.minWidth"
+              :align="column.align"
+            >
+              <template v-slot="scope">
+                <slot :scope="scope" :name="column.scopedSlots"></slot>
+              </template>
+            </el-table-column>
+            <!--            三级目录-->
+            <el-table-column
+              v-else-if="column.children"
+              :key="column.label + index"
+              :label="column.label"
+              header-align="center"
+              :width="column.width"
+              :min-width="column.minWidth"
+            >
+              <template v-for="(column, index) in column.children">
+                <el-table-column
+                  v-if="column.scopedSlots"
+                  :key="'childrens' + index"
+                  :label="column.label"
+                  :width="column.width"
+                  :min-width="column.minWidth"
+                  :align="column.align"
+                  :sortable="column.sortable"
+                >
+                  <template v-slot="scope">
+                    <slot :scope="scope" :name="column.scopedSlots"></slot>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  v-else
+                  :key="index + 'childrenskey'"
+                  :prop="column.dataIndex"
+                  :label="column.label"
+                  :width="column.width"
+                  :min-width="column.minWidth"
+                  :show-overflow-tooltip="column.showOverflowTooltip || false"
+                  :sortable="column.sortable"
+                  :align="column.align"
+                ></el-table-column>
+              </template>
+            </el-table-column>
+            <el-table-column
+              v-else
+              :key="index + 'childrenkey'"
+              :prop="column.dataIndex"
+              :label="column.label"
+              :width="column.width"
+              :min-width="column.minWidth"
+              :show-overflow-tooltip="column.showOverflowTooltip || false"
+              :sortable="column.sortable"
+              :align="column.align"
+            ></el-table-column>
           </template>
         </el-table-column>
         <el-table-column
@@ -34,6 +115,8 @@
           :min-width="column.minWidth"
           :show-overflow-tooltip="column.showOverflowTooltip || false"
           :sortable="column.sortable"
+          @sort-change="(sortProp) => $emit('sort-change', sortProp)"
+          :align="column.align"
         ></el-table-column>
       </template>
     </el-table>
@@ -45,13 +128,15 @@
       v-bind="page"
       v-model:current-page="page.currentPage"
       class="self-pagination"
+      :pager-count="5"
     >
     </el-pagination>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { minElapsed } from '@/utils';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 /**
  * 表格组件 CommonTable 用法同element-plus中的Table
  * hasPanel 是否是面板表格样式
@@ -75,9 +160,10 @@ const props = defineProps({
   hasSelection: { type: Boolean, default: false },
   selectedList: { type: Array, default: () => [] },
   pagination: { type: [Object, Boolean] },
+  isAutoScroll: { type: Boolean, default: false },
 });
 
-const emits = defineEmits(['changePage', 'update:selectedList', 'sort-change']);
+const emits = defineEmits(['changePage', 'update:selectedList', 'sort-change', 'row-click']);
 
 const defaultPagination = ref({
   small: false,
@@ -91,6 +177,9 @@ const defaultPagination = ref({
 });
 
 const commonTable = ref(null);
+let autoTimer = null;
+const mouseover = ref(false);
+const isPause = ref(false);
 
 const page = computed(() => {
   return {
@@ -123,6 +212,74 @@ function handleCurrentChange(val) {
 function handleSelectionChange(val) {
   emits('update:selectedList', val);
 }
+function rowClick(val) {
+  emits('row-click', val);
+}
+
+function handleAutoScroll() {
+  if (!props.isAutoScroll) return;
+  const table = commonTable.value;
+  if (!table) return;
+  const divData = table.$refs.bodyWrapper;
+  const tableHeader = table.$refs.headerWrapper;
+  // 负责滚动的容器
+  const scrollView = divData && divData.getElementsByClassName('el-scrollbar__wrap')[0];
+  // 内容容器，一般内容高度是大于滚动容器的高度
+  const contentView = divData && divData.getElementsByClassName('el-scrollbar__view')[0];
+
+  if (!scrollView || !contentView) return;
+  let start;
+  function step(timestamp) {
+    // if (Array.isArray([])) return;
+    autoTimer = requestAnimationFrame(step);
+    if (start === undefined) {
+      start = timestamp;
+    }
+    const elapsed = timestamp - start;
+
+    // 限制刷新频率
+    if (elapsed < minElapsed) return;
+    start = timestamp;
+    // 整个高度
+    const tableHeight = contentView.scrollHeight;
+
+    let height = 0;
+    if (tableHeader) {
+      const tableHeaderStyle = getComputedStyle(tableHeader);
+      height = tableHeaderStyle?.height || 0;
+    }
+
+    const tableBoxHeight = (parseInt(props.maxHeight || props.height) || 0) - (parseInt(height) || 0);
+
+    if (tableHeight <= tableBoxHeight + 100) return;
+    if (mouseover.value || isPause.value) return;
+    scrollView.scrollTop += 1;
+    // 判断元素是否滚动到底部(可视高度+距离顶部=整个高度)
+    if (scrollView.clientHeight + scrollView.scrollTop == tableHeight) {
+      // 重置table距离顶部距离
+      scrollView.scrollTop = 0;
+    }
+  }
+  step();
+}
+
+function play() {
+  isPause.value = false;
+}
+
+function pause() {
+  isPause.value = true;
+}
+
+onMounted(handleAutoScroll);
+
+onUnmounted(() => {
+  if (autoTimer) {
+    cancelAnimationFrame(autoTimer);
+  }
+});
+
+defineExpose({ play, pause });
 </script>
 
 <style lang="scss">

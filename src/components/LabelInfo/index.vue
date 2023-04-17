@@ -38,6 +38,7 @@
  * @param {String, Number} label 文字内容
  * @param {Number} num 数值
  * @param {String} unit 单位
+ * @param {String} valueSize 数值字体大小
  * @param {Number} smallNum 数值
  * @param {String} smallUnit 单位
  * @param {String} change 数值变化 可选[reduce, add]
