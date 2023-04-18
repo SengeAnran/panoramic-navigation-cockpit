@@ -11,7 +11,7 @@
           <div class="self-info">
             <div class="left">
               <div class="header-logo">
-                <img src="./header.png" alt="" />
+                <img src="../header.png" alt="" />
               </div>
               <div class="info">
                 <div class="name">
@@ -46,11 +46,6 @@
           <div class="item-text">
             <div class="white-text">科技创新活跃度:</div>
             <LabelInfo class="text-num" :num="99.9" :valueSize="33" />
-          </div>
-          <div class="item-text">
-            <div class="white-text">参与项目:</div>
-            <div class="blue-text">项目名称可能会很长最起码预留20字</div>
-            <div class="blue-text">项目名称可能会很长最起码预留20字</div>
           </div>
           <div class="item-text">
             <div class="white-text">人物背景:</div>
@@ -135,7 +130,7 @@ const dataList1 = ref([
   top: 0;
   left: 0;
   width: 860px;
-  height: 852px;
+  //height: 852px;
   background: #091c35;
   border: 1px solid #46e9fe;
   border-radius: 10px;
@@ -180,7 +175,7 @@ const dataList1 = ref([
           display: block;
           width: 17px;
           height: 16px;
-          background: url('./back.png') no-repeat;
+          background: url('../back.png') no-repeat;
           background-size: 100% 100%;
         }
       }

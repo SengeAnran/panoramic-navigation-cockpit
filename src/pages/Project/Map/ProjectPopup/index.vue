@@ -5,11 +5,11 @@
       <div class="delimiter" />
       <div class="center-section">
         <div class="item-box">
-          <img src="./icon_01.png" alt="" />
+          <img src="TalentDetails/icon_01.png" alt="" />
           <div>牵头单位名称可能会很长</div>
         </div>
         <div class="item-box">
-          <img src="./icon_02.png" alt="" />
+          <img src="TalentDetails/icon_02.png" alt="" />
           <div>负责人</div>
         </div>
       </div>
@@ -40,8 +40,8 @@
 </template>
 <script setup>
 import Force from './Force';
-import EnterpriseDetails from './EnterpriseDetails';
-import TalentDetails from './TalentDetails';
+import EnterpriseDetails from './EnterpriseDetails/index';
+import TalentDetails from './TalentDetails/index';
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { getProjectDetail } from '@/api/project';
@@ -63,8 +63,14 @@ function getName(code) {
   return areaMap.value?.[code]?.name || code;
 }
 function showDetail(data) {
-  console.log(data);
-  showTalentDetails.value = true;
+  if (/^人物/.test(data?.data.name)) {
+    showTalentDetails.value = true;
+    return;
+  }
+  if (/^企业/.test(data?.data.name)) {
+    showEnterpriseDetails.value = true;
+    return;
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -72,7 +78,7 @@ function showDetail(data) {
   position: relative;
   border: 1px solid #46e9fe;
   border-radius: 10px;
-  padding: 12px;
+  //padding: 12px;
   .content {
     background: rgba(0, 21, 46, 0.8);
     box-shadow: inset 0px 0px 40px 0px #1d4d8d;

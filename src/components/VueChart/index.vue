@@ -9,6 +9,7 @@
  */
 import { ref, watch, onBeforeUnmount, onMounted, nextTick } from 'vue';
 import * as echarts from 'echarts';
+import '@/utils/echarts-wordcloud.min.js';
 const unwarp = (obj) => obj && (obj.__v_raw || obj.valueOf() || obj);
 
 const props = defineProps({
