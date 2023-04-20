@@ -14,6 +14,9 @@
         <template #icon>
           <CompanyIcon />
         </template>
+        <template #popup>
+          <ProjectPopup :point="item" />
+        </template>
       </Marker>
     </template>
     <template v-if="showProject">

@@ -48,6 +48,11 @@
             <LabelInfo class="text-num" :num="99.9" :valueSize="33" />
           </div>
           <div class="item-text">
+            <div class="white-text">参与项目:</div>
+            <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
+            <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
+          </div>
+          <div class="item-text">
             <div class="white-text">人物背景:</div>
             <div class="white-text">
               这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字。
@@ -78,6 +83,9 @@ import HotWords from './HotWords';
 import FrontiersField from './FrontiersField';
 import DomainRelevance from './DomainRelevance';
 import { ref } from 'vue';
+import { useStore } from 'vuex';
+const store = useStore();
+const emit = defineEmits(['closeView']);
 const tableColumns1 = [
   { label: '一级领域', dataIndex: 'name' },
   { label: '排名', dataIndex: 'value' },
@@ -112,8 +120,15 @@ const dataList1 = ref([
     value: 20,
   },
 ]);
+function showProject() {
+  store.commit('project/SET_PROJECT_INFO', { projectId: 1 });
+  emit('closeView');
+}
 </script>
 <style lang="scss" scoped>
+.can-click {
+  cursor: pointer;
+}
 .blue-text {
   font-size: 16px;
   font-family: PingFang SC;

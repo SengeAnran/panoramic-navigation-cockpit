@@ -57,7 +57,7 @@ export const getSystemsTree = (data) => {
 export const changeToggle = (data) => {
   return axios.request({
     method: 'post',
-    url: '/api/graph/toggle',
+    url: '/api/graph/v2/toggle',
     data,
   });
 };

@@ -43,15 +43,14 @@ async function clickOne(node) {
   // console.log(node);
   if (node.depth && !node.data.counterpart && node.position !== 'center') {
     // 单系统结果展示
-    console.log('需要单展示啦！');
-    let { url, video_url } = node.data.meta || {};
+    console.log('需要单展示啦！', node.data.meta);
+    let { url, video_url, scriptCollectName = '', scriptName = '' } = node.data.meta || {};
     // 兼容字符串格式数据
-    if (!(url instanceof Array)) {
-      url = [url];
-    }
-    if (!(video_url instanceof Array)) {
-      video_url = [video_url];
-    }
+    url = Array.isArray(url) ? url : [url];
+    video_url = Array.isArray(video_url) ? video_url : [video_url];
+    scriptCollectName = Array.isArray(scriptCollectName) ? scriptCollectName : [scriptCollectName];
+    scriptName = Array.isArray(scriptName) ? scriptName : [scriptName];
+
     url = url.filter((i) => {
       if (i) {
         return i;
@@ -62,7 +61,18 @@ async function clickOne(node) {
         return i;
       }
     });
-    const data = { url, video_url, topicPattern: 'SINGLE' };
+    console.log(scriptCollectName);
+    scriptCollectName = scriptCollectName.filter((i) => {
+      if (i) {
+        return i;
+      }
+    });
+    scriptName = scriptName.filter((i) => {
+      if (i) {
+        return i;
+      }
+    });
+    const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
     await changeToggle(data);
 
     // // 打开新页面方式
@@ -87,8 +97,8 @@ async function clickOne(node) {
   if (node.depth && (node.data.counterpart || node.position === 'center')) {
     // 对比系统结果展示
     console.log('需要对比展示啦！');
-    const { url, video_url } = node.data.meta || {};
-    const data = { url, video_url, topicPattern: 'TWIN' };
+    const { url, video_url, scriptCollectName = [], scriptName = [] } = node.data.meta || {};
+    const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'TWIN' };
     console.log(data);
     await changeToggle(data);
     const params = { comparisonMapInfo: state.getters.comparisonMapInfo, nodeNames: node.nodeNames };

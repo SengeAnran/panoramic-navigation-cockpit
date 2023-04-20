@@ -137,8 +137,8 @@ async function openSingleDetail(detail) {
       video_url: detail.rootVideoUrl,
     },
   };
-  const { url, video_url } = query.meta || {};
-  const data = { url, video_url, topicPattern: 'SINGLE' };
+  const { url, video_url, scriptCollectName, scriptName } = query.meta || {};
+  const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
   const res = await changeToggle(data);
   console.log(res);
   store.commit('SET_CONTENT_OPACITY', true);

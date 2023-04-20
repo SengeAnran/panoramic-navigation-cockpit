@@ -5,6 +5,7 @@ import storage from '@/utils/storage';
 import theme from './modules/theme';
 import map from './modules/map';
 import atlasMap from './modules/atlasMap';
+import projectMap from './modules/projectMap';
 const defaultMainTitle = '全景导览驾驶舱';
 export default createStore({
   state: {
@@ -116,7 +117,7 @@ export default createStore({
       });
     },
   },
-  modules: { theme, map, atlasMap },
+  modules: { theme, map, atlasMap, projectMap },
   plugins: process.env.NODE_ENV === 'development' ? [createLogger()] : [],
   getters: {
     viewNodeUrl: (state) => state.atlasMap.viewNodeUrl,
@@ -132,5 +133,6 @@ export default createStore({
     compereNodeInfo: (state) => state.atlasMap.compereNodeInfo,
     comparisonMapInfo: (state) => state.atlasMap.comparisonMapInfo,
     mainTitle: (state) => state.mainTitle,
+    projectInfo: (state) => state.projectMap.projectInfo,
   },
 });

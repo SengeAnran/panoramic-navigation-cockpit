@@ -31,8 +31,8 @@ const forceData = computed(() => {
 async function handleClick(node) {
   // console.log(node);
   console.log('需要单展示啦！');
-  const { url, video_url } = node.meta || {};
-  const data = { url, video_url, topicPattern: 'SINGLE' };
+  const { url, video_url, scriptCollectName, scriptName } = node.meta || {};
+  const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
   const res = await changeToggle(data);
   console.log(res);
   state.commit('SET_CONTENT_OPACITY', true);

@@ -30,15 +30,14 @@ function getNodeData() {
     systemList.value = res;
     // 从地图跳转无节点数据
     if (!nodeInfo.value.name && !nodeInfo.value.node_id) {
-      let { url, video_url } = res.children[0]?.meta || {};
+      let { url, video_url, scriptCollectName, scriptName } = res.children[0]?.meta || {};
       // 兼容字符串格式数据
-      if (!(url instanceof Array)) {
-        url = [url];
-      }
-      if (!(video_url instanceof Array)) {
-        video_url = [video_url];
-      }
-      const data = { url, video_url, topicPattern: 'SINGLE' };
+      url = Array.isArray(url) ? url : [url];
+      video_url = Array.isArray(video_url) ? video_url : [video_url];
+      scriptCollectName = Array.isArray(scriptCollectName) ? scriptCollectName : [scriptCollectName];
+      scriptName = Array.isArray(scriptName) ? scriptName : [scriptName];
+
+      const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
       if (url) {
         changeToggle(data);
       }

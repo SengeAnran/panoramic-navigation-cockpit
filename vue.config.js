@@ -36,8 +36,8 @@ module.exports = {
     port: 5077, // 端口号
     proxy: {
       '/apiProxy': {
-        // target: 'http://192.168.8.188:8088/', // 八方城
-        target: 'http://172.16.24.1:8088', // 公司服务器
+        target: 'http://192.168.8.116:8088/', // 八方城
+        // target: 'http://172.16.24.1:8088', // 公司服务器
         changeOrigin: true,
         pathRewrite: { '^/apiProxy': '' },
       },

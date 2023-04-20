@@ -498,8 +498,8 @@ function render(option) {
         // console.log(info);
         state.commit('atlasMap/SET_COMPERE_NODE_INFO', info);
         // console.log(position, nodes[position]);
-        const { url, video_url } = d.data.meta || {};
-        const data = { url, video_url, topicPattern: 'TWIN' };
+        const { url, video_url, scriptCollectName, scriptName } = d.data.meta || {};
+        const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'TWIN' };
         // console.log(data);
         changeToggle(data);
         return;

@@ -356,15 +356,14 @@ function render(option) {
         state.commit('SET_CONTENT_OPACITY', true);
         state.commit('atlasMap/SET_DIALOG_INFO', d.data);
         console.log('需要单展示啦！');
-        let { url, video_url } = d.data.meta || {};
+        let { url, video_url, scriptCollectName, scriptName } = d.data.meta || {};
         // 兼容字符串格式数据
-        if (!(url instanceof Array)) {
-          url = [url];
-        }
-        if (!(video_url instanceof Array)) {
-          video_url = [video_url];
-        }
-        const data = { url, video_url, topicPattern: 'SINGLE' };
+        url = Array.isArray(url) ? url : [url];
+        video_url = Array.isArray(video_url) ? video_url : [video_url];
+        scriptCollectName = Array.isArray(scriptCollectName) ? scriptCollectName : [scriptCollectName];
+        scriptName = Array.isArray(scriptName) ? scriptName : [scriptName];
+
+        const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
         if (url) {
           changeToggle(data);
         }

@@ -30,14 +30,26 @@ const forceData = computed(() => {
 });
 async function handleClick(node) {
   console.log(node);
-  let { url, video_url } = node.meta || {};
+  let { url, video_url, scriptCollectName, scriptName } = node.meta || {};
   // 兼容字符串格式数据
   url = Array.isArray(url) ? url : [url];
   video_url = Array.isArray(video_url) ? video_url : [video_url];
+  scriptCollectName = Array.isArray(scriptCollectName) ? scriptCollectName : [scriptCollectName];
+  scriptName = Array.isArray(scriptName) ? scriptName : [scriptName];
 
   url = url.filter((i) => i);
   video_url = video_url.filter((i) => i);
-  const data = { url, video_url, topicPattern: 'SINGLE' };
+  scriptCollectName = scriptCollectName.filter((i) => {
+    if (i) {
+      return i;
+    }
+  });
+  scriptName = scriptName.filter((i) => {
+    if (i) {
+      return i;
+    }
+  });
+  const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
   await changeToggle(data);
   const query = { ...node, children: [] };
   const openUrl = '/one-map?data=' + JSON.stringify(query);

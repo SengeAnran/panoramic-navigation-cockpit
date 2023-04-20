@@ -26,8 +26,8 @@
         </div>
         <div class="item-text">
           <div class="white-text">参与项目:</div>
-          <div class="blue-text">项目名称可能会很长最起码预留20字</div>
-          <div class="blue-text">项目名称可能会很长最起码预留20字</div>
+          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
+          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
         </div>
         <div class="delimiter" />
         <section class="industry-sec">
@@ -60,14 +60,24 @@ import IndustryRanking from './IndustryRanking';
 import IndustrialDistribution from './IndustrialDistribution';
 import IndChainPosition from './IndChainPosition';
 import TechLayout from './TechLayout';
+import { useStore } from 'vuex';
+const store = useStore();
+const emit = defineEmits(['closeView']);
 const tipList = ref(['高新技术企业', '高新技术企业', '高新技术企业', '高新技术企业']);
 const btns = ['产业链定位', '技术创新布局'];
 const activeIndex = ref(0);
 function show(index) {
   activeIndex.value = index;
 }
+function showProject() {
+  store.commit('project/SET_PROJECT_INFO', { projectId: 1 });
+  emit('closeView');
+}
 </script>
 <style lang="scss" scoped>
+.can-click {
+  cursor: pointer;
+}
 .blue-text {
   font-size: 16px;
   font-family: PingFang SC;
