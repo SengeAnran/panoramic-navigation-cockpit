@@ -10,6 +10,7 @@
 
 <script setup>
 import ContrastSvgBox from './ContrastSvgBox/index';
+import * as _ from 'lodash';
 import { ref } from 'vue';
 import {
   getRootInfo,
@@ -61,7 +62,7 @@ async function clickOne(node) {
         return i;
       }
     });
-    console.log(scriptCollectName);
+    // console.log(scriptCollectName);
     scriptCollectName = scriptCollectName.filter((i) => {
       if (i) {
         return i;
@@ -99,11 +100,16 @@ async function clickOne(node) {
     console.log('需要对比展示啦！');
     const { url, video_url, scriptCollectName = [], scriptName = [] } = node.data.meta || {};
     const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'TWIN' };
-    console.log(data);
+    // console.log(data);
     await changeToggle(data);
-    const params = { comparisonMapInfo: state.getters.comparisonMapInfo, nodeNames: node.nodeNames };
+    const compareSystrm = _.cloneDeep(state.getters.comparisonMapInfo);
+    compareSystrm[0].children = [];
+    compareSystrm[1].children = [];
+
+    const params = { comparisonMapInfo: compareSystrm, nodeNames: node.nodeNames };
+    // console.log(params);
     const openUrl = '/compare-map?data=' + JSON.stringify(params);
-    console.log(openUrl);
+    // console.log(openUrl);
     window.open(openUrl, '_blank');
     // router.push({ name: 'compareMap' });
   }

@@ -29,6 +29,7 @@
 </template>
 
 <script setup>
+import * as _ from 'lodash';
 import {
   animateY,
   animateX,
@@ -98,7 +99,7 @@ const props = defineProps({
     default: 750,
   },
   canClick: {
-    // 能否点击节点切换页面
+    // 能否点击节点切换页面（成果对比展示模式）
     type: Boolean,
     default: false,
   },
@@ -138,9 +139,11 @@ function mouseMove() {
     });
   });
 }
+const showData = ref(_.cloneDeep(props.data));
 watch(
   () => props.data,
   (val) => {
+    showData.value = _.cloneDeep(val);
     if (val.children) {
       nextTick(() => {
         init();
@@ -173,8 +176,8 @@ watch(
   },
 );
 function showMain() {
-  for (let i = 0; i < props.data.children.length; i++) {
-    hideAllChildren(props.data.children[i]);
+  for (let i = 0; i < showData.value.children.length; i++) {
+    hideAllChildren(showData.value.children[i]);
   }
 }
 // 节点背景颜色
@@ -214,8 +217,8 @@ function init() {
   let multiple = 1,
     heightMultiple = 1, // 屏高系数
     widthMultiple = 1; // 屏宽系数
-  treeHeight = d3.hierarchy(props.data).height;
-  const treeWidth = getTreeMax(props.data.children);
+  treeHeight = d3.hierarchy(showData.value).height;
+  const treeWidth = getTreeMax(showData.value.children);
   // if (treeHeight > 3) {
   //   heightMultiple = treeHeight / 2 + 2 / 2;
   // }
@@ -246,22 +249,21 @@ function init() {
 
   if (state.getters.showFirstTime) {
     // 第一次展示最多展示七层
-    const fristRoot = d3.hierarchy(props.data);
+    const fristRoot = d3.hierarchy(showData.value);
     hideChildrenOnFirst(fristRoot, 5);
     if (multiple !== 1) {
       // 设置窗口展示位置
       // const left = ((multiple - 1) / 2) * (props.defaultWidth - margin.left - margin.right);
       const left = multiple > 1 ? (innerWidth + margin.left) / 2 - props.defaultWidth / 2 : 0;
       const top = multiple > 1 ? innerHeight / 4 - 400 : 0;
-      console.log(left, top);
       document.querySelector('.svg-show-box').scrollTop = top; //通过scrollTop设置滚动到100位置
       document.querySelector('.svg-show-box').scrollLeft = left; //通过scrollTop设置滚动到200位置
     }
     state.commit('atlasMap/SET_SHOW_FIRST_TIME', false);
   }
-  if (props.data.children[0]) {
+  if (showData.value.children[0]) {
     const option = {
-      data: props.data.children[0], // 树状图数据，
+      data: showData.value.children[0], // 树状图数据，
       position: 'left', //  位置：left、right、bottom
       rootNode: {
         // 根节点固定初始坐标
@@ -271,9 +273,9 @@ function init() {
     };
     render(option);
   }
-  if (props.data.children[1]) {
+  if (showData.value.children[1]) {
     const option = {
-      data: props.data.children[1],
+      data: showData.value.children[1],
       position: 'right',
       rootNode: {
         x: innerHeight / 4,
@@ -283,24 +285,23 @@ function init() {
     // console.log('right');
     render(option);
     let data = {
-      name: props.data.name,
+      name: showData.value.name,
       children: [
         {
-          name: props.data.children[0].name,
+          name: showData.value.children[0].name,
         },
         {
           name: '相同节点',
         },
         {
-          name: props.data.children[1].name,
+          name: showData.value.children[1].name,
         },
       ],
     };
-    console.log('props.data', props.data);
-    if (props.data.children[2] && props.data.children[2].children) {
-      sameData.children = props.data.children[2].children;
+    if (showData.value.children[2] && showData.value.children[2].children) {
+      sameData.children = showData.value.children[2].children;
       const optionSame = {
-        data: props.data.children[2],
+        data: showData.value.children[2],
         position: 'center',
         rootNode: {
           x: innerWidth / 4,
@@ -319,6 +320,7 @@ function init() {
     };
     renderRoot(optionRoot);
   }
+
   // addActive(nodeInfo.value.node_id); // 加当前节点效果
 }
 const gSvg = reactive({
@@ -364,7 +366,7 @@ function render(option) {
     center: [innerWidth / 2, (innerHeight * 4) / 8], // f(x + w/4, y + h*3/8)
   };
   root = d3.tree().size(regionSize[position])(root);
-  if (props.data.children.length > 1) {
+  if (showData.value.children.length > 1) {
     root.x = rootNode.x; // 设置根节点初始位置
     root.y = rootNode.y;
   }
@@ -419,7 +421,7 @@ function render(option) {
               nodeOption2.width(d.target.data.name),
               position,
             ); // 计算短路径
-      if (position !== 'center' && !d.source.parent && props.data.children.length === 2) {
+      if (position !== 'center' && !d.source.parent && showData.value.children.length === 2) {
         // 左右侧根节点
         x4 = x1;
       }
@@ -463,7 +465,7 @@ function render(option) {
     )
     .attr('opacity', (d) => {
       return d.data.hide === true ||
-        (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length >= 2)
+        (position === 'center' ? d.depth === 0 : d.depth === 0 && showData.value.children.length >= 2)
         ? 0
         : 1;
     });
@@ -473,6 +475,10 @@ function render(option) {
     .join('text')
     .on('click', (e, d) => {
       // console.log(e.target.__data__); // 点击的节点
+      // // 节点为虚拟节点不进行响应
+      // if (d.data.node_id.every((i) => i === '-1')) {
+      //   return;
+      // }
       if (props.canClick) {
         let info = [];
         // console.log(d.data.counterpart);
@@ -495,7 +501,6 @@ function render(option) {
         } else {
           info = [d.data];
         }
-        // console.log(info);
         state.commit('atlasMap/SET_COMPERE_NODE_INFO', info);
         // console.log(position, nodes[position]);
         const { url, video_url, scriptCollectName, scriptName } = d.data.meta || {};
@@ -524,7 +529,11 @@ function render(option) {
           nodeNames.push(d.data.node_name);
         }
       }
-      console.log(nodeNames);
+      // console.log('info', info);
+      // if (info.length === 2) {
+      //   info[0].children = [];
+      //   info[1].children = [];
+      // }
       emit('clickOne', { ...d, position, nodeNames });
     })
     .attr('text-anchor', 'middle') // 位置
@@ -541,7 +550,7 @@ function render(option) {
     .style('font-family', 'YouSheBiaoTiHei')
     .attr('opacity', (d) => {
       return d.data.hide === true ||
-        (position === 'center' ? d.depth === 0 : d.depth === 0 && props.data.children.length >= 2)
+        (position === 'center' ? d.depth === 0 : d.depth === 0 && showData.value.children.length >= 2)
         ? 0
         : 1;
     })
@@ -569,7 +578,7 @@ function render(option) {
     .attr('transform', (d) => {
       function mathX() {
         let positionX;
-        if (props.data && props.data.children.length > 1 && d.depth === 0) {
+        if (showData.value && showData.value.children.length > 1 && d.depth === 0) {
           switch (position) {
             case 'center':
               positionX = d.x + innerWidth / 4 - 55;
@@ -603,9 +612,12 @@ function render(option) {
       moveTo(e);
       showChildrenNode(d);
       init();
+      nextTick(() => {
+        addActive(nodeIdList.value);
+      });
     })
     .attr('opacity', (d) => {
-      // return d.data.hide === true || (d.depth === 0 && props.data.children.length >= 2) || !d.data.children ? 0 : 1;
+      // return d.data.hide === true || (d.depth === 0 && showData.value.children.length >= 2) || !d.data.children ? 0 : 1;
       return d.data.hide === true || !d.data.children ? 0 : 1;
     });
   // 画减按钮
@@ -618,7 +630,7 @@ function render(option) {
     .attr('transform', (d) => {
       function mathX() {
         let positionX;
-        if (props.data && props.data.children.length > 1 && d.depth === 0) {
+        if (showData.value && showData.value.children.length > 1 && d.depth === 0) {
           switch (position) {
             case 'center':
               positionX = d.x + innerWidth / 4 - 55;
@@ -656,6 +668,9 @@ function render(option) {
       moveTo(e);
       hideChildrenNode(d);
       init();
+      nextTick(() => {
+        addActive(nodeIdList.value);
+      });
     })
     .attr('opacity', (d) => {
       return d.data.hide === true || !d.data.children ? 0 : 1;
@@ -726,8 +741,8 @@ function renderRoot(option) {
     .data(node)
     .join('text')
     .on('click', (d) => {
-      console.log(d.target.__data__); // 点击的节点
-      console.log('点击了,深度为：' + d.target.__data__.depth);
+      // console.log(d.target.__data__); // 点击的节点
+      // console.log('点击了,深度为：' + d.target.__data__.depth);
       if (d.target.__data__.depth) {
         console.log('需要展示啦！');
       }
@@ -745,7 +760,9 @@ function renderRoot(option) {
 }
 // 给当前显示元素加选中色;
 function addActive(data) {
+  // console.log('给当前显示元素加选中色');
   if (!gSvg.left && !gSvg.center && !gSvg.right) {
+    console.log('没东西');
     return;
   }
   Object.keys(gSvg).map((i) => {

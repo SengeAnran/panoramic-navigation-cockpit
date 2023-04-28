@@ -6,7 +6,7 @@ import theme from './modules/theme';
 import map from './modules/map';
 import atlasMap from './modules/atlasMap';
 import projectMap from './modules/projectMap';
-const defaultMainTitle = '全景导览驾驶舱';
+const defaultMainTitle = '物联网与智慧城市多层级多主题成果展示平台';
 export default createStore({
   state: {
     query: [], // 检索词

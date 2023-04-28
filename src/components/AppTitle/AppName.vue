@@ -45,7 +45,7 @@ const firstName = computed(() => {
     //background: linear-gradient(0deg, #b2d2ff 0%);
     -webkit-background-clip: text;
     .first-name {
-      font-size: 56px;
+      font-size: 37px;
       font-family: YouSheBiaoTiHei;
       font-weight: 400;
       color: #f0f0f0;

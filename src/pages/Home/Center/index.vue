@@ -22,10 +22,16 @@
 import Atlas from './components/Atlas/index';
 import Map from './components/Map/index';
 import { ref } from 'vue';
+import { useStore } from 'vuex';
+const state = useStore();
 const pageType = ref(['图谱', '地图']);
 const activeIndex = ref(1);
 function changeActive(index) {
+  if (activeIndex.value === index) {
+    return;
+  }
   activeIndex.value = index;
+  state.commit('SET_HIDE_BOTTOM', false);
 }
 </script>
 

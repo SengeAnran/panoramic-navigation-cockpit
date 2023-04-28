@@ -33,7 +33,9 @@ const showSvgBox = ref(false);
 const compereNodeInfo = computed(() => {
   return state.getters.compereNodeInfo;
 });
+console.log(route.query.data);
 const query = JSON.parse(route.query.data || '');
+console.log(query);
 const comparisonMapInfo = ref(query.comparisonMapInfo);
 if (comparisonMapInfo.value) {
   console.log(query.nodeNames[0], query.nodeNames[1]);
@@ -113,7 +115,7 @@ async function init() {
   };
   const sameNode = {
     name: '相同节点',
-    children: [res.commonNodes],
+    children: res.commonNodes || [],
   };
   contrastData.children = [systemA, systemB, sameNode];
   showSvgBox.value = true;

@@ -15,7 +15,7 @@
           <CompanyIcon />
         </template>
         <template #popup>
-          <ProjectPopup :point="item" />
+          <ProjectPopup :point="item" showCompany />
         </template>
       </Marker>
     </template>

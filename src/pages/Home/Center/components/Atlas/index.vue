@@ -180,7 +180,7 @@ async function checkOne(index, click) {
       };
       const sameNode = {
         name: '相同节点',
-        children: res.commonNodes ? [res.commonNodes] : [],
+        children: res.commonNodes ? res.commonNodes : [],
       };
       contrastData.children = [systemA, systemB, sameNode];
     } else {
