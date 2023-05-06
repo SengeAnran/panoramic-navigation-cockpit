@@ -6,12 +6,19 @@
     <EnterpriseDetails @closeView="closeEnter" class="enterprise-details" v-if="showEnterpriseDetails" />
     <!--    人才详情-->
     <TalentDetails @closeView="showTalentDetails = false" class="enterprise-details" v-if="showTalentDetails" />
+    <!--    机构详情-->
+    <InstitutionalDetails
+      @closeView="showInstitutionalDetails = false"
+      class="enterprise-details"
+      v-if="showInstitutionalDetails"
+    />
   </div>
 </template>
 <script setup>
 import ProjectDetail from './ProjectDetail/index';
 import EnterpriseDetails from './EnterpriseDetails/index';
 import TalentDetails from './TalentDetails/index';
+import InstitutionalDetails from './InstitutionalDetails/index';
 import { ref } from 'vue';
 const props = defineProps({
   point: null,
@@ -24,6 +31,7 @@ const props = defineProps({
 const showProjectDetail = ref(!props.showCompany);
 const showEnterpriseDetails = ref(props.showCompany);
 const showTalentDetails = ref(false);
+const showInstitutionalDetails = ref(false);
 // onMounted(async () => {
 //   const { data } = await axios.get('/map/flat.json');
 //   areaMap.value = data;
@@ -39,6 +47,10 @@ function showDetail(data) {
   }
   if (/^企业/.test(data?.data.name)) {
     showEnterpriseDetails.value = true;
+    return;
+  }
+  if (/^系统/.test(data?.data.name)) {
+    showInstitutionalDetails.value = true;
     return;
   }
 }
