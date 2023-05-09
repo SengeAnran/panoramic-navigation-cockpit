@@ -53,7 +53,7 @@ const curThemeConfig = getThemeConfig();
 
 const props = defineProps({
   direction: { type: String, default: 'left' },
-  label: { type: [String, Number], required: true },
+  label: { type: [String, Number], required: false },
   num: { type: Number, required: false },
   autoChangeTime: { type: Number, default: 0 },
   unit: { type: String, required: false },

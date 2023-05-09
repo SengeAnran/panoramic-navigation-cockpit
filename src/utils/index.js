@@ -68,3 +68,5 @@ export function getQueryString(str = location.search) {
  * @returns {Object}
  */
 export const deepClone = cloneDeep;
+/** 最新屏幕刷新频率（毫秒） */
+export const minElapsed = 30;

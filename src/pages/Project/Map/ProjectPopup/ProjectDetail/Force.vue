@@ -3,9 +3,11 @@
 </template>
 
 <script setup>
+// import Mock from 'mockjs';
 import * as echarts from 'echarts';
 import { getOption, getOption2 } from './option';
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+// import { dataObj } from './data';
 const myChart = ref();
 const chart = ref('');
 const optionData = reactive({
@@ -34,46 +36,143 @@ const optionData = reactive({
   ThirdLevelData: [
     {
       name: '企业名称1',
+      Flag: true, //true-牵头单位
+      Type: 'institution', //institution-机构,enterprise-企业
     },
     {
       name: '企业名称2',
+      Flag: false, //true-牵头单位
+      Type: 'enterprise', //institution-机构,enterprise-企业
     },
     {
       name: '企业名称3',
+      Flag: true, //true-牵头单位
+      Type: 'enterprise', //institution-机构,enterprise-企业
     },
     {
       name: '企业名称4',
+      Flag: false, //true-牵头单位
+      Type: 'institution', //institution-机构,enterprise-企业
     },
     {
       name: '企业名称5',
+      Flag: true, //true-牵头单位
+      Type: 'enterprise', //institution-机构,enterprise-企业
     },
   ],
   FourthLevelData: [
     {
       name: '人物名称1',
+      Flag: true, //是否课题负责人
+      Type: 'character', //institution-人物
     },
     {
       name: '人物名称2',
-      itemStyle: {},
+      Flag: false, //是否课题负责人
+      Type: 'character', //institution-人物
     },
     {
       name: '人物名称3',
+      Flag: true, //是否课题负责人
+      Type: 'character', //institution-人物
     },
     {
       name: '人物名称4',
+      Flag: false, //是否课题负责人
+      Type: 'character', //institution-人物
     },
     {
       name: '人物名称5',
+      Flag: true, //是否课题负责人
+      Type: 'character', //institution-人物
     },
     {
       name: '人物名称6',
+      Flag: false, //是否课题负责人
+      Type: 'character', //institution-人物
     },
     {
       name: '人物名称7',
+      Flag: true, //是否课题负责人
+      Type: 'character', //institution-人物
     },
     {
       name: '人物名称8',
+      Flag: false, //是否课题负责人
+      Type: 'character', //institution-人物
     },
+    // {
+    //   name: '人物名称9',
+    // },
+    // {
+    //   name: '人物名称10',
+    // },
+    // {
+    //   name: '人物名称11',
+    // },
+    // {
+    //   name: '人物名称12',
+    // },
+    // {
+    //   name: '人物名称13',
+    // },
+    // {
+    //   name: '人物名称14',
+    // },
+    // {
+    //   name: '人物名称15',
+    // },
+    // {
+    //   name: '人物名称16',
+    // },
+    // {
+    //   name: '人物名称17',
+    // },
+    // {
+    //   name: '人物名称18',
+    // },
+    // {
+    //   name: '人物名称19',
+    // },
+    // {
+    //   name: '人物名称20',
+    // },
+    // {
+    //   name: '人物名称21',
+    // },
+    // {
+    //   name: '人物名称22',
+    // },
+    // {
+    //   name: '人物名称23',
+    // },
+    // {
+    //   name: '人物名称24',
+    // },
+    // {
+    //   name: '人物名称25',
+    // },
+    // {
+    //   name: '人物名称26',
+    // },
+    // {
+    //   name: '人物名称27',
+    // },
+    // {
+    //   name: '人物名称28',
+    // },
+    // {
+    //   name: '人物名称29',
+    // },
+    // {
+    //   name: '人物名称30',
+    // },
+    // {
+    //   name: '人物名称31',
+    // },
+    // {
+    //   name: '人物名称32',
+    // },
   ],
   links: [
     {
@@ -227,8 +326,10 @@ function initChart() {
     optionData.SecondLevelData[index].symbolSize = 36;
   });
   model3.forEach((i, index) => {
-    optionData.ThirdLevelData[index].value = i;
-    optionData.ThirdLevelData[index].itemStyle = {
+    const item = optionData.ThirdLevelData[index];
+    item.value = i;
+    item.symbolSize = item.Flag ? 50 : 41;
+    item.itemStyle = {
       label: {
         show: true,
         position: 'inside',
@@ -241,11 +342,12 @@ function initChart() {
       color: '#84CC1C',
       value: 25,
     };
-    optionData.ThirdLevelData[index].symbolSize = 41;
   });
   model4.forEach((i, index) => {
-    optionData.FourthLevelData[index].value = i;
-    optionData.FourthLevelData[index].itemStyle = {
+    const item = optionData.FourthLevelData[index];
+    item.value = i;
+    item.symbolSize = item.Flag ? 50 : 40;
+    item.itemStyle = {
       label: {
         show: true,
         position: 'inside',
@@ -257,7 +359,6 @@ function initChart() {
       borderColor: '#fff',
       color: '#E16975',
     };
-    optionData.FourthLevelData[index].symbolSize = 40;
   });
   myChart.value.clear();
   myChart.value.setOption(getOption2(optionData));
@@ -279,6 +380,40 @@ onBeforeUnmount(() => {
     myChart.value = null;
   }
 });
+// let data = Mock.mock(dataObj);
+// data = initData(data);
+// function initData(data) {
+//   let { FirstLevelData, SecondLevelData, ThirdLevelData, FourthLevelData, links } = data.Atlas;
+//   FirstLevelData = [FirstLevelData];
+//   SecondLevelData = SecondLevelData.map((i) => {
+//     return { name: i };
+//   });
+//   ThirdLevelData = ThirdLevelData.map((i) => {
+//     return {
+//       ...i,
+//       name: i.Name,
+//     };
+//   });
+//   FourthLevelData = FourthLevelData.map((i) => {
+//     return {
+//       ...i,
+//       name: i.Name,
+//     };
+//   });
+//   links = links.map((i) => {
+//     return {
+//       source: i.Source,
+//       target: i.Target,
+//     };
+//   });
+//   return {
+//     FirstLevelData,
+//     SecondLevelData,
+//     ThirdLevelData,
+//     FourthLevelData,
+//     links,
+//   };
+// }
 </script>
 
 <style scoped>

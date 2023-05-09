@@ -17,6 +17,9 @@
         <template #icon>
           <MarkerIcon type="company" />
         </template>
+        <template #popup>
+          <ProjectPopup :point="item" showCompany />
+        </template>
       </Marker>
     </template>
     <template v-if="showSystem">
@@ -59,6 +62,7 @@ import MarkerIcon from './MarkerIcon';
 import SystemPopup from './SystemPopup';
 import { getSystemList } from '@/api/atlas';
 import areaProps from './flat.json';
+import ProjectPopup from './ProjectPopup';
 
 // console.log(odLines);
 const store = useStore();
@@ -141,16 +145,16 @@ async function openSingleDetail(detail) {
   const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
   const res = await changeToggle(data);
   console.log(res);
-  store.commit('SET_CONTENT_OPACITY', true);
+  // store.commit('SET_CONTENT_OPACITY', true);
   // const rootId = getTreeRootId(node);
   // console.log(rootId, node.data);
-  store.commit('atlasMap/SET_DIALOG_INFO', { rootId: query.sys_id, ...query });
-  store.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
-  store.commit('SET_SHOW_ONE_DIALOG', true);
-  store.commit('SET_MAIN_TITLE', query.system);
+  // store.commit('atlasMap/SET_DIALOG_INFO', { rootId: query.sys_id, ...query });
+  // store.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
+  // store.commit('SET_SHOW_ONE_DIALOG', true);
+  // store.commit('SET_MAIN_TITLE', query.system);
   // console.log(detail);
-  // const openUrl = '/one-map?data=' + JSON.stringify(query);
-  // window.open(openUrl, '_blank');
+  const openUrl = '/one-map?data=' + JSON.stringify(query);
+  window.open(openUrl, '_blank');
 }
 
 watchEffect(async () => {

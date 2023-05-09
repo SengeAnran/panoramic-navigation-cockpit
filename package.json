@@ -26,6 +26,7 @@
     "lodash": "^4.17.21",
     "mapbox-gl": "^2.9.2",
     "mitt": "^3.0.0",
+    "mockjs": "^1.1.0",
     "moment": "^2.29.1",
     "mpvue-calendar": "^3.0.1",
     "nprogress": "^0.2.0",

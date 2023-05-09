@@ -12,10 +12,10 @@
 import ContrastSvgBox from './ContrastSvgBox/index';
 import * as _ from 'lodash';
 import { ref } from 'vue';
-import {
-  getRootInfo,
-  getTreeRootId,
-} from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
+// import {
+//   getRootInfo,
+//   getTreeRootId,
+// } from '@/pages/Home/Center/components/Atlas/components/AtlasMap/ContrastSvgBox/constant';
 import { useStore } from 'vuex';
 import { changeToggle } from '@/api/atlas';
 // import { useRouter } from 'vue-router';
@@ -77,21 +77,22 @@ async function clickOne(node) {
     await changeToggle(data);
 
     // // 打开新页面方式
-    // const query = { ...node.data, children: [] };
-    // console.log(query);
-    // const openUrl = '/one-map?data=' + JSON.stringify(query);
-    // window.open(openUrl, '_blank');
+    const nodeData = node.data;
+    nodeData.children = [];
+    const query = { ...nodeData, children: [] };
+    const openUrl = '/one-map?data=' + JSON.stringify(query);
+    window.open(openUrl, '_blank');
     // console.log(res);
 
     // 弹窗
-    state.commit('SET_CONTENT_OPACITY', true);
-    const rootId = getTreeRootId(node);
+    // state.commit('SET_CONTENT_OPACITY', true);
+    // const rootId = getTreeRootId(node);
     // const sysTitle = getRootInfo(node);
 
-    state.commit('atlasMap/SET_DIALOG_INFO', { rootId, ...node.data });
-    state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
-    state.commit('SET_SHOW_ONE_DIALOG', true);
-    state.commit('SET_MAIN_TITLE', getRootInfo(node).name);
+    // state.commit('atlasMap/SET_DIALOG_INFO', { rootId, ...node.data });
+    // state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
+    // state.commit('SET_SHOW_ONE_DIALOG', true);
+    // state.commit('SET_MAIN_TITLE', getRootInfo(node).name);
 
     return;
   }

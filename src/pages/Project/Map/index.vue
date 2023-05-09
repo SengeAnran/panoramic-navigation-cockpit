@@ -63,7 +63,6 @@ const currentArea = ref(100000);
 // });
 
 function handleClick(item) {
-  console.log('handleClick click');
   const props = areaProps[item.adcode];
   if (props.level > 2) {
     return;

@@ -7,14 +7,14 @@
 <script setup>
 // import { computed, watch } from 'vue';
 import { computed } from 'vue';
-import { useStore } from 'vuex';
+// import { useStore } from 'vuex';
 import { deepClone } from '@/utils';
 import { changeToggle } from '@/api/atlas';
 import Globe from './Globe';
 import PointSphere from './PointSphere';
 import Force from './Force';
 
-const state = useStore();
+// const state = useStore();
 
 const props = defineProps({
   data: null,
@@ -29,18 +29,30 @@ const forceData = computed(() => {
   return deepClone(props.data?.filter((d) => d.check));
 });
 async function handleClick(node) {
-  // console.log(node);
-  console.log('需要单展示啦！');
-  const { url, video_url, scriptCollectName, scriptName } = node.meta || {};
+  console.log(node);
+  let { url, video_url, scriptCollectName, scriptName } = node.meta || {};
+  // 兼容字符串格式数据
+  url = Array.isArray(url) ? url : [url];
+  video_url = Array.isArray(video_url) ? video_url : [video_url];
+  scriptCollectName = Array.isArray(scriptCollectName) ? scriptCollectName : [scriptCollectName];
+  scriptName = Array.isArray(scriptName) ? scriptName : [scriptName];
+
+  url = url.filter((i) => i);
+  video_url = video_url.filter((i) => i);
+  scriptCollectName = scriptCollectName.filter((i) => {
+    if (i) {
+      return i;
+    }
+  });
+  scriptName = scriptName.filter((i) => {
+    if (i) {
+      return i;
+    }
+  });
   const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
-  const res = await changeToggle(data);
-  console.log(res);
-  state.commit('SET_CONTENT_OPACITY', true);
-  // const rootId = getTreeRootId(node);
-  // console.log(rootId, node.data);
-  state.commit('atlasMap/SET_DIALOG_INFO', { rootId: node.sys_id, ...node });
-  state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', true);
-  state.commit('SET_SHOW_ONE_DIALOG', true);
-  state.commit('SET_MAIN_TITLE', node.system);
+  await changeToggle(data);
+  const query = { ...node, children: [] };
+  const openUrl = '/one-map?data=' + JSON.stringify(query);
+  window.open(openUrl, '_blank');
 }
 </script>
