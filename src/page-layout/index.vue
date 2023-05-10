@@ -3,10 +3,16 @@
   <!--  centerFull-->
   <FitScreen displayType="centerFull" :pageSize="pageSize" />
   <!--  <FitScreen displayType="none" :pageSize="pageSize" />-->
-  <AppTitle v-if="!hidePageTitle" style="z-index: 1" />
-  <router-view v-if="!isLoading" />
-  <AppBottom v-if="!hidePageTitle || !hideBottom" :class="{ opacity: bottomOpacity }" />
-  <Search />
+  <div class="main-page">
+    <div class="left"></div>
+    <div class="center-content">
+      <AppTitle v-if="!hidePageTitle" style="z-index: 1" />
+      <router-view v-if="!isLoading" />
+      <AppBottom v-if="!hidePageTitle || !hideBottom" :class="{ opacity: bottomOpacity }" />
+      <Search />
+    </div>
+    <div class="right"></div>
+  </div>
 </template>
 
 <script setup>
@@ -51,8 +57,33 @@ onMounted(() => store.commit(Types.SET_INTERVAL_ID, true));
 onUnmounted(() => store.commit(Types.SET_INTERVAL_ID, false));
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .opacity {
   opacity: 0.1;
+}
+.main-page {
+  position: relative;
+  display: flex;
+  .left {
+    //position: absolute;
+    //left: 0;
+    width: 1500px;
+    height: 1080px;
+    background: url('./img/result_bg.jpg') no-repeat;
+    background-size: 100% 100%;
+  }
+  .right {
+    //position: absolute;
+    //right: 0;
+    width: 1500px;
+    height: 1080px;
+    background: url('./img/result_bg.jpg') no-repeat;
+    background-size: 100% 100%;
+  }
+}
+.center-content {
+  position: relative;
+  width: 4680px;
+  height: 1080px;
 }
 </style>
