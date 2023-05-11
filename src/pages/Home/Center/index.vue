@@ -44,11 +44,11 @@ function changeActive(index) {
   .mask {
     width: 100%;
     height: 100%;
-    background: url('./img/mask.png') center no-repeat;
+    background: url('./img/mask_bg.png') center no-repeat;
     pointer-events: none;
     background-position: center center;
-    background-size: 110% 110%;
-    //background-size: 100% 100%;
+    //background-size: 110% 110%;
+    background-size: 100% 100%;
   }
   .change {
     z-index: 14;

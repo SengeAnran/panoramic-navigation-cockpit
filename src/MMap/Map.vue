@@ -59,7 +59,7 @@ onUnmounted(async () => {
   &::after {
     position: absolute;
     content: '';
-    background: url('./map-mask.png');
+    background: url('./mask_bg.png');
     background-size: 110% 110%;
     background-position: center;
     top: 0;

@@ -1,7 +1,7 @@
 <template>
   <div class="dialog-right">
     <h3 class="theme-font-style">页面介绍</h3>
-    <div class="show-box"></div>
+    <!--    <div class="show-box"></div>-->
   </div>
 </template>
 
@@ -18,13 +18,13 @@
     padding: 0;
     margin-bottom: 46px;
   }
-  .show-box {
-    width: 1440px;
-    height: 810px;
-    border-radius: 20px;
-    border: 1px solid #547eff;
-    box-shadow: 0px 0px 40px 0px #1d4d8d;
-    background: #222f4e;
-  }
+  //.show-box {
+  //  width: 1440px;
+  //  height: 810px;
+  //  border-radius: 20px;
+  //  border: 1px solid #547eff;
+  //  box-shadow: 0px 0px 40px 0px #1d4d8d;
+  //  background: #222f4e;
+  //}
 }
 </style>
