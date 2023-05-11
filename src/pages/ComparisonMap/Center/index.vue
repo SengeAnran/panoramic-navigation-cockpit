@@ -172,7 +172,7 @@ function close() {
   left: 1634px;
 }
 .right-node-name {
-  left: 6292px;
+  left: 4810px;
 }
 
 .content {
