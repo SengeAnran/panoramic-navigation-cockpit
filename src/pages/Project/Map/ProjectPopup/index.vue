@@ -1,7 +1,7 @@
 <template>
   <div class="project-popup">
     <!--    项目详情-->
-    <ProjectDetail @showDetail="showDetail" v-if="showProjectDetail" v-bind="$attrs" />
+    <ProjectDetail @showDetail="showDetail" v-if="showProjectDetail" v-bind="$attrs" :point="props.point" />
     <!--    企业详情-->
     <EnterpriseDetails @closeView="closeEnter" class="enterprise-details" v-if="showEnterpriseDetails" />
     <!--    人才详情-->
@@ -46,18 +46,20 @@ function closeEnter() {
   showProjectDetail.value = true;
 }
 function showDetail(data) {
-  const type = data?.data.Type;
-  if (type === 'character') {
-    showTalentDetails.value = true;
-    return;
-  }
-  if (type === 'enterprise') {
-    showEnterpriseDetails.value = true;
-    return;
-  }
-  if (type === 'institution') {
-    showInstitutionalDetails.value = true;
-    return;
+  const type = data?.data.type;
+  if (data?.data.nodeId) {
+    if (type === 'character') {
+      showTalentDetails.value = true;
+      return;
+    }
+    if (type === 'enterprise') {
+      showEnterpriseDetails.value = true;
+      return;
+    }
+    if (type === 'institution') {
+      showInstitutionalDetails.value = true;
+      return;
+    }
   }
 }
 function showSchoolOrEnt(data) {

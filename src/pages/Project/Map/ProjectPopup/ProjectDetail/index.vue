@@ -6,16 +6,16 @@
       <div class="center-section">
         <div class="item-box">
           <img src="TalentDetails/icon_01.png" alt="" />
-          <div>牵头单位名称可能会很长</div>
+          <div>{{ state.leadUnit }}</div>
         </div>
         <div class="item-box">
           <img src="TalentDetails/icon_02.png" alt="" />
-          <div>负责人</div>
+          <div>{{ state.leadName }}</div>
         </div>
       </div>
       <div class="body">
         <div class="companies">
-          <Force @showDetail="showDetail" />
+          <Force @showDetail="showDetail" :atlas="state.atlas" />
         </div>
         <div class="delimiter" />
         <div class="areas">
@@ -32,20 +32,32 @@
 </template>
 <script setup>
 import Force from './Force';
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import axios from 'axios';
-import { getProjectDetail } from '@/api/project';
+import { getProjectGraphBall } from '@/api/project';
+import { reactive } from 'vue-demi';
 const props = defineProps({
   point: null,
 });
 const areaMap = ref();
+const loading = ref(false);
+const state = reactive({
+  leadName: '',
+  leadUnit: '',
+  atlas: {},
+});
 onMounted(async () => {
   const { data } = await axios.get('/map/flat.json');
   areaMap.value = data;
 });
-onMounted(async () => {
-  const data = await getProjectDetail(props.point?._?.projectId);
-  console.log(data);
+onBeforeMount(async () => {
+  console.log(props.point);
+  loading.value = false;
+  const { leadName, leadUnit, atlas } = await getProjectGraphBall(props.point?._?.projectId);
+  state.atlas = atlas;
+  state.leadName = leadName;
+  state.leadUnit = leadUnit;
+  loading.value = true;
 });
 function getName(code) {
   return areaMap.value?.[code]?.name || code;
