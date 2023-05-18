@@ -6,9 +6,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { getForceOption } from './option';
-
+import { useStore } from 'vuex';
+import { getChordData } from '@/api/project';
+const store = useStore();
+const popId = computed(() => {
+  return store.getters.popId;
+});
+watch(
+  () => popId.value,
+  (val) => {
+    if (val) {
+      getData();
+    }
+  },
+);
+async function getData() {
+  const data = {
+    id: popId.value,
+  };
+  const res = await getChordData(data);
+  console.log(res);
+}
+getData();
 const options = ref(getForceOption());
 </script>
 

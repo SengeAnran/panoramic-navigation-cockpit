@@ -6,9 +6,42 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { drawLineChart, dataList2, dataList1, dataList3 } from './option';
+import { nextTick, ref, watch } from 'vue';
+import { drawLineChart, dataList1, dataList2, dataList3 } from './option';
+import { getFieldTrend } from '@/api/project';
+const props = defineProps({
+  fieldNames: [],
+});
+const dataObj = ref([]);
 const options = ref(drawLineChart(dataList1, dataList2, dataList3));
+watch(
+  () => props.fieldNames,
+  () => {
+    nextTick(() => {
+      getData();
+    });
+  },
+);
+async function getData() {
+  const data = {
+    fieldNames: props.fieldNames,
+  };
+  // const { property1, property2 } = await getFieldTrend(data);
+  const res = await getFieldTrend(data);
+  console.log(res);
+  props.fieldNames.forEach((i, index) => {
+    console.log(i);
+    dataObj.value[index] = res.data[i].map((j) => {
+      return {
+        name: j.year,
+        data1: j.yearCount - 0,
+      };
+    });
+  });
+  // dataList1.value = res;
+  console.log(dataObj.value);
+}
+getData();
 </script>
 
 <style lang="scss" scoped>

@@ -25,6 +25,7 @@ import EnterpriseDetails from './EnterpriseDetails/index';
 import TalentDetails from './TalentDetails/index';
 import InstitutionalDetails from './InstitutionalDetails/index';
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 const props = defineProps({
   point: null,
   showCompany: {
@@ -41,13 +42,16 @@ const showInstitutionalDetails = ref(false);
 //   const { data } = await axios.get('/map/flat.json');
 //   areaMap.value = data;
 // });
+const store = useStore();
 function closeEnter() {
   showEnterpriseDetails.value = false;
   showProjectDetail.value = true;
 }
 function showDetail(data) {
   const type = data?.data.type;
+  console.log(data?.data);
   if (data?.data.nodeId) {
+    store.commit('mapPop/SET_ID', data?.data.nodeId);
     if (type === 'character') {
       showTalentDetails.value = true;
       return;

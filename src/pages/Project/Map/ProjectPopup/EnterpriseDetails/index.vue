@@ -13,11 +13,11 @@
           </div>
           <div class="info">
             <div class="name">
-              <span class="theme-font-style">企业/学校名称可能会很长预留15字</span>
+              <span class="theme-font-style">{{ detailData.name }}</span>
             </div>
             <div class="item-text">
               <div class="white-text">科技创新活跃度:</div>
-              <LabelInfo class="text-num" :num="99.9" :valueSize="33" />
+              <LabelInfo class="text-num" :num="detailData.innovationIndex || 0" :valueSize="33" />
             </div>
             <div class="flex tips">
               <div v-for="(item, index) in tipList" :key="index" class="tip blue-text">{{ item }}</div>
@@ -55,14 +55,34 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import IndustryRanking from './IndustryRanking';
 import IndustrialDistribution from './IndustrialDistribution';
 import IndChainPosition from './IndChainPosition';
 import TechLayout from './TechLayout';
 import { useStore } from 'vuex';
+import { getEnterprise } from '@/api/project';
 const store = useStore();
 const emit = defineEmits(['closeView']);
+const popId = computed(() => {
+  return store.getters.popId;
+});
+const detailData = ref({});
+watch(
+  () => popId.value,
+  (val) => {
+    if (val) {
+      getData();
+    }
+  },
+);
+function getData() {
+  getEnterprise(popId.value).then((res) => {
+    console.log(res);
+    detailData.value = res;
+  });
+}
+getData();
 const tipList = ref(['高新技术企业', '高新技术企业', '高新技术企业', '高新技术企业']);
 const btns = ['产业链定位', '技术创新布局'];
 const activeIndex = ref(0);

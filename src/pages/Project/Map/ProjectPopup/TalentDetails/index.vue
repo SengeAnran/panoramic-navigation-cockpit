@@ -11,15 +11,15 @@
           <div class="self-info">
             <div class="left">
               <div class="header-logo">
-                <img src="../header.png" alt="" />
+                <img :src="detailData.scholarAvg ? detailData.scholarAvg : '../header.png'" alt="" />
               </div>
               <div class="info">
                 <div class="name">
-                  <span class="theme-font-style">王雅雅</span>
-                  <div class="tip blue-text">教授</div>
+                  <span class="theme-font-style">{{ detailData.scholarName }}</span>
+                  <div class="tip blue-text">{{ detailData.position }}</div>
                 </div>
-                <div class="blue-text can-click" @click="showSchoolOrEnt">单位/学校</div>
-                <div class="white-text">专业技术职务</div>
+                <div class="blue-text can-click" @click="showSchoolOrEnt">{{ detailData.orgName }}</div>
+                <div class="white-text">{{ detailData.technicalPosition }}</div>
               </div>
             </div>
             <div class="right">
@@ -34,10 +34,10 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><LabelInfo :num="999" unit="篇" :valueSize="18" /></td>
-                    <td><LabelInfo :num="999" unit="个" :valueSize="18" /></td>
-                    <td><LabelInfo :num="999" unit="个" :valueSize="18" /></td>
-                    <td><LabelInfo :num="999" unit="个" :valueSize="18" /></td>
+                    <td><LabelInfo :num="detailData.papersNum" unit="篇" :valueSize="18" /></td>
+                    <td><LabelInfo :num="detailData.patents" unit="个" :valueSize="18" /></td>
+                    <td><LabelInfo :num="detailData.projectNum" unit="个" :valueSize="18" /></td>
+                    <td><LabelInfo :num="detailData.awardNum" unit="个" :valueSize="18" /></td>
                   </tr>
                 </tbody>
               </table>
@@ -45,7 +45,7 @@
           </div>
           <div class="item-text">
             <div class="white-text">科技创新活跃度:</div>
-            <LabelInfo class="text-num" :num="99.9" :valueSize="33" />
+            <LabelInfo class="text-num" :num="detailData.innovationIndex" :valueSize="33" />
           </div>
           <div class="item-text">
             <div class="white-text">参与项目:</div>
@@ -55,7 +55,7 @@
           <div class="item-text">
             <div class="white-text">人物背景:</div>
             <div class="white-text">
-              这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字。
+              {{ detailData.introduction }}
             </div>
           </div>
         </div>
@@ -63,16 +63,16 @@
         <div class="lists">
           <theme-table class="table-content" :columns="tableColumns1" :data-source="dataList1" height="160">
           </theme-table>
-          <theme-table class="table-content" :columns="tableColumns2" :data-source="dataList1" height="160">
+          <theme-table class="table-content" :columns="tableColumns2" :data-source="dataList2" height="160">
           </theme-table>
-          <theme-table class="table-content" :columns="tableColumns3" :data-source="dataList1" height="160">
+          <theme-table class="table-content" :columns="tableColumns3" :data-source="dataList3" height="160">
           </theme-table>
         </div>
         <div class="delimiter" />
         <div class="chart-list">
           <HotWords />
-          <FrontiersField />
-          <DomainRelevance />
+          <FrontiersField :fieldNames="fieldNames" />
+          <DomainRelevance :fieldNames="fieldNames" />
         </div>
       </div>
     </div>
@@ -82,9 +82,24 @@
 import HotWords from './HotWords';
 import FrontiersField from './FrontiersField';
 import DomainRelevance from './DomainRelevance';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useStore } from 'vuex';
+import { getProjectDetails } from '@/api/project';
 const store = useStore();
+const popId = computed(() => {
+  return store.getters.popId;
+});
+const fieldNames = ref([]);
+watch(
+  () => popId.value,
+  (val) => {
+    if (val) {
+      getData();
+    }
+  },
+);
+const detailData = ref({});
+
 const emit = defineEmits(['closeView', 'showSchoolOrEnt']);
 const tableColumns1 = [
   { label: '一级领域', dataIndex: 'name' },
@@ -98,28 +113,44 @@ const tableColumns3 = [
   { label: '三级领域', dataIndex: 'name' },
   { label: '排名', dataIndex: 'value' },
 ];
-const dataList1 = ref([
-  {
-    name: '领域名称',
-    value: 20,
-  },
-  {
-    name: '领域名称',
-    value: 20,
-  },
-  {
-    name: '领域名称',
-    value: 20,
-  },
-  {
-    name: '领域名称',
-    value: 20,
-  },
-  {
-    name: '领域名称',
-    value: 20,
-  },
-]);
+const dataList1 = ref([]);
+const dataList2 = ref([]);
+const dataList3 = ref([]);
+function getData() {
+  const data = {
+    id: popId.value,
+  };
+  getProjectDetails(data).then((res) => {
+    console.log(res);
+    detailData.value = res;
+    if (res.primaryFields && Array.isArray(res.primaryFields)) {
+      dataList1.value = res.primaryFields.map((i) => {
+        return {
+          name: i.fieldName,
+          value: i.rank,
+        };
+      });
+    }
+    if (res.fieldsTwo && Array.isArray(res.fieldsTwo)) {
+      dataList2.value = res.fieldsTwo.map((i) => {
+        return {
+          name: i.fieldName,
+          value: i.rank,
+        };
+      });
+      fieldNames.value = res.fieldsTwo.map((i) => i.fieldEnglishName);
+    }
+    if (res.fields && Array.isArray(res.fields)) {
+      dataList3.value = res.fields.map((i) => {
+        return {
+          name: i.fieldName,
+          value: i.rank,
+        };
+      });
+    }
+  });
+}
+getData();
 function showProject() {
   store.commit('projectMap/SET_PROJECT_INFO', { projectId: 1 });
   emit('closeView');
