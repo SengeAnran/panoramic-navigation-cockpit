@@ -6,31 +6,35 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import { getForceOption } from './option';
-import { useStore } from 'vuex';
 import { getChordData } from '@/api/project';
-const store = useStore();
-const popId = computed(() => {
-  return store.getters.popId;
+
+const props = defineProps({
+  fieldNames: [],
 });
+const options = ref();
 watch(
-  () => popId.value,
-  (val) => {
-    if (val) {
+  () => props.fieldNames,
+  () => {
+    nextTick(() => {
       getData();
-    }
+    });
   },
 );
 async function getData() {
   const data = {
-    id: popId.value,
+    fieldNames: props.fieldNames,
   };
   const res = await getChordData(data);
-  console.log(res);
+  const datas = res.nodes.map((i) => {
+    return {
+      name: i.name,
+    };
+  });
+  options.value = getForceOption(datas, res.links);
 }
 getData();
-const options = ref(getForceOption());
 </script>
 
 <style lang="scss" scoped>

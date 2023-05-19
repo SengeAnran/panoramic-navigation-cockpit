@@ -39,7 +39,17 @@ export const getChordData = (data) => {
 };
 // 企业详情
 
-// 获取二级领域相关度分析
+// 获取高新技术企业基本信息
 export const getEnterprise = (orgId) => {
   return axios.get(`/api/project/getEnterprise/${orgId}`);
+};
+// 获取项目企业的产业信息
+export const getTndustryInfo = (id) => {
+  return axios.get(`/api/project/industry/${id}`);
+};
+
+//机构详情
+// 获取学校信息详情
+export const getSchoolInfo = (orgId) => {
+  return axios.get(`/api/project/getSchool/${orgId}`);
 };

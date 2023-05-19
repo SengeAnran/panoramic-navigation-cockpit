@@ -54,7 +54,7 @@
           </div>
           <div class="item-text">
             <div class="white-text">人物背景:</div>
-            <div class="white-text">
+            <div class="white-text three-line">
               {{ detailData.introduction }}
             </div>
           </div>
@@ -163,6 +163,14 @@ function showSchoolOrEnt(data) {
 <style lang="scss" scoped>
 .can-click {
   cursor: pointer;
+}
+.three-line {
+  line-break: anywhere;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
 }
 .blue-text {
   font-size: 16px;

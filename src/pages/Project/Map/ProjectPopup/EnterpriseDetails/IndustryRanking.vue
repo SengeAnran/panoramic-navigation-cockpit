@@ -1,39 +1,43 @@
 <template>
   <div class="industry">
     <div class="title-name">产业排名:</div>
-    <theme-table class="table-content" :columns="tableColumns" :data-source="dataList" height="207"> </theme-table>
+    <theme-table class="table-content" :columns="tableColumns" :data-source="props.dataList" height="207">
+    </theme-table>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+// import { ref } from 'vue';
 
 const tableColumns = [
   { label: '产业名称', dataIndex: 'name' },
   { label: '排名', dataIndex: 'value' },
 ];
-const dataList = ref([
-  {
-    name: '具体产业名称',
-    value: 20,
-  },
-  {
-    name: '具体产业名称',
-    value: 20,
-  },
-  {
-    name: '具体产业名称',
-    value: 20,
-  },
-  {
-    name: '具体产业名称',
-    value: 20,
-  },
-  {
-    name: '具体产业名称',
-    value: 20,
-  },
-]);
+const props = defineProps({
+  dataList: {},
+});
+// const dataList = ref([
+//   {
+//     name: '具体产业名称',
+//     value: 20,
+//   },
+//   {
+//     name: '具体产业名称',
+//     value: 20,
+//   },
+//   {
+//     name: '具体产业名称',
+//     value: 20,
+//   },
+//   {
+//     name: '具体产业名称',
+//     value: 20,
+//   },
+//   {
+//     name: '具体产业名称',
+//     value: 20,
+//   },
+// ]);
 </script>
 
 <style lang="scss" scoped>

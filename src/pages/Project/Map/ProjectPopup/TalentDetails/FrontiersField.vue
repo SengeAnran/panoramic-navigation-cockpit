@@ -7,13 +7,14 @@
 
 <script setup>
 import { nextTick, ref, watch } from 'vue';
-import { drawLineChart, dataList1, dataList2, dataList3 } from './option';
+import { drawLineChart } from './option';
 import { getFieldTrend } from '@/api/project';
 const props = defineProps({
   fieldNames: [],
 });
 const dataObj = ref([]);
-const options = ref(drawLineChart(dataList1, dataList2, dataList3));
+// const options = ref(drawLineChart(dataList1, dataList2, dataList3));
+const options = ref({});
 watch(
   () => props.fieldNames,
   () => {
@@ -28,9 +29,7 @@ async function getData() {
   };
   // const { property1, property2 } = await getFieldTrend(data);
   const res = await getFieldTrend(data);
-  console.log(res);
   props.fieldNames.forEach((i, index) => {
-    console.log(i);
     dataObj.value[index] = res.data[i].map((j) => {
       return {
         name: j.year,
@@ -38,6 +37,7 @@ async function getData() {
       };
     });
   });
+  options.value = drawLineChart(dataObj.value, props.fieldNames);
   // dataList1.value = res;
   console.log(dataObj.value);
 }

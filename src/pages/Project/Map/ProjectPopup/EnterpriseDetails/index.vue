@@ -9,7 +9,7 @@
       <div class="body">
         <div class="detail-info">
           <div class="header-logo">
-            <img src="../header.png" alt="" />
+            <img :src="detailData.logoUrl ? detailData.logoUrl : '../header.png'" alt="" />
           </div>
           <div class="info">
             <div class="name">
@@ -19,20 +19,26 @@
               <div class="white-text">科技创新活跃度:</div>
               <LabelInfo class="text-num" :num="detailData.innovationIndex || 0" :valueSize="33" />
             </div>
-            <div class="flex tips">
-              <div v-for="(item, index) in tipList" :key="index" class="tip blue-text">{{ item }}</div>
-            </div>
+            <!--            <div class="flex tips">-->
+            <!--              <div v-for="(item, index) in tipList" :key="index" class="tip blue-text">{{ item }}</div>-->
+            <!--            </div>-->
           </div>
         </div>
         <div class="item-text">
           <div class="white-text">参与项目:</div>
-          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
-          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
+          <div
+            v-for="item in detailData.addProjects"
+            :key="item.name"
+            class="blue-text can-click"
+            @click="showProject(item)"
+          >
+            {{ item.name }}
+          </div>
         </div>
         <div class="delimiter" />
         <section class="industry-sec">
-          <IndustryRanking />
-          <IndustrialDistribution />
+          <IndustryRanking :dataList="rankData" />
+          <IndustrialDistribution :dataObj="distributionData" />
         </section>
         <div class="delimiter" />
         <section class="tow-chart">
@@ -48,7 +54,7 @@
             </div>
           </div>
           <IndChainPosition v-if="activeIndex === 0" />
-          <TechLayout v-if="activeIndex === 1" />
+          <!--          <TechLayout v-if="activeIndex === 1" />-->
         </section>
       </div>
     </div>
@@ -59,15 +65,18 @@ import { computed, ref, watch } from 'vue';
 import IndustryRanking from './IndustryRanking';
 import IndustrialDistribution from './IndustrialDistribution';
 import IndChainPosition from './IndChainPosition';
-import TechLayout from './TechLayout';
+// import TechLayout from './TechLayout';
 import { useStore } from 'vuex';
-import { getEnterprise } from '@/api/project';
+import { getEnterprise, getTndustryInfo } from '@/api/project';
 const store = useStore();
 const emit = defineEmits(['closeView']);
 const popId = computed(() => {
   return store.getters.popId;
 });
 const detailData = ref({});
+const rankData = ref([]);
+const distributionData = ref([]);
+// const positionData = ref([]);
 watch(
   () => popId.value,
   (val) => {
@@ -78,20 +87,34 @@ watch(
 );
 function getData() {
   getEnterprise(popId.value).then((res) => {
-    console.log(res);
     detailData.value = res;
+  });
+  getTndustryInfo(popId.value).then((res) => {
+    console.log(res);
+    rankData.value = res.industryRank.map((i) => {
+      return {
+        name: i.chanye,
+        value: i.quanguo,
+      };
+    });
+    distributionData.value.dataname = res.industryRadarChart.map((i) => i.chanye);
+    distributionData.value.value = res.industryRadarChart.map((i) => i.count);
+    // detailData.value = res;
   });
 }
 getData();
-const tipList = ref(['高新技术企业', '高新技术企业', '高新技术企业', '高新技术企业']);
-const btns = ['产业链定位', '技术创新布局'];
+// const tipList = ref(['高新技术企业', '高新技术企业', '高新技术企业', '高新技术企业']);
+// const btns = ['产业链定位', '技术创新布局'];
+const btns = ['产业链定位'];
 const activeIndex = ref(0);
 function show(index) {
   activeIndex.value = index;
 }
-function showProject() {
-  store.commit('projectMap/SET_PROJECT_INFO', { projectId: 1 });
-  emit('closeView');
+function showProject(item) {
+  if (item.id) {
+    store.commit('projectMap/SET_PROJECT_INFO', { projectId: item.id });
+    emit('closeView');
+  }
 }
 </script>
 <style lang="scss" scoped>

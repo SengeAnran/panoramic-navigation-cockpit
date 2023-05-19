@@ -68,6 +68,14 @@ function showDetail(data) {
 }
 </script>
 <style lang="scss" scoped>
+.three-line {
+  line-break: anywhere;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
 .project-popup {
   position: relative;
   border: 1px solid #46e9fe;
