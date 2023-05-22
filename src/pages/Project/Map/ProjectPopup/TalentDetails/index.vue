@@ -11,14 +11,16 @@
           <div class="self-info">
             <div class="left">
               <div class="header-logo">
-                <img :src="detailData.scholarAvg ? detailData.scholarAvg : '../header.png'" alt="" />
+                <img :src="detailData.scholarAvg ? detailData.scholarAvg : headerImg" alt="" />
               </div>
               <div class="info">
                 <div class="name">
                   <span class="theme-font-style">{{ detailData.scholarName }}</span>
-                  <div class="tip blue-text">{{ detailData.position }}</div>
+                  <div v-if="detailData.position" class="tip blue-text">{{ detailData.position }}</div>
                 </div>
-                <div class="blue-text can-click" @click="showSchoolOrEnt">{{ detailData.orgName }}</div>
+                <div class="blue-text can-click" @click="showSchoolOrEnt(detailData.orgId)">
+                  {{ detailData.orgName }}
+                </div>
                 <div class="white-text">{{ detailData.technicalPosition }}</div>
               </div>
             </div>
@@ -45,12 +47,18 @@
           </div>
           <div class="item-text">
             <div class="white-text">科技创新活跃度:</div>
-            <LabelInfo class="text-num" :num="detailData.innovationIndex" :valueSize="33" />
+            <LabelInfo class="text-num" :num="(detailData.innovationIndex || 0) - 0" :valueSize="33" />
           </div>
           <div class="item-text">
             <div class="white-text">参与项目:</div>
-            <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
-            <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
+            <div
+              v-for="item in detailData.projectList"
+              :key="item.name"
+              class="blue-text can-click"
+              @click="showProject(item)"
+            >
+              {{ item.name }}
+            </div>
           </div>
           <div class="item-text">
             <div class="white-text">人物背景:</div>
@@ -85,6 +93,7 @@ import DomainRelevance from './DomainRelevance';
 import { computed, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { getProjectDetails } from '@/api/project';
+const headerImg = require('../header.png');
 const store = useStore();
 const popId = computed(() => {
   return store.getters.popId;
@@ -98,6 +107,7 @@ watch(
     }
   },
 );
+
 const detailData = ref({});
 
 const emit = defineEmits(['closeView', 'showSchoolOrEnt']);
@@ -151,13 +161,15 @@ function getData() {
   });
 }
 getData();
-function showProject() {
-  store.commit('projectMap/SET_PROJECT_INFO', { projectId: 1 });
-  emit('closeView');
+function showProject(item) {
+  if (item.id) {
+    store.commit('projectMap/SET_PROJECT_INFO', { projectId: item.id });
+    emit('closeView');
+  }
 }
-function showSchoolOrEnt(data) {
-  store.commit('projectMap/SET_PROJECT_INFO', { schoolId: 1 });
-  emit('showSchoolOrEnt', data);
+function showSchoolOrEnt(id) {
+  store.commit('projectMap/SET_PROJECT_INFO', { schoolId: id });
+  emit('showSchoolOrEnt', id);
 }
 </script>
 <style lang="scss" scoped>

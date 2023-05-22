@@ -21,8 +21,8 @@
         <div class="areas">
           <h3 class="title">示范地区</h3>
           <div class="list">
-            <div class="item" v-for="item in point?._?.areas" :key="item.areaId">
-              {{ getName(item.areaId) }}
+            <div class="item" v-for="item in state.areas" :key="item">
+              {{ item }}
             </div>
           </div>
         </div>
@@ -32,12 +32,17 @@
 </template>
 <script setup>
 import Force from './Force';
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import { getProjectGraphBall } from '@/api/project';
 import { reactive } from 'vue-demi';
+import { useStore } from 'vuex';
 const props = defineProps({
   point: null,
+});
+const store = useStore();
+const projectId = computed(() => {
+  return store.getters.popId;
 });
 const areaMap = ref();
 const loading = ref(false);
@@ -45,7 +50,16 @@ const state = reactive({
   leadName: '',
   leadUnit: '',
   atlas: {},
+  areas: [],
 });
+watch(
+  () => projectId.value,
+  (val) => {
+    if (val) {
+      // getData();
+    }
+  },
+);
 onMounted(async () => {
   const { data } = await axios.get('/map/flat.json');
   areaMap.value = data;
@@ -53,15 +67,16 @@ onMounted(async () => {
 onBeforeMount(async () => {
   console.log(props.point);
   loading.value = false;
-  const { leadName, leadUnit, atlas } = await getProjectGraphBall(props.point?._?.projectId);
+  const { leadName, leadUnit, atlas, areas } = await getProjectGraphBall(props.point?._?.projectId);
   state.atlas = atlas;
   state.leadName = leadName;
   state.leadUnit = leadUnit;
+  state.areas = areas;
   loading.value = true;
 });
-function getName(code) {
-  return areaMap.value?.[code]?.name || code;
-}
+// function getName(code) {
+//   return areaMap.value?.[code]?.name || code;
+// }
 const emit = defineEmits(['showDetail']);
 function showDetail(data) {
   emit('showDetail', data);

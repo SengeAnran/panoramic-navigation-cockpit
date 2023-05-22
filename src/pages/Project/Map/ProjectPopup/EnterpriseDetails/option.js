@@ -12,12 +12,12 @@ export function getOption(dataname, value1) {
   // // const datamax = [100, 100, 100, 100, 100, 100,100,100,100];
   // const value1 = [89, 93, 60, 59, 85, 91, 70, 65];
   // const num = 72;
-
+  const max = Math.max(...value1);
   const indicator = [];
   for (let i = 0; i < dataname.length; i++) {
     indicator.push({
       name: dataname[i],
-      max: 100,
+      max: max,
     });
   }
   const option = {
@@ -115,146 +115,152 @@ export function getOption(dataname, value1) {
   return option;
 }
 
-export function getForceOption() {
-  const categories = [
-    {
-      name: '学生',
-    },
-    {
-      name: '运维',
-    },
-    {
-      name: '测试',
-      // itemStyle: {
-      //   // 可配置颜色
-      //   normal: {
-      //     // color: 'blue',
-      //     color: 'red',
-      //     borderType: 'solid', // 图形描边类型，默认为实线，支持 'solid'（实线）, 'dashed'(虚线), 'dotted'（点线）。
-      //     borderColor: 'rgba(205, 149, 12, 0.4)', // 设置图形边框为淡金色,透明度为0.4
-      //     borderWidth: 2, // 图形的描边线宽。为 0 时无描边。
-      //     opacity: 1, // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。默认0.5
-      //   },
-      // },
-    },
-    {
-      name: '应用',
-    },
-    {
-      name: '实施',
-    },
-    {
-      name: '开发',
-    },
-  ];
-  const data = [
-    {
-      name: '王小二',
-      draggable: true, // 是否可以拖拽，默认false
-      category: 0, // 这是种类，运维1测试2应用3实施4开发5
-      number: 10, // 这是编号 非必须，目的仅为方便编写line
-      symbolSize: 45, //图形大小
-      showNum: 25, //节点需要显示的额外内容
-    },
-    {
-      name: '运维1',
-      number: 1,
-      category: 1,
-      draggable: true,
-      symbolSize: 40,
-      showNum: 35,
-    },
-    {
-      name: '测试1',
-      number: 2,
-      category: 2,
-      draggable: true,
-      symbolSize: 45,
-      showNum: 35,
-    },
-    {
-      name: '应用1',
-      number: 3,
-      category: 3,
-      draggable: true,
-      symbolSize: 45,
-      showNum: 35,
-    },
-    {
-      name: '实施1',
-      number: 4,
-      category: 4,
-      draggable: true,
-      symbolSize: 45,
-      showNum: 35,
-    },
-    {
-      name: '开发1',
-      number: 5,
-      category: 5,
-      draggable: true,
-      symbolSize: 45,
-      showNum: 35,
-    },
-    {
-      name: 'JS',
-      number: 6,
-      category: 5,
-      draggable: true,
-      symbolSize: 35,
-      showNum: 35,
-    },
-    {
-      name: 'php',
-      number: 7,
-      category: 5,
-      draggable: true,
-      symbolSize: 20,
-      showNum: 35,
-    },
-    {
-      name: 'java',
-      number: 8,
-      category: 5,
-      draggable: true,
-      symbolSize: 45,
-      showNum: 35,
-    },
-  ];
-  const links = [
-    {
-      source: '王小二', // 可以用name 可以用number，但name不能重名
-      target: '运维1',
-    },
-    {
-      source: 0,
-      target: 2,
-    },
-    {
-      source: 0,
-      target: 3,
-    },
-    {
-      source: 0,
-      target: 4,
-    },
-    {
-      source: 0,
-      target: 5,
-    },
-    {
-      source: 5,
-      target: 6,
-    },
-    {
-      source: 6,
-      target: 7,
-    },
-    {
-      source: 6,
-      target: 8,
-    },
-  ];
+export function getForceOption(dataObj) {
+  const { categories, data, links } = dataObj;
+  categories.push({
+    name: '产业',
+  });
+
+  // const categories = [
+  //   {
+  //     name: '学生',
+  //   },
+  //   {
+  //     name: '运维',
+  //   },
+  //   {
+  //     name: '测试',
+  //     // itemStyle: {
+  //     //   // 可配置颜色
+  //     //   normal: {
+  //     //     // color: 'blue',
+  //     //     color: 'red',
+  //     //     borderType: 'solid', // 图形描边类型，默认为实线，支持 'solid'（实线）, 'dashed'(虚线), 'dotted'（点线）。
+  //     //     borderColor: 'rgba(205, 149, 12, 0.4)', // 设置图形边框为淡金色,透明度为0.4
+  //     //     borderWidth: 2, // 图形的描边线宽。为 0 时无描边。
+  //     //     opacity: 1, // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。默认0.5
+  //     //   },
+  //     // },
+  //   },
+  //   {
+  //     name: '应用',
+  //   },
+  //   {
+  //     name: '实施',
+  //   },
+  //   {
+  //     name: '开发',
+  //   },
+  // ];
+  // const data = [
+  //   {
+  //     name: '王小二',
+  //     draggable: true, // 是否可以拖拽，默认false
+  //     category: 0, // 这是种类，运维1测试2应用3实施4开发5
+  //     number: 10, // 这是编号 非必须，目的仅为方便编写line
+  //     symbolSize: 45, //图形大小
+  //     showNum: 25, //节点需要显示的额外内容
+  //   },
+  //   {
+  //     name: '运维1',
+  //     number: 1,
+  //     category: 1,
+  //     draggable: true,
+  //     symbolSize: 40,
+  //     showNum: 35,
+  //   },
+  //   {
+  //     name: '测试1',
+  //     number: 2,
+  //     category: 2,
+  //     draggable: true,
+  //     symbolSize: 45,
+  //     showNum: 35,
+  //   },
+  //   {
+  //     name: '应用1',
+  //     number: 3,
+  //     category: 3,
+  //     draggable: true,
+  //     symbolSize: 45,
+  //     showNum: 35,
+  //   },
+  //   {
+  //     name: '实施1',
+  //     number: 4,
+  //     category: 4,
+  //     draggable: true,
+  //     symbolSize: 45,
+  //     showNum: 35,
+  //   },
+  //   {
+  //     name: '开发1',
+  //     number: 5,
+  //     category: 5,
+  //     draggable: true,
+  //     symbolSize: 45,
+  //     showNum: 35,
+  //   },
+  //   {
+  //     name: 'JS',
+  //     number: 6,
+  //     category: 5,
+  //     draggable: true,
+  //     symbolSize: 35,
+  //     showNum: 35,
+  //   },
+  //   {
+  //     name: 'php',
+  //     number: 7,
+  //     category: 5,
+  //     draggable: true,
+  //     symbolSize: 20,
+  //     showNum: 35,
+  //   },
+  //   {
+  //     name: 'java',
+  //     number: 8,
+  //     category: 5,
+  //     draggable: true,
+  //     symbolSize: 45,
+  //     showNum: 35,
+  //   },
+  // ];
+  // const links = [
+  //   // {
+  //   //   source: '王小二', // 可以用name 可以用number，但name不能重名
+  //   //   target: '运维1',
+  //   // },
+  //   {
+  //     source: 0,
+  //     target: 2,
+  //   },
+  //   {
+  //     source: 0,
+  //     target: 3,
+  //   },
+  //   {
+  //     source: 0,
+  //     target: 4,
+  //   },
+  //   {
+  //     source: 0,
+  //     target: 5,
+  //   },
+  //   {
+  //     source: 5,
+  //     target: 6,
+  //   },
+  //   {
+  //     source: 6,
+  //     target: 7,
+  //   },
+  //   {
+  //     source: 6,
+  //     target: 8,
+  //   },
+  // ];
+
   const option = {
     title: {
       text: '产业链定位',
@@ -266,7 +272,7 @@ export function getForceOption() {
     legend: {
       x: 'center',
       show: true,
-      data: ['运维', '测试', '应用', '实施', '开发'], // 此处不显示根节点学生
+      data: categories.map((i) => i.name), // 此处不显示根节点学生
     },
     series: [
       {
@@ -286,6 +292,9 @@ export function getForceOption() {
             textStyle: {
               fontSize: 12,
             },
+            formatter: function (node) {
+              return node.data.trueName;
+            },
           },
         },
         force: {
@@ -295,7 +304,7 @@ export function getForceOption() {
           formatter: function (node) {
             // 区分连线和节点，节点上额外显示其他数字
             if (!node.value) {
-              return node.data.name;
+              return node.data.trueName;
             } else {
               return node.data.name + ':' + node.data.showNum;
             }
@@ -304,7 +313,7 @@ export function getForceOption() {
         lineStyle: {
           normal: {
             opacity: 0.9,
-            width: 1,
+            width: 2,
             curveness: 0.3,
           },
         },

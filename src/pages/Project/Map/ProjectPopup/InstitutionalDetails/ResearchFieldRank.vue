@@ -6,35 +6,71 @@
         :key="item.name"
         :class="{ active: activeIndex === index }"
         class="list-item"
-        @click="activeIndex = index"
+        @click="changeActive(item, index)"
       >
         {{ item.name }}
       </div>
     </div>
     <div class="delimiter" />
-    <Ranking />
+    <Ranking :dataList="dataList2" />
   </div>
 </template>
 
 <script setup>
 import Ranking from './Ranking';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { getProjectFraction, getSchoolFirstLevel } from '@/api/project';
+import { useStore } from 'vuex';
+const store = useStore();
+const popId = computed(() => {
+  return store.getters.popId;
+});
 const activeIndex = ref(0);
+const activeId = ref();
+const dataList2 = ref([]);
 const dataList = ref([
-  { name: '信息科学' },
-  { name: '医学' },
-  { name: '生物学' },
-  { name: '材料科学' },
-  { name: '数学' },
-  { name: '经济学' },
-  { name: '地质学' },
-  { name: '物理学' },
-  { name: '地理学' },
-  { name: '工程学' },
-  { name: '商业' },
-  { name: '化学' },
-  { name: '环埴科学' },
+  // { name: '信息科学' },
+  // { name: '医学' },
+  // { name: '生物学' },
+  // { name: '材料科学' },
+  // { name: '数学' },
+  // { name: '经济学' },
+  // { name: '地质学' },
+  // { name: '物理学' },
+  // { name: '地理学' },
+  // { name: '工程学' },
+  // { name: '商业' },
+  // { name: '化学' },
+  // { name: '环埴科学' },
 ]);
+async function getTypeData() {
+  const res = await getSchoolFirstLevel(popId.value);
+  dataList.value = res.map((i) => {
+    return {
+      name: i.fieldName,
+      id: i.id,
+    };
+  });
+  activeId.value = dataList.value[0].id;
+  getDataList();
+}
+getTypeData();
+function getDataList() {
+  getProjectFraction(popId.value, activeId.value).then((res) => {
+    dataList2.value = res.map((i) => {
+      return {
+        name: i.fieldName,
+        value: i.rank,
+        innovationIndex: i.innovationIndex,
+      };
+    });
+  });
+}
+function changeActive(item, index) {
+  activeIndex.value = index;
+  activeId.value = item.id;
+  getDataList();
+}
 </script>
 
 <style lang="scss" scoped>

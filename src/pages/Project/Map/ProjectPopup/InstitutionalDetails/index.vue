@@ -9,7 +9,7 @@
       <div class="body">
         <div class="detail-info">
           <div class="header-logo">
-            <img :src="detailData.logoUrl ? detailData.logoUrl : '../header.png'" alt="" />
+            <img :src="detailData.logoUrl ? detailData.logoUrl : headerImg" alt="" />
           </div>
           <div class="info">
             <div class="name">
@@ -17,10 +17,10 @@
             </div>
             <div class="item-text">
               <div class="white-text">科技创新活跃度:</div>
-              <LabelInfo class="text-num" :num="detailData.innovationIndex || 0" :valueSize="33" />
+              <LabelInfo class="text-num" :num="(detailData.innovationIndex || 0) - 0" :valueSize="33" />
             </div>
             <div class="item-text">
-              <div class="white-text wrap three-line">
+              <div class="white-text wrap three-line" :title="detailData.detail">
                 {{ detailData.detail }}
               </div>
             </div>
@@ -51,7 +51,7 @@
             </div>
           </div>
           <ResearchFieldRank v-if="activeIndex === 0" />
-          <IndChainPosition v-if="activeIndex === 1" />
+          <!--          <IndChainPosition v-if="activeIndex === 1" />-->
         </section>
       </div>
     </div>
@@ -59,13 +59,15 @@
 </template>
 <script setup>
 import { computed, ref, watch } from 'vue';
-import IndChainPosition from './IndChainPosition';
+// import IndChainPosition from './IndChainPosition';
 import ResearchFieldRank from './ResearchFieldRank';
 import { useStore } from 'vuex';
 import { getSchoolInfo } from '@/api/project';
+const headerImg = require('../header.png');
 const store = useStore();
 const emit = defineEmits(['closeView']);
-const btns = ['研究领域排名', '研究领域图谱'];
+// const btns = ['研究领域排名', '研究领域图谱'];
+const btns = ['研究领域排名'];
 const activeIndex = ref(0);
 const popId = computed(() => {
   return store.getters.popId;

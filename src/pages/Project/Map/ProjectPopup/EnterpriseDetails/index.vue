@@ -9,7 +9,7 @@
       <div class="body">
         <div class="detail-info">
           <div class="header-logo">
-            <img :src="detailData.logoUrl ? detailData.logoUrl : '../header.png'" alt="" />
+            <img :src="detailData.logoUrl ? detailData.logoUrl : headerImg" alt="" />
           </div>
           <div class="info">
             <div class="name">
@@ -17,7 +17,7 @@
             </div>
             <div class="item-text">
               <div class="white-text">科技创新活跃度:</div>
-              <LabelInfo class="text-num" :num="detailData.innovationIndex || 0" :valueSize="33" />
+              <LabelInfo class="text-num" :num="(detailData.innovationIndex || 0) - 0" :valueSize="33" />
             </div>
             <!--            <div class="flex tips">-->
             <!--              <div v-for="(item, index) in tipList" :key="index" class="tip blue-text">{{ item }}</div>-->
@@ -53,7 +53,7 @@
               {{ item }}
             </div>
           </div>
-          <IndChainPosition v-if="activeIndex === 0" />
+          <IndChainPosition v-if="activeIndex === 0" :dataObj="positionData" />
           <!--          <TechLayout v-if="activeIndex === 1" />-->
         </section>
       </div>
@@ -65,9 +65,10 @@ import { computed, ref, watch } from 'vue';
 import IndustryRanking from './IndustryRanking';
 import IndustrialDistribution from './IndustrialDistribution';
 import IndChainPosition from './IndChainPosition';
-// import TechLayout from './TechLayout';
 import { useStore } from 'vuex';
 import { getEnterprise, getTndustryInfo } from '@/api/project';
+import * as d3 from 'd3';
+const headerImg = require('../header.png');
 const store = useStore();
 const emit = defineEmits(['closeView']);
 const popId = computed(() => {
@@ -76,7 +77,7 @@ const popId = computed(() => {
 const detailData = ref({});
 const rankData = ref([]);
 const distributionData = ref([]);
-// const positionData = ref([]);
+const positionData = ref({});
 watch(
   () => popId.value,
   (val) => {
@@ -85,12 +86,12 @@ watch(
     }
   },
 );
+
 function getData() {
   getEnterprise(popId.value).then((res) => {
     detailData.value = res;
   });
   getTndustryInfo(popId.value).then((res) => {
-    console.log(res);
     rankData.value = res.industryRank.map((i) => {
       return {
         name: i.chanye,
@@ -99,8 +100,89 @@ function getData() {
     });
     distributionData.value.dataname = res.industryRadarChart.map((i) => i.chanye);
     distributionData.value.value = res.industryRadarChart.map((i) => i.count);
+    positionData.value = initForceData(res.industrialChain);
+    console.log(positionData.value);
     // detailData.value = res;
   });
+}
+
+/**
+ * 初始化力导图数据
+ * @param data
+ * return {data, categories, links}
+ */
+
+function initForceData(data) {
+  const obj = {
+    name: '产业',
+    trueName: '产业',
+    category: '产业',
+    id: '99999',
+    children: [],
+    symbolSize: 100, //图形大小
+  };
+  obj.children = data || [];
+  // obj.children.forEach((i) => {
+  //   i.children = [];
+  // });
+  const categories = data.map((i) => {
+    return {
+      name: i.name,
+    };
+  });
+  data.forEach((i) => treeAddType(i, i.name));
+  const root = d3.hierarchy(obj);
+  const nodesData = root.descendants().map((i) => {
+    return {
+      // id: i.data.id - 0,'
+      draggable: true, // 是否可以拖拽，默认false
+      name: i.data.id,
+      trueName: i.data.name,
+      category: i.data.category,
+      number: i.data.id,
+      symbolSize: 50, //图形大小
+    };
+  });
+  // 节点去重根据id（name属性）
+  const sameArr = [];
+  nodesData.forEach((i, index) => {
+    const indexNum = nodesData.findIndex((j, jndex) => {
+      return j.name === i.name && jndex > index;
+    });
+    if (indexNum !== -1) {
+      // console.log(nodesData[indexNum], nodesData[index], indexNum, index);
+      sameArr.unshift(indexNum);
+    }
+  });
+  // console.log(' sameArr', sameArr);
+  sameArr.forEach((i) => {
+    nodesData.splice(i, 1);
+  });
+  const links = root.links().map((i) => {
+    return {
+      source: i.source.data.id,
+      target: i.target.data.id,
+    };
+    // return {
+    //   source: i.source.data.name,
+    //   target: i.target.data.name,
+    // };
+  });
+  return { data: nodesData, categories, links };
+}
+
+/**
+ * 给树节点加类型
+ * @param node
+ * @param type
+ */
+function treeAddType(node, type) {
+  node.category = type;
+  if (node.children && node.children.length > 0) {
+    node.children.forEach((i) => {
+      treeAddType(i, type);
+    });
+  }
 }
 getData();
 // const tipList = ref(['高新技术企业', '高新技术企业', '高新技术企业', '高新技术企业']);

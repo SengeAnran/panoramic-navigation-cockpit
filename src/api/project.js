@@ -53,3 +53,12 @@ export const getTndustryInfo = (id) => {
 export const getSchoolInfo = (orgId) => {
   return axios.get(`/api/project/getSchool/${orgId}`);
 };
+
+// 获取学校的一级领域信息
+export const getSchoolFirstLevel = (id) => {
+  return axios.get(`/api/project/getSchoolFirstLevel/${id}`);
+};
+// 获取项目企业的子领域分数
+export const getProjectFraction = (orgId, fieldParentId) => {
+  return axios.get(`/api/project/getProjectFraction/${orgId}/${fieldParentId}`);
+};
