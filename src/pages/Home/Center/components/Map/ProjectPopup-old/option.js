@@ -8,8 +8,8 @@ function roundDatas(num) {
   return datas;
 }
 export function getOption(data) {
-  const { firstLevelData = [], secondLevelData = [], thirdLevelData = [], fourthLevelData = [] } = data;
-  // console.log(secondLevelData, thirdLevelData, fourthLevelData);
+  const { FirstLevelData = [], SecondLevelData = [], ThirdLevelData = [], FourthLevelData = [] } = data;
+  // console.log(SecondLevelData,ThirdLevelData, FourthLevelData )
   const option = {
     animationDurationUpdate: 1500,
     roam: true, //鼠标缩放及平移
@@ -44,7 +44,7 @@ export function getOption(data) {
           },
           emphasis: {},
         },
-        data: firstLevelData,
+        data: FirstLevelData,
       },
       {
         type: 'graph',
@@ -100,7 +100,7 @@ export function getOption(data) {
             value: 25,
           },
         },
-        data: secondLevelData,
+        data: SecondLevelData,
       },
       {
         type: 'graph',
@@ -155,7 +155,7 @@ export function getOption(data) {
             value: 25,
           },
         },
-        data: thirdLevelData,
+        data: ThirdLevelData,
       },
       {
         type: 'graph',
@@ -207,15 +207,14 @@ export function getOption(data) {
             color: '#E16975',
           },
         },
-        data: fourthLevelData,
+        data: FourthLevelData,
       },
     ],
   };
-  console.log('option', option);
   return option;
 }
 export function getOption2(data) {
-  const { firstLevelData = [], secondLevelData = [], thirdLevelData = [], fourthLevelData = [], links = [] } = data;
+  const { FirstLevelData = [], SecondLevelData = [], ThirdLevelData = [], FourthLevelData = [], links = [] } = data;
   const option = {
     //使用直角坐标需要xAxis和yAxis
     xAxis: {
@@ -305,7 +304,7 @@ export function getOption2(data) {
           show: true, //是否显示图形上的文本标签
         },
         //节点集合（节点的name不能重复）
-        data: [...firstLevelData, ...secondLevelData, ...thirdLevelData, ...fourthLevelData],
+        data: [...FirstLevelData, ...SecondLevelData, ...ThirdLevelData, ...FourthLevelData],
         //线集合
         links: links,
       },

@@ -155,10 +155,11 @@ watchEffect(async () => {
     .filter((d) => d.companies?.length > 1)
     .map((d) => d.companies)
     .flat()
-    .map((d, i) => ({
+    .map((d) => ({
       lng: +d.longitude,
       lat: +d.latitude,
-      projectId: i,
+      projectId: d.id,
+      type: d.type,
     }));
   odLines.value = res
     .filter((d) => d.areas?.length > 1)

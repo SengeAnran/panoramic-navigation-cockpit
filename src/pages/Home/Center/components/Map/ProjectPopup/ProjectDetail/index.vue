@@ -1,28 +1,28 @@
 <template>
   <div class="project-popup">
-    <div class="content">
-      <h3 class="project-name">{{ point?._?.projectName }}</h3>
+    <div class="content" v-loading="loading">
+      <h3 class="project-name">{{ state.projectName || point?._?.projectName }}</h3>
       <div class="delimiter" />
       <div class="center-section">
         <div class="item-box">
           <img src="TalentDetails/icon_01.png" alt="" />
-          <div>牵头单位名称可能会很长</div>
+          <div>{{ state.leadUnit }}</div>
         </div>
         <div class="item-box">
           <img src="TalentDetails/icon_02.png" alt="" />
-          <div>负责人</div>
+          <div>{{ state.leadName }}</div>
         </div>
       </div>
       <div class="body">
         <div class="companies">
-          <Force @showDetail="showDetail" />
+          <Force @showDetail="showDetail" :atlas="state.atlas" />
         </div>
         <div class="delimiter" />
         <div class="areas">
           <h3 class="title">示范地区</h3>
           <div class="list">
-            <div class="item" v-for="item in point?._?.areas" :key="item.areaId">
-              {{ getName(item.areaId) }}
+            <div class="item" v-for="item in state.areas" :key="item">
+              {{ item }}
             </div>
           </div>
         </div>
@@ -32,30 +32,71 @@
 </template>
 <script setup>
 import Force from './Force';
-import { onMounted, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
-import { getProjectDetail } from '@/api/project';
+import { getProjectGraphBall } from '@/api/project';
+import { reactive } from 'vue-demi';
+import { useStore } from 'vuex';
 const props = defineProps({
   point: null,
 });
+const store = useStore();
+const projectId = computed(() => {
+  return store.getters.projectInfo.projectId;
+});
 const areaMap = ref();
+const loading = ref(true);
+const state = reactive({
+  leadName: '',
+  leadUnit: '',
+  projectName: '',
+  atlas: {},
+  areas: [],
+});
+watch(
+  () => projectId.value,
+  (val) => {
+    if (val) {
+      getData(val);
+    }
+  },
+);
 onMounted(async () => {
   const { data } = await axios.get('/map/flat.json');
   areaMap.value = data;
 });
-onMounted(async () => {
-  const data = await getProjectDetail(props.point?._?.projectId);
-  console.log(data);
+onBeforeMount(async () => {
+  getData();
 });
-function getName(code) {
-  return areaMap.value?.[code]?.name || code;
+async function getData(val) {
+  loading.value = true;
+  const { leadName, leadUnit, atlas, areas, projectName } = await getProjectGraphBall(
+    val || props.point?._?.projectId || projectId.value,
+  );
+  state.atlas = atlas;
+  state.leadName = leadName;
+  state.leadUnit = leadUnit;
+  state.areas = areas;
+  state.projectName = projectName;
+  loading.value = false;
 }
+// function getName(code) {
+//   return areaMap.value?.[code]?.name || code;
+// }
 const emit = defineEmits(['showDetail']);
 function showDetail(data) {
   emit('showDetail', data);
 }
 </script>
 <style lang="scss" scoped>
+.three-line {
+  line-break: anywhere;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
 .project-popup {
   position: relative;
   border: 1px solid #46e9fe;

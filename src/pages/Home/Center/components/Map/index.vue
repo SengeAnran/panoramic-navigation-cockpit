@@ -205,6 +205,9 @@ watchEffect(async () => {
       ...d,
       lng: +d.longitude,
       lat: +d.latitude,
+      projectId: d.organizationId,
+      type: d.organizationType,
     }));
+  console.log('companyPoints.value', companyPoints.value);
 });
 </script>

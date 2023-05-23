@@ -306,7 +306,7 @@ function initChart() {
   let model3 = myChart.value.getModel().getSeriesByIndex(4).getData()._itemLayouts;
   let model4 = myChart.value.getModel().getSeriesByIndex(6).getData()._itemLayouts;
   model1.forEach((i, index) => {
-    optionData.value.firstLevelData[index].value = i;
+    optionData.value.firstLevelData[index].value = isNaN(i[0]) ? [286, 205] : i; // 兼容中心点坐标为空情况
     optionData.value.firstLevelData[index].itemStyle = {
       label: {
         show: true,
@@ -429,6 +429,7 @@ function initData() {
     };
   });
   // links = links.splice(4, 20);
+  // console.log('处理好的数据', firstLevelData, secondLevelData, thirdLevelData, fourthLevelData, links);
   optionData.value = { firstLevelData, secondLevelData, thirdLevelData, fourthLevelData, links };
 }
 </script>

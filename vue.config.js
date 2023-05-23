@@ -24,10 +24,10 @@ module.exports = {
         gs: [path.resolve('./src/global.js'), 'gs'],
       }),
       AutoImport({
-        resolvers: [ElementPlusResolver()],
+        resolvers: [ElementPlusResolver({ importStyle: false })],
       }),
       Components({
-        resolvers: [ElementPlusResolver()],
+        resolvers: [ElementPlusResolver({ importStyle: false })],
       }),
     ],
   },

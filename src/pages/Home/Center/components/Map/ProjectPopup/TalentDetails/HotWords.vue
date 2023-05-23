@@ -10,25 +10,64 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import * as d3 from 'd3';
+import { getResearchWords } from '@/api/project';
+import { useStore } from 'vuex';
+const store = useStore();
+const popId = computed(() => {
+  return store.getters.popId;
+});
+watch(
+  () => popId.value,
+  (val) => {
+    if (val) {
+      nextTick(() => {
+        getData();
+      });
+    }
+  },
+);
 
 const dataList = ref(
-  [...new Array(15).keys()].map((i, index) => {
-    return {
-      name: '词' + index,
-      value: Math.random() * 15,
-    };
-  }),
+  [],
+  // [...new Array(15).keys()].map((i, index) => {
+  //   return {
+  //     name: '词' + index,
+  //     value: Math.random() * 15,
+  //   };
+  // }),
 );
 const list = ref('');
+async function getData() {
+  const data = {
+    id: popId.value,
+  };
+  const res = await getResearchWords(data);
+  if (res && Array.isArray(res)) {
+    dataList.value = res
+      .map((i) => {
+        return {
+          name: i.name,
+          value: Math.random() * 15,
+        };
+      })
+      .slice(0, 50);
+  }
+
+  nextTick(() => {
+    setWordOption();
+  });
+}
+getData();
 // 设置热词的位置，大小，透明度
 function setWordOption() {
   // 设置元素滚动时的动态的位置
   const sortList = dataList.value.sort((a, b) => a.value - b.value);
-  const maxValue = sortList[0].value;
+  if (!sortList[0]) return;
+  const maxValue = sortList[0]?.value;
   const minValue = sortList[sortList.length - 1].value;
-  console.log(sortList, maxValue, minValue);
+  // console.log(sortList, maxValue, minValue);
   // 比例尺
   const fontSizeScale = d3.scaleLinear().domain([minValue, maxValue]).range([12, 28]);
   const opacityScale = d3.scaleLinear().domain([minValue, maxValue]).range([0.2, 1]);
@@ -51,11 +90,6 @@ function setWordOption() {
     listItem[i].style.opacity = opacity;
   }
 }
-onMounted(() => {
-  nextTick(() => {
-    setWordOption();
-  });
-});
 </script>
 
 <style lang="scss" scoped>

@@ -11,17 +11,15 @@
           <div class="self-info">
             <div class="left">
               <div class="header-logo">
-                <img :src="detailData.scholarAvg ? detailData.scholarAvg : headerImg" alt="" />
+                <img src="../header.png" alt="" />
               </div>
               <div class="info">
                 <div class="name">
-                  <span class="theme-font-style">{{ detailData.scholarName }}</span>
-                  <div v-if="detailData.position" class="tip blue-text">{{ detailData.position }}</div>
+                  <span class="theme-font-style">王雅雅</span>
+                  <div class="tip blue-text">教授</div>
                 </div>
-                <div class="blue-text can-click" @click="showSchoolOrEnt(detailData.orgId, detailData.type)">
-                  {{ detailData.orgName }}
-                </div>
-                <div class="white-text">{{ detailData.technicalPosition }}</div>
+                <div class="blue-text can-click" @click="showSchoolOrEnt">单位/学校</div>
+                <div class="white-text">专业技术职务</div>
               </div>
             </div>
             <div class="right">
@@ -36,10 +34,10 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><LabelInfo :num="detailData.papersNum" unit="篇" :valueSize="18" /></td>
-                    <td><LabelInfo :num="detailData.patents" unit="个" :valueSize="18" /></td>
-                    <td><LabelInfo :num="detailData.projectNum" unit="个" :valueSize="18" /></td>
-                    <td><LabelInfo :num="detailData.awardNum" unit="个" :valueSize="18" /></td>
+                    <td><LabelInfo :num="999" unit="篇" :valueSize="18" /></td>
+                    <td><LabelInfo :num="999" unit="个" :valueSize="18" /></td>
+                    <td><LabelInfo :num="999" unit="个" :valueSize="18" /></td>
+                    <td><LabelInfo :num="999" unit="个" :valueSize="18" /></td>
                   </tr>
                 </tbody>
               </table>
@@ -47,23 +45,17 @@
           </div>
           <div class="item-text">
             <div class="white-text">科技创新活跃度:</div>
-            <LabelInfo class="text-num" :num="(detailData.innovationIndex || 0) - 0" :valueSize="33" />
+            <LabelInfo class="text-num" :num="99.9" :valueSize="33" />
           </div>
           <div class="item-text">
             <div class="white-text">参与项目:</div>
-            <div
-              v-for="item in detailData.projectList"
-              :key="item.name"
-              class="blue-text can-click"
-              @click="showProject(item)"
-            >
-              {{ item.name }}
-            </div>
+            <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
+            <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
           </div>
           <div class="item-text">
             <div class="white-text">人物背景:</div>
-            <div class="white-text three-line">
-              {{ detailData.introduction }}
+            <div class="white-text">
+              这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字这是一段背景介绍文字。
             </div>
           </div>
         </div>
@@ -71,16 +63,16 @@
         <div class="lists">
           <theme-table class="table-content" :columns="tableColumns1" :data-source="dataList1" height="160">
           </theme-table>
-          <theme-table class="table-content" :columns="tableColumns2" :data-source="dataList2" height="160">
+          <theme-table class="table-content" :columns="tableColumns2" :data-source="dataList1" height="160">
           </theme-table>
-          <theme-table class="table-content" :columns="tableColumns3" :data-source="dataList3" height="160">
+          <theme-table class="table-content" :columns="tableColumns3" :data-source="dataList1" height="160">
           </theme-table>
         </div>
         <div class="delimiter" />
         <div class="chart-list">
           <HotWords />
-          <FrontiersField :fieldNames="fieldNames" />
-          <DomainRelevance :fieldNames="fieldNames" />
+          <FrontiersField />
+          <DomainRelevance />
         </div>
       </div>
     </div>
@@ -90,27 +82,9 @@
 import HotWords from './HotWords';
 import FrontiersField from './FrontiersField';
 import DomainRelevance from './DomainRelevance';
-import { computed, ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useStore } from 'vuex';
-import { getProjectDetails } from '@/api/project';
-import { ElMessage } from 'element-plus';
-const headerImg = require('../header.png');
 const store = useStore();
-const popId = computed(() => {
-  return store.getters.popId;
-});
-const fieldNames = ref([]);
-watch(
-  () => popId.value,
-  (val) => {
-    if (val) {
-      getData();
-    }
-  },
-);
-
-const detailData = ref({});
-
 const emit = defineEmits(['closeView', 'showSchoolOrEnt']);
 const tableColumns1 = [
   { label: '一级领域', dataIndex: 'name' },
@@ -124,73 +98,40 @@ const tableColumns3 = [
   { label: '三级领域', dataIndex: 'name' },
   { label: '排名', dataIndex: 'value' },
 ];
-const dataList1 = ref([]);
-const dataList2 = ref([]);
-const dataList3 = ref([]);
-function getData() {
-  const data = {
-    id: popId.value,
-  };
-  getProjectDetails(data).then((res) => {
-    console.log(res);
-    detailData.value = res;
-    if (res.primaryFields && Array.isArray(res.primaryFields)) {
-      dataList1.value = res.primaryFields.map((i) => {
-        return {
-          name: i.fieldName,
-          value: i.rank,
-        };
-      });
-    }
-    if (res.fieldsTwo && Array.isArray(res.fieldsTwo)) {
-      dataList2.value = res.fieldsTwo.map((i) => {
-        return {
-          name: i.fieldName,
-          value: i.rank,
-        };
-      });
-      fieldNames.value = res.fieldsTwo.map((i) => i.fieldEnglishName);
-    }
-    if (res.fields && Array.isArray(res.fields)) {
-      dataList3.value = res.fields.map((i) => {
-        return {
-          name: i.fieldName,
-          value: i.rank,
-        };
-      });
-    }
-  });
+const dataList1 = ref([
+  {
+    name: '领域名称',
+    value: 20,
+  },
+  {
+    name: '领域名称',
+    value: 20,
+  },
+  {
+    name: '领域名称',
+    value: 20,
+  },
+  {
+    name: '领域名称',
+    value: 20,
+  },
+  {
+    name: '领域名称',
+    value: 20,
+  },
+]);
+function showProject() {
+  store.commit('projectMap/SET_PROJECT_INFO', { projectId: 1 });
+  emit('closeView');
 }
-getData();
-function showProject(item) {
-  if (item.id) {
-    store.commit('projectMap/SET_PROJECT_INFO', { projectId: item.id });
-    emit('closeView');
-  }
-}
-function showSchoolOrEnt(id, type) {
-  if (!id) {
-    ElMessage.warning({
-      message: '暂无该单位/企业的详情信息',
-      type: 'warning',
-    });
-    return;
-  }
-  store.commit('mapPop/SET_ID', id);
-  emit('showSchoolOrEnt', type);
+function showSchoolOrEnt(data) {
+  store.commit('projectMap/SET_PROJECT_INFO', { schoolId: 1 });
+  emit('showSchoolOrEnt', data);
 }
 </script>
 <style lang="scss" scoped>
 .can-click {
   cursor: pointer;
-}
-.three-line {
-  line-break: anywhere;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  overflow: hidden;
 }
 .blue-text {
   font-size: 16px;

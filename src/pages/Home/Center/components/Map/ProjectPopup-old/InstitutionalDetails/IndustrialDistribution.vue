@@ -6,31 +6,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { getOption } from './option';
-const props = defineProps({
-  dataObj: {
-    type: Object,
-    default: () => {
-      return {
-        dataname: [],
-        value: [],
-      };
-    },
-  },
-});
-const options = ref({});
-watch(
-  () => props.dataObj.value,
-  (val) => {
-    if (val.length > 0) {
-      options.value = getOption(props.dataObj.dataname, props.dataObj.value);
-    }
-  },
-  {
-    deep: true,
-  },
-);
+const options = ref(getOption());
 </script>
 
 <style lang="scss" scoped>

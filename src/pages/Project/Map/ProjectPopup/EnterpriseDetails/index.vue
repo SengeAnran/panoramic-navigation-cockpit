@@ -3,7 +3,7 @@
     <div class="content">
       <div class="title">
         <h3 class="project-name theme-font-style">企业详情</h3>
-        <div class="back theme-font-style" @click="$emit('closeView')">返回</div>
+        <div v-if="!props.hideBack" class="back theme-font-style" @click="$emit('closeView')">返回</div>
       </div>
       <div class="delimiter" />
       <div class="body">
@@ -69,6 +69,12 @@ import { useStore } from 'vuex';
 import { getEnterprise, getTndustryInfo } from '@/api/project';
 import * as d3 from 'd3';
 const headerImg = require('../header.png');
+const props = defineProps({
+  hideBack: {
+    type: Boolean,
+    default: false,
+  },
+});
 const store = useStore();
 const emit = defineEmits(['closeView']);
 const popId = computed(() => {

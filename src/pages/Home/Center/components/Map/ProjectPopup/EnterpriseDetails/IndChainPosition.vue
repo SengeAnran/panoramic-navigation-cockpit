@@ -3,9 +3,32 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { getForceOption } from './option';
-const options = ref(getForceOption());
+const props = defineProps({
+  dataObj: {
+    type: Object,
+    default: () => {
+      return {
+        data: [],
+        categories: [],
+        links: [],
+      };
+    },
+  },
+});
+const options = ref({});
+watch(
+  () => props.dataObj.data,
+  (val) => {
+    if (val.length > 0) {
+      options.value = getForceOption(props.dataObj);
+    }
+  },
+);
+if (props.dataObj.data?.length > 0) {
+  options.value = getForceOption(props.dataObj);
+}
 </script>
 
 <style lang="scss" scoped>

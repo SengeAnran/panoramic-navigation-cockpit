@@ -3,7 +3,12 @@
     <!--    项目详情-->
     <ProjectDetail @showDetail="showDetail" v-if="showProjectDetail" v-bind="$attrs" :point="props.point" />
     <!--    企业详情-->
-    <EnterpriseDetails @closeView="closeEnter" class="enterprise-details" v-if="showEnterpriseDetails" />
+    <EnterpriseDetails
+      :hideBack="hideBack"
+      @closeView="closeEnter"
+      class="enterprise-details"
+      v-if="showEnterpriseDetails"
+    />
     <!--    人才详情-->
     <TalentDetails
       @closeView="showTalentDetails = false"
@@ -13,18 +18,20 @@
     />
     <!--    机构详情-->
     <InstitutionalDetails
-      @closeView="showInstitutionalDetails = false"
+      :hideBack="hideBack"
+      @closeView="closeEnter"
       class="enterprise-details"
       v-if="showInstitutionalDetails"
     />
   </div>
 </template>
 <script setup>
+import { ElMessage } from 'element-plus';
 import ProjectDetail from './ProjectDetail/index';
 import EnterpriseDetails from './EnterpriseDetails/index';
 import TalentDetails from './TalentDetails/index';
 import InstitutionalDetails from './InstitutionalDetails/index';
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useStore } from 'vuex';
 const props = defineProps({
   point: null,
@@ -35,9 +42,30 @@ const props = defineProps({
 });
 // const areaMap = ref();
 const showProjectDetail = ref(!props.showCompany);
-const showEnterpriseDetails = ref(props.showCompany);
+const showEnterpriseDetails = ref(false);
 const showTalentDetails = ref(false);
 const showInstitutionalDetails = ref(false);
+const hideBack = ref(false);
+onBeforeMount(() => {
+  if (props.showCompany) {
+    enterInit();
+  }
+});
+function enterInit() {
+  hideBack.value = true;
+  if (!props.point.type || !props.point.projectId) return;
+  const type = props.point.type;
+  store.commit('mapPop/SET_ID', props.point.projectId);
+  if (type === 'enterprise') {
+    // 企业
+    // showTalentDetails.value = false;
+    showEnterpriseDetails.value = true;
+  } else if (type === 'institution') {
+    // 机构
+    // showTalentDetails.value = false;
+    showInstitutionalDetails.value = true;
+  }
+}
 // onMounted(async () => {
 //   const { data } = await axios.get('/map/flat.json');
 //   areaMap.value = data;
@@ -45,12 +73,15 @@ const showInstitutionalDetails = ref(false);
 const store = useStore();
 function closeEnter() {
   showEnterpriseDetails.value = false;
+  showInstitutionalDetails.value = false;
   showProjectDetail.value = true;
+  console.log('showProjectDetail');
 }
 function showDetail(data) {
   const type = data?.data.type;
-  console.log(data?.data);
+  // console.log(data?.data);
   if (data?.data.nodeId) {
+    hideBack.value = false; // 二级弹窗返回功能开启
     store.commit('mapPop/SET_ID', data?.data.nodeId);
     if (type === 'character') {
       showTalentDetails.value = true;
@@ -64,12 +95,23 @@ function showDetail(data) {
       showInstitutionalDetails.value = true;
       return;
     }
+  } else {
+    ElMessage.warning({
+      message: '暂无该节点的详情信息',
+      type: 'warning',
+    });
   }
 }
-function showSchoolOrEnt(data) {
-  console.log(data);
-  showTalentDetails.value = false;
-  showEnterpriseDetails.value = true;
+function showSchoolOrEnt(type) {
+  if (type === 'enterprise') {
+    // 企业
+    showTalentDetails.value = false;
+    showEnterpriseDetails.value = true;
+  } else if (type === 'institution') {
+    // 机构
+    showTalentDetails.value = false;
+    showInstitutionalDetails.value = true;
+  }
 }
 </script>
 <style lang="scss" scoped>

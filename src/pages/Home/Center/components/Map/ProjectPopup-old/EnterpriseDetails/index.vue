@@ -2,41 +2,38 @@
   <div class="company-popup">
     <div class="content">
       <div class="title">
-        <h3 class="project-name theme-font-style">机构详情</h3>
-        <div v-if="!props.hideBack" class="back theme-font-style" @click="$emit('closeView')">返回</div>
+        <h3 class="project-name theme-font-style">企业详情</h3>
+        <div class="back theme-font-style" @click="$emit('closeView')">返回</div>
       </div>
       <div class="delimiter" />
       <div class="body">
         <div class="detail-info">
           <div class="header-logo">
-            <img :src="detailData.logoUrl ? detailData.logoUrl : headerImg" alt="" />
+            <img src="../header.png" alt="" />
           </div>
           <div class="info">
             <div class="name">
-              <span class="theme-font-style">{{ detailData.name }}</span>
+              <span class="theme-font-style">企业/学校名称可能会很长预留15字</span>
             </div>
             <div class="item-text">
               <div class="white-text">科技创新活跃度:</div>
-              <LabelInfo class="text-num" :num="(detailData.innovationIndex || 0) - 0" :valueSize="33" />
+              <LabelInfo class="text-num" :num="99.9" :valueSize="33" />
             </div>
-            <div class="item-text">
-              <div class="white-text wrap three-line" :title="detailData.detail">
-                {{ detailData.detail }}
-              </div>
+            <div class="flex tips">
+              <div v-for="(item, index) in tipList" :key="index" class="tip blue-text">{{ item }}</div>
             </div>
           </div>
         </div>
         <div class="item-text">
           <div class="white-text">参与项目:</div>
-          <div
-            v-for="item in detailData.addProjects"
-            :key="item.name"
-            class="blue-text can-click"
-            @click="showProject(item)"
-          >
-            {{ item.name }}
-          </div>
+          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
+          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
         </div>
+        <div class="delimiter" />
+        <section class="industry-sec">
+          <IndustryRanking />
+          <IndustrialDistribution />
+        </section>
         <div class="delimiter" />
         <section class="tow-chart">
           <div class="btns">
@@ -50,71 +47,34 @@
               {{ item }}
             </div>
           </div>
-          <ResearchFieldRank v-if="activeIndex === 0" />
-          <!--          <IndChainPosition v-if="activeIndex === 1" />-->
+          <IndChainPosition v-if="activeIndex === 0" />
+          <TechLayout v-if="activeIndex === 1" />
         </section>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
-// import IndChainPosition from './IndChainPosition';
-import ResearchFieldRank from './ResearchFieldRank';
+import { ref } from 'vue';
+import IndustryRanking from './IndustryRanking';
+import IndustrialDistribution from './IndustrialDistribution';
+import IndChainPosition from './IndChainPosition';
+import TechLayout from './TechLayout';
 import { useStore } from 'vuex';
-import { getSchoolInfo } from '@/api/project';
-const headerImg = require('../header.png');
-const props = defineProps({
-  hideBack: {
-    type: Boolean,
-    default: false,
-  },
-});
 const store = useStore();
 const emit = defineEmits(['closeView']);
-// const btns = ['研究领域排名', '研究领域图谱'];
-const btns = ['研究领域排名'];
+const tipList = ref(['高新技术企业', '高新技术企业', '高新技术企业', '高新技术企业']);
+const btns = ['产业链定位', '技术创新布局'];
 const activeIndex = ref(0);
-const popId = computed(() => {
-  return store.getters.popId;
-});
-const detailData = ref({});
-watch(
-  () => popId.value,
-  (val) => {
-    if (val) {
-      getData();
-    }
-  },
-);
-function getData() {
-  getSchoolInfo(popId.value).then((res) => {
-    detailData.value = res;
-  });
-}
-getData();
 function show(index) {
   activeIndex.value = index;
 }
-function showProject(item) {
-  if (item.id) {
-    store.commit('projectMap/SET_PROJECT_INFO', { projectId: item.id });
-    emit('closeView');
-  }
+function showProject() {
+  store.commit('projectMap/SET_PROJECT_INFO', { projectId: 1 });
+  emit('closeView');
 }
-onBeforeUnmount(() => {
-  store.commit('projectMap/SET_PROJECT_INFO', { projectId: undefined });
-});
 </script>
 <style lang="scss" scoped>
-.three-line {
-  line-break: anywhere;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  overflow: hidden;
-}
 .can-click {
   cursor: pointer;
 }
@@ -211,7 +171,6 @@ onBeforeUnmount(() => {
           }
         }
         .info {
-          width: calc(100% - 149px);
           margin-left: 15px;
           margin-top: 16px;
           .name {
@@ -257,9 +216,6 @@ onBeforeUnmount(() => {
         & div:first-child {
           margin-right: 12px;
           white-space: nowrap;
-        }
-        & .wrap {
-          white-space: pre-wrap !important;
         }
         .blue-text {
           margin-right: 24px;
