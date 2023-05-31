@@ -1,6 +1,6 @@
 <template>
   <div class="industry">
-    <theme-table :columns="tableColumns" height="450px" :data-source="props.dataList" hasIndex> </theme-table>
+    <theme-table :columns="tableColumns" :height="450" :data-source="props.dataList" hasIndex> </theme-table>
   </div>
 </template>
 

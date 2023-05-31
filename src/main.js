@@ -4,6 +4,7 @@ import router from './router';
 import store from './store';
 import globalRegister from '@/components/globalRegister';
 import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
 
 import './assets/iconfont/index.css';
 import './assets/fonts/font.scss';
