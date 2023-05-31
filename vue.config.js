@@ -23,12 +23,12 @@ module.exports = {
       new webpack.ProvidePlugin({
         gs: [path.resolve('./src/global.js'), 'gs'],
       }),
-      AutoImport({
-        resolvers: [ElementPlusResolver({ importStyle: false })],
-      }),
-      Components({
-        resolvers: [ElementPlusResolver({ importStyle: false })],
-      }),
+      // AutoImport({
+      //   resolvers: [ElementPlusResolver({ importStyle: false })],
+      // }),
+      // Components({
+      //   resolvers: [ElementPlusResolver({ importStyle: false })],
+      // }),
     ],
   },
   devServer: {

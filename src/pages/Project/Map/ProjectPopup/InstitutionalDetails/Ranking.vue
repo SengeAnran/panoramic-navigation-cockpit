@@ -1,10 +1,6 @@
 <template>
   <div class="industry">
-    <theme-table class="table-content" :columns="tableColumns" :data-source="props.dataList" height="450">
-      <template v-slot:index="{ scope }">
-        {{ scope.$index + 1 }}
-      </template>
-    </theme-table>
+    <theme-table :columns="tableColumns" height="450px" :data-source="props.dataList" hasIndex> </theme-table>
   </div>
 </template>
 
@@ -13,7 +9,7 @@ const props = defineProps({
   dataList: [],
 });
 const tableColumns = [
-  { label: '序号', dataIndex: 'index', scopedSlots: 'index', align: 'center' },
+  // { label: '序号', dataIndex: 'rand', scopedSlots: 'rand', align: 'center' },
   { label: '领域名称', dataIndex: 'name', align: 'center' },
   { label: '排名', dataIndex: 'value', align: 'center' },
   { label: '创新指数', dataIndex: 'innovationIndex', align: 'center' },

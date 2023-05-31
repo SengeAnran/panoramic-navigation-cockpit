@@ -49,7 +49,7 @@ $pageSizeBg: #04325e;
       }
       border: 1px solid #16678d;
       background: linear-gradient(90deg, transparent 0%, rgb(0, 50, 94, 0.92) 50%, transparent);
-      margin-bottom: 12px;
+      margin-bottom: 0;
     }
     .el-table__body-wrapper {
       .el-table__body {

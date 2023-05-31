@@ -63,7 +63,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import ResearchFieldRank from './ResearchFieldRank';
 import { useStore } from 'vuex';
 import { getSchoolInfo } from '@/api/project';
-const headerImg = require('../header.png');
+const headerImg = require('../header2.png');
 const props = defineProps({
   hideBack: {
     type: Boolean,

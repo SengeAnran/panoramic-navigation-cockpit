@@ -68,7 +68,7 @@ import IndChainPosition from './IndChainPosition';
 import { useStore } from 'vuex';
 import { getEnterprise, getTndustryInfo } from '@/api/project';
 import * as d3 from 'd3';
-const headerImg = require('../header.png');
+const headerImg = require('../header2.png');
 const props = defineProps({
   hideBack: {
     type: Boolean,
