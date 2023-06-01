@@ -47,7 +47,7 @@ import OdLine from '@/MMap/ThreeLayer/OdLine';
 import CompanyIcon, { offset as companyOffset } from './Icon/Company';
 import ProjectIcon, { offset as projectOffset } from './Icon/Project';
 import Legend from './Legend';
-import ProjectPopup from './ProjectPopup';
+import ProjectPopup from '@/views/ProjectPopup';
 import { getProjectList } from '@/api/project';
 import DemoAreas from './DemoAreas';
 import OutPolygon from './OutPolygon';

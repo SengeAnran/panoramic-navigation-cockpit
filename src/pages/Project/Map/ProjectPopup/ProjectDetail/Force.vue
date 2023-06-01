@@ -417,7 +417,8 @@ function initData() {
     return {
       ...i,
       nodeId: i.id,
-      name: i.name,
+      name: i.unitName + i.name,
+      trueName: i.name,
       type: 'character',
       id: undefined,
     };

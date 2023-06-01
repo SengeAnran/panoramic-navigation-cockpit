@@ -289,6 +289,10 @@ export function getOption2(data) {
           normal: {
             label: {
               show: true,
+              formatter: (params) => {
+                // 兼容第4层节点重名情况
+                return params.data.trueName || params.data.name;
+              },
               position: 'inside',
               opacity: 1,
               color: '#fff',

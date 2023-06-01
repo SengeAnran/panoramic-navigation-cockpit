@@ -1,10 +1,11 @@
-export function drawLineChart(data = [], data1 = [], data2 = []) {
-  const ydata1 = data.map((v) => v.data1 - 0);
-  const ydata2 = data1.map((v) => v.data1 - 0);
-  const ydata3 = data2.map((v) => v.data1 - 0);
-  const xdata = data.map((v) => v.name);
+export function drawLineChart(dataList = [], names = []) {
+  if (dataList.length === 0) return;
+  const ydataList = dataList.map((i) => {
+    return i.map((v) => v.data1 - 0);
+  });
+  const xdata = dataList[0].map((v) => v.name);
   const option = {
-    color: '#00deff',
+    // color: '#00deff',
     tooltip: {
       show: true,
       trigger: 'axis',
@@ -155,104 +156,138 @@ export function drawLineChart(data = [], data1 = [], data2 = []) {
       },
     ],
     series: [
-      {
-        name: '周点击',
-        yAxisIndex: 0,
-        type: 'line',
-        symbol: 'rect',
-        symbolSize: 6,
-        triggerLineEvent: true,
-        itemStyle: {
-          color: '#F4DB59',
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 1,
-            x2: 0,
-            y2: 0,
-            colorStops: [
-              {
-                offset: 0,
-                color: 'rgba(244,219,89,0)', // 0% 处的颜色
-              },
-              {
-                offset: 1,
-                color: 'rgba(244,219,89,0.2)', // 100% 处的颜色
-              },
-            ],
-            global: false, // 缺省为 false
-          },
-        },
-        data: ydata1,
-      },
-      {
-        name: '月点击',
-        yAxisIndex: 0,
-        type: 'line',
-        symbol: 'rect',
-        symbolSize: 6,
-        triggerLineEvent: true,
-        itemStyle: {
-          color: '#6A8DF8',
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 1,
-            x2: 0,
-            y2: 0,
-            colorStops: [
-              {
-                offset: 1,
-                color: 'rgba(71,108,224,0.41)', // 0% 处的颜色
-              },
-              {
-                offset: 0,
-                color: 'rgba(57,104,255,0)', // 100% 处的颜色
-              },
-            ],
-            global: false, // 缺省为 false
-          },
-        },
-        data: ydata2,
-      },
-      {
-        name: '击人数',
-        yAxisIndex: 0,
-        type: 'line',
-        symbol: 'rect',
-        symbolSize: 6,
-        triggerLineEvent: true,
-        itemStyle: {
-          color: '#62cb62',
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 1,
-            x2: 0,
-            y2: 0,
-            colorStops: [
-              {
-                offset: 1,
-                color: 'rgba(98,203,98,0.42)', // 0% 处的颜色
-              },
-              {
-                offset: 0,
-                color: 'rgba(57,104,255,0)', // 100% 处的颜色
-              },
-            ],
-            global: false, // 缺省为 false
-          },
-        },
-        data: ydata3,
-      },
+      // {
+      //   name: '周点击',
+      //   yAxisIndex: 0,
+      //   type: 'line',
+      //   symbol: 'rect',
+      //   symbolSize: 6,
+      //   triggerLineEvent: true,
+      //   itemStyle: {
+      //     color: '#F4DB59',
+      //   },
+      //   areaStyle: {
+      //     color: {
+      //       type: 'linear',
+      //       x: 0,
+      //       y: 1,
+      //       x2: 0,
+      //       y2: 0,
+      //       colorStops: [
+      //         {
+      //           offset: 0,
+      //           color: 'rgba(244,219,89,0)', // 0% 处的颜色
+      //         },
+      //         {
+      //           offset: 1,
+      //           color: 'rgba(244,219,89,0.2)', // 100% 处的颜色
+      //         },
+      //       ],
+      //       global: false, // 缺省为 false
+      //     },
+      //   },
+      //   data: ydata1,
+      // },
+      // {
+      //   name: '月点击',
+      //   yAxisIndex: 0,
+      //   type: 'line',
+      //   symbol: 'rect',
+      //   symbolSize: 6,
+      //   triggerLineEvent: true,
+      //   itemStyle: {
+      //     color: '#6A8DF8',
+      //   },
+      //   areaStyle: {
+      //     color: {
+      //       type: 'linear',
+      //       x: 0,
+      //       y: 1,
+      //       x2: 0,
+      //       y2: 0,
+      //       colorStops: [
+      //         {
+      //           offset: 1,
+      //           color: 'rgba(71,108,224,0.41)', // 0% 处的颜色
+      //         },
+      //         {
+      //           offset: 0,
+      //           color: 'rgba(57,104,255,0)', // 100% 处的颜色
+      //         },
+      //       ],
+      //       global: false, // 缺省为 false
+      //     },
+      //   },
+      //   data: ydata2,
+      // },
+      // {
+      //   name: '击人数',
+      //   yAxisIndex: 0,
+      //   type: 'line',
+      //   symbol: 'rect',
+      //   symbolSize: 6,
+      //   triggerLineEvent: true,
+      //   itemStyle: {
+      //     color: '#62cb62',
+      //   },
+      //   areaStyle: {
+      //     color: {
+      //       type: 'linear',
+      //       x: 0,
+      //       y: 1,
+      //       x2: 0,
+      //       y2: 0,
+      //       colorStops: [
+      //         {
+      //           offset: 1,
+      //           color: 'rgba(98,203,98,0.42)', // 0% 处的颜色
+      //         },
+      //         {
+      //           offset: 0,
+      //           color: 'rgba(57,104,255,0)', // 100% 处的颜色
+      //         },
+      //       ],
+      //       global: false, // 缺省为 false
+      //     },
+      //   },
+      //   data: ydata3,
+      // },
     ],
   };
+  ydataList.forEach((i, index) => {
+    option.series.push({
+      name: names[index],
+      yAxisIndex: 0,
+      type: 'line',
+      symbol: 'rect',
+      symbolSize: 6,
+      triggerLineEvent: true,
+      itemStyle: {
+        // color: '#F4DB59',
+      },
+      // areaStyle: {
+      //   color: {
+      //     type: 'linear',
+      //     x: 0,
+      //     y: 1,
+      //     x2: 0,
+      //     y2: 0,
+      //     colorStops: [
+      //       {
+      //         offset: 0,
+      //         color: 'rgba(244,219,89,0)', // 0% 处的颜色
+      //       },
+      //       {
+      //         offset: 1,
+      //         color: 'rgba(244,219,89,0.2)', // 100% 处的颜色
+      //       },
+      //     ],
+      //     global: false, // 缺省为 false
+      //   },
+      // },
+      data: i,
+    });
+  });
   return option;
 }
 
@@ -395,7 +430,7 @@ export const dataList3 = [
   },
 ];
 
-export function getForceOption() {
+export function getForceOption(data, links) {
   const option = {
     series: [
       {
@@ -496,16 +531,16 @@ export function getForceOption() {
           // },
         },
         categories: [
-          { name: 1 },
-          { name: 2 },
-          { name: 3 },
-          { name: 4 },
-          { name: 5 },
-          { name: 6 },
-          { name: 7 },
-          { name: 8 },
-          { name: 9 },
-          { name: 10 },
+          // { name: 1 },
+          // { name: 2 },
+          // { name: 3 },
+          // { name: 4 },
+          // { name: 5 },
+          // { name: 6 },
+          // { name: 7 },
+          // { name: 8 },
+          // { name: 9 },
+          // { name: 10 },
         ],
 
         // 设置结点node的数据
@@ -515,61 +550,20 @@ export function getForceOption() {
         // symbolSize: 结点图形的大小
         // symbol: 类目节点标记图形，默然为圆形
         // label: 标签样式
-        data: [
-          { name: 1, category: 1 },
-          { name: 2, category: 2 },
-          { name: 3, category: 3 },
-          { name: 4, category: 4 },
-          { name: 5, category: 5 },
-          { name: 6, category: 6 },
-          { name: 7, category: 7 },
-          { name: 8, category: 8 },
-          { name: 9, category: 9 },
-          { name: 10, category: 10 },
-        ],
-        links: [
-          { source: 1, target: 6 },
-          { source: 2, target: 8 },
-          { source: 3, target: 4 },
-          { source: 4, target: 7 },
-          { source: 5, target: 4 },
-          { source: 6, target: 5 },
-          { source: 7, target: 6 },
-          { source: 8, target: 6 },
-          { source: 9, target: 2 },
-          { source: 10, target: 7 },
-          { source: 1, target: 2 },
-          { source: 2, target: 9 },
-          { source: 3, target: 10 },
-          { source: 4, target: 5 },
-          { source: 5, target: 10 },
-          { source: 6, target: 4 },
-          { source: 7, target: 1 },
-          { source: 8, target: 3 },
-          { source: 9, target: 4 },
-          { source: 0, target: 5 },
-          // { source: 1, target: 3 },
-          // { source: 2, target: 6 },
-          // { source: 3, target: 6 },
-          // { source: 4, target: 3 },
-          // { source: 5, target: 7 },
-          // { source: 6, target: 9 },
-          // { source: 7, target: 1 },
-          // { source: 8, target: 5 },
-          // { source: 9, target: 8 },
-          // { source: 10, target: 4 },
-          // { source: 1, target: 7 },
-          // { source: 2, target: 4 },
-          // { source: 3, target: 1 },
-          // { source: 14, target: 19 },
-          // { source: 15, target: 20 },
-          // { source: 16, target: 5 },
-          // { source: 17, target: 9 },
-          // { source: 18, target: 14 },
-          // { source: 19, target: 5 },
-          // { source: 20, target: 18 },
-          // { source: 0, target: 18 },
-        ],
+        // data: [
+        //   { name: 1, category: 1 },
+        //   { name: 2, category: 2 },
+        //   { name: 3, category: 3 },
+        //   { name: 4, category: 4 },
+        //   { name: 5, category: 5 },
+        //   { name: 6, category: 6 },
+        //   { name: 7, category: 7 },
+        //   { name: 8, category: 8 },
+        //   { name: 9, category: 9 },
+        //   { name: 10, category: 10 },
+        // ],
+        data: data,
+        links: links,
       },
     ],
   };

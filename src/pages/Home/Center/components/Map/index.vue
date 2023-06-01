@@ -62,7 +62,7 @@ import MarkerIcon from './MarkerIcon';
 import SystemPopup from './SystemPopup';
 import { getSystemList } from '@/api/atlas';
 import areaProps from './flat.json';
-import ProjectPopup from './ProjectPopup';
+import ProjectPopup from '@/views/ProjectPopup';
 
 // console.log(odLines);
 const store = useStore();

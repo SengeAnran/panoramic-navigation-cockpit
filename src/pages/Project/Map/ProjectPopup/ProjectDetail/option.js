@@ -289,6 +289,10 @@ export function getOption2(data) {
           normal: {
             label: {
               show: true,
+              formatter: (params) => {
+                // 兼容第4层节点重名情况
+                return params.data.trueName || params.data.name;
+              },
               position: 'inside',
               opacity: 1,
               color: '#fff',
@@ -302,7 +306,7 @@ export function getOption2(data) {
         },
         label: {
           //图形上的文本标签
-          show: true, //是否显示图形上的文本标签
+          show: false, //是否显示图形上的文本标签
         },
         //节点集合（节点的name不能重复）
         data: [...firstLevelData, ...secondLevelData, ...thirdLevelData, ...fourthLevelData],
@@ -397,5 +401,6 @@ export function getOption2(data) {
       },
     ],
   };
+  console.log('option', option);
   return option;
 }
