@@ -37,6 +37,7 @@ module.exports = {
     proxy: {
       '/apiProxy': {
         // target: 'http://192.168.8.116:8088/', // 八方城
+        // target: 'http://10.21.235.148:8088', // 湖州云 不走代理
         target: 'http://172.16.24.1:8088', // 公司服务器
         changeOrigin: true,
         pathRewrite: { '^/apiProxy': '' },

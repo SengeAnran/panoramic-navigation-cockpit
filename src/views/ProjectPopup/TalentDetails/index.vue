@@ -1,6 +1,6 @@
 <template>
   <div class="company-popup">
-    <div class="content">
+    <div class="content" v-loading="loading">
       <div class="title">
         <h3 class="project-name theme-font-style">人才详情</h3>
         <div class="back theme-font-style" @click="$emit('closeView')">返回</div>
@@ -110,7 +110,7 @@ watch(
 );
 
 const detailData = ref({});
-
+const loading = ref(true);
 const emit = defineEmits(['closeView', 'showSchoolOrEnt']);
 const tableColumns1 = [
   { label: '一级领域', dataIndex: 'name' },
@@ -128,10 +128,12 @@ const dataList1 = ref([]);
 const dataList2 = ref([]);
 const dataList3 = ref([]);
 function getData() {
+  loading.value = true;
   const data = {
     id: popId.value,
   };
   getProjectDetails(data).then((res) => {
+    loading.value = false;
     console.log(res);
     detailData.value = res;
     if (res.primaryFields && Array.isArray(res.primaryFields)) {
@@ -295,6 +297,7 @@ function showSchoolOrEnt(id, type) {
                   color: #b2d2ff;
                 }
                 .tip {
+                  max-width: 150px;
                   margin-left: 15px;
                   padding: 1px 16px;
                   background: rgba(0, 216, 255, 0.2);

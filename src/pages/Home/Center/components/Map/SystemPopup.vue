@@ -30,7 +30,7 @@ onMounted(async () => {
   const data = await getSystemDetail(props.point.id);
   detail.value = data;
   // console.log(props.point);
-  // console.log(data);
+  console.log(data, detail.value);
 });
 </script>
 <style lang="scss" scoped>
@@ -79,7 +79,7 @@ onMounted(async () => {
     flex-wrap: wrap;
     max-width: 400px;
     .label {
-      width: 70px;
+      //width: 70px;
       background: url('./label-bg.png');
       background-size: 100% 100%;
       color: #000;

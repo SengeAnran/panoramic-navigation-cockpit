@@ -1,6 +1,6 @@
 <template>
   <div class="company-popup">
-    <div class="content">
+    <div class="content" v-loading="loading">
       <div class="title">
         <h3 class="project-name theme-font-style">机构详情</h3>
         <div v-if="!props.hideBack" class="back theme-font-style" @click="$emit('closeView')">返回</div>
@@ -78,6 +78,7 @@ const activeIndex = ref(0);
 const popId = computed(() => {
   return store.getters.popId;
 });
+const loading = ref(true);
 const detailData = ref({});
 watch(
   () => popId.value,
@@ -88,8 +89,10 @@ watch(
   },
 );
 function getData() {
+  loading.value = true;
   getSchoolInfo(popId.value).then((res) => {
     detailData.value = res;
+    loading.value = false;
   });
 }
 getData();

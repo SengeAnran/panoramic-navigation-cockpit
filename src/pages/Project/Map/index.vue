@@ -92,6 +92,9 @@ watchEffect(async () => {
   demoArea.value = undefined;
   const query = store.getters.query;
   const projectTypes = query.filter((d) => d.type === '项目类型').map((d) => d.value);
+  const TechnicalDirects = query.filter((d) => d.type === '技术方向').map((d) => d.value);
+  const ServiceContents = query.filter((d) => d.type === '服务内容').map((d) => d.value);
+  const ApplicationScenarios = query.filter((d) => d.type === '应用场景').map((d) => d.value);
   const keys = query.filter((d) => d.type === 'search').map((d) => d.value);
   const queryDims = [];
   query
@@ -115,6 +118,9 @@ watchEffect(async () => {
     projectTypes,
     keys,
     queryDims,
+    TechnicalDirects,
+    ServiceContents,
+    ApplicationScenarios,
   }).catch((err) => {
     // console.log(err.message);
     ElMessage.error({
