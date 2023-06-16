@@ -306,14 +306,15 @@ function initChart() {
   let model3 = myChart.value.getModel().getSeriesByIndex(4).getData()._itemLayouts;
   let model4 = myChart.value.getModel().getSeriesByIndex(6).getData()._itemLayouts;
   model1.forEach((i, index) => {
-    optionData.value.firstLevelData[index].value = isNaN(i[0]) ? [286, 205] : i; // 兼容中心点坐标为空情况
-    optionData.value.firstLevelData[index].itemStyle = {
+    const node = optionData.value.firstLevelData[index];
+    node.value = isNaN(i[0]) ? [286, 205] : i; // 兼容中心点坐标为空情况
+    node.itemStyle = {
       label: {
         show: true,
         position: 'inside',
         opacity: 1,
         color: '#fff',
-        fontSize: 9,
+        fontSize: 14,
       },
       borderWidth: 1,
       borderColor: '#fff',
@@ -330,7 +331,7 @@ function initChart() {
         position: 'inside',
         opacity: 1,
         color: '#fff',
-        fontSize: 8,
+        fontSize: 14,
       },
       borderWidth: 1,
       borderColor: '#fff',
@@ -342,36 +343,36 @@ function initChart() {
   model3.forEach((i, index) => {
     const item = optionData.value.thirdLevelData[index];
     item.value = i;
-    item.symbolSize = item.Flag ? 50 : 41;
+    item.symbolSize = item.flag ? 50 : 41;
     item.itemStyle = {
       label: {
         show: true,
         position: 'inside',
         opacity: 1,
         color: '#fff',
-        fontSize: 8,
+        fontSize: 14,
       },
       borderWidth: 1,
       borderColor: '#fff',
-      color: '#84CC1C',
+      color: item.nodeId ? '#84CC1C' : 'rgba(132,204,28,0.62)',
       value: 25,
     };
   });
   model4.forEach((i, index) => {
     const item = optionData.value.fourthLevelData[index];
     item.value = i;
-    item.symbolSize = item.Flag ? 50 : 40;
+    item.symbolSize = item.flag ? 50 : 40;
     item.itemStyle = {
       label: {
         show: true,
         position: 'inside',
         opacity: 1,
         color: '#fff',
-        fontSize: 8,
+        fontSize: 14,
       },
       borderWidth: 1,
       borderColor: '#fff',
-      color: '#E16975',
+      color: item.nodeId ? '#9a1828' : 'rgba(232,134,144,0.61)',
     };
   });
   myChart.value.clear();

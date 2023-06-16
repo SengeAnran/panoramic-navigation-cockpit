@@ -1,6 +1,6 @@
 <template>
   <div class="company-popup">
-    <div class="content">
+    <div class="content" v-loading="loading">
       <div class="title">
         <h3 class="project-name theme-font-style">企业详情</h3>
         <div v-if="!props.hideBack" class="back theme-font-style" @click="$emit('closeView')">返回</div>
@@ -81,6 +81,7 @@ const popId = computed(() => {
   return store.getters.popId;
 });
 const detailData = ref({});
+const loading = ref(true);
 const rankData = ref([]);
 const distributionData = ref([]);
 const positionData = ref({});
@@ -94,6 +95,7 @@ watch(
 );
 
 function getData() {
+  loading.value = true;
   getEnterprise(popId.value).then((res) => {
     detailData.value = res;
   });
@@ -109,6 +111,7 @@ function getData() {
     positionData.value = initForceData(res.industrialChain);
     console.log(positionData.value);
     // detailData.value = res;
+    loading.value = false;
   });
 }
 
