@@ -171,6 +171,7 @@ async function getDataList() {
         dimNames: [seletType.name],
       };
       res = await getDirectoryList(data);
+      res = res[0];
       break;
     }
     case '服务内容': {
@@ -178,6 +179,7 @@ async function getDataList() {
         dimNames: [seletType.name],
       };
       res = await getDirectoryList(data);
+      res = res[0];
       break;
     }
     case '应用场景': {
@@ -185,6 +187,7 @@ async function getDataList() {
         dimNames: [seletType.name],
       };
       res = await getDirectoryList(data);
+      res = res[0];
       break;
     }
     default:
@@ -193,7 +196,7 @@ async function getDataList() {
 
   dataList.value = res.map((i) => {
     return {
-      name: i.text || i,
+      name: i.text || i.name || i,
       value: i.value || '',
       checked: false,
       position: 'left',

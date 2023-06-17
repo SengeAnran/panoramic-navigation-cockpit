@@ -330,9 +330,9 @@ function init() {
   }
 
   // addActive(nodeInfo.value.node_id); // 加当前节点效果
-  nextTick(() => {
-    addActive(nodeIdList.value);
-  });
+  // nextTick(() => {
+  //   addActive(nodeIdList.value);
+  // });
 }
 const gSvg = reactive({
   left: '',

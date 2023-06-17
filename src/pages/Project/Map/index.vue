@@ -140,10 +140,11 @@ watchEffect(async () => {
     return;
   }
   projectList.value = res
-    .filter((d) => d.areas?.length > 1)
+    // .filter((d) => d.areas?.length > 1) //???
+    .filter((d) => d.areas?.length > 0)
     // .map((d) => d.areas[1])
     .map((d) => {
-      const area = d.areas[0];
+      const area = d.companies.filter((i) => i.roleName === '项目负责')[0];
       return {
         lng: +area.longitude,
         lat: +area.latitude,
@@ -158,7 +159,7 @@ watchEffect(async () => {
     .map((d) => d.areaId);
   demoArea.value = Array.from(new Set(areas));
   companyList.value = res
-    .filter((d) => d.companies?.length > 1)
+    .filter((d) => d.companies?.length > 0)
     .map((d) => d.companies)
     .flat()
     .map((d) => ({
@@ -168,9 +169,10 @@ watchEffect(async () => {
       type: d.type,
     }));
   odLines.value = res
-    .filter((d) => d.areas?.length > 1)
+    .filter((d) => d.areas?.length > 0)
     .map((d) => {
-      const area = d.areas[0];
+      // const area = d.areas[0];
+      const area = d.companies.filter((i) => i.roleName === '项目负责')[0];
       const start = [+area.longitude, +area.latitude];
       return d.companies.map((company) => {
         return [start, [+company.longitude, +company.latitude]];
