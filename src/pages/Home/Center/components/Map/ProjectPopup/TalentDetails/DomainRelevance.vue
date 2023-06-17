@@ -6,10 +6,35 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import { getForceOption } from './option';
+import { getChordData } from '@/api/project';
 
-const options = ref(getForceOption());
+const props = defineProps({
+  fieldNames: [],
+});
+const options = ref();
+watch(
+  () => props.fieldNames,
+  () => {
+    nextTick(() => {
+      getData();
+    });
+  },
+);
+async function getData() {
+  const data = {
+    fieldNames: props.fieldNames,
+  };
+  const res = await getChordData(data);
+  const datas = res.nodes.map((i) => {
+    return {
+      name: i.name,
+    };
+  });
+  options.value = getForceOption(datas, res.links);
+}
+getData();
 </script>
 
 <style lang="scss" scoped>

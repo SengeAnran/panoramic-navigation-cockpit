@@ -62,7 +62,7 @@ import MarkerIcon from './MarkerIcon';
 import SystemPopup from './SystemPopup';
 import { getSystemList } from '@/api/atlas';
 import areaProps from './flat.json';
-import ProjectPopup from './ProjectPopup';
+import ProjectPopup from '@/views/ProjectPopup';
 
 // console.log(odLines);
 const store = useStore();
@@ -205,6 +205,9 @@ watchEffect(async () => {
       ...d,
       lng: +d.longitude,
       lat: +d.latitude,
+      projectId: d.organizationId,
+      type: d.organizationType,
     }));
+  console.log('companyPoints.value', companyPoints.value);
 });
 </script>

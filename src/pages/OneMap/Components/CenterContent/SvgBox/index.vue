@@ -92,6 +92,7 @@ const props = defineProps({
     default: false,
   },
 });
+let timer = null; // 节流阀
 const inWidVal = ref(0);
 const inHeiVal = ref(0);
 let innerWidth, // 内宽
@@ -348,14 +349,13 @@ function render(option) {
     .data(node)
     .join('text')
     .on('click', (e, d) => {
+      if (timer) return;
       // console.log(e.target.__data__); // 点击的节点
-      console.log(d);
-      console.log('点击了,深度为：' + d.depth);
+      // console.log('点击了,深度为：' + d.depth);
       if (d.depth && !d.data.same) {
         console.log('需要单展示啦！');
         state.commit('SET_CONTENT_OPACITY', true);
         state.commit('atlasMap/SET_DIALOG_INFO', d.data);
-        console.log('需要单展示啦！');
         let { url, video_url, scriptCollectName, scriptName } = d.data.meta || {};
         // 兼容字符串格式数据
         url = Array.isArray(url) ? url : [url];
@@ -365,7 +365,10 @@ function render(option) {
 
         const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
         if (url) {
-          changeToggle(data);
+          timer = setTimeout(() => {
+            changeToggle(data);
+            timer = null;
+          }, 500);
         }
         state.commit('SET_MAIN_TITLE', getRootInfo(d).name);
       }

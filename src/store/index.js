@@ -6,6 +6,7 @@ import theme from './modules/theme';
 import map from './modules/map';
 import atlasMap from './modules/atlasMap';
 import projectMap from './modules/projectMap';
+import mapPop from './modules/mapPop';
 const defaultMainTitle = '物联网与智慧城市多层级多主题成果展示平台';
 export default createStore({
   state: {
@@ -117,7 +118,7 @@ export default createStore({
       });
     },
   },
-  modules: { theme, map, atlasMap, projectMap },
+  modules: { theme, map, atlasMap, projectMap, mapPop },
   plugins: process.env.NODE_ENV === 'development' ? [createLogger()] : [],
   getters: {
     viewNodeUrl: (state) => state.atlasMap.viewNodeUrl,
@@ -134,5 +135,6 @@ export default createStore({
     comparisonMapInfo: (state) => state.atlasMap.comparisonMapInfo,
     mainTitle: (state) => state.mainTitle,
     projectInfo: (state) => state.projectMap.projectInfo,
+    popId: (state) => state.mapPop.id,
   },
 });

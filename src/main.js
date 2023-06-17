@@ -3,6 +3,8 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import globalRegister from '@/components/globalRegister';
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
 
 import './assets/iconfont/index.css';
 import './assets/fonts/font.scss';
@@ -18,5 +20,6 @@ const app = createApp(App);
 app.use(store);
 app.use(router);
 // app.directive('custom-loading', CustomLoading());
+app.use(ElementPlus);
 globalRegister(app);
 app.mount('#app');

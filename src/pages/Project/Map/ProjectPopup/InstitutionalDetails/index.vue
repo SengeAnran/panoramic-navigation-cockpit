@@ -3,35 +3,39 @@
     <div class="content">
       <div class="title">
         <h3 class="project-name theme-font-style">机构详情</h3>
-        <div class="back theme-font-style" @click="$emit('closeView')">返回</div>
+        <div v-if="!props.hideBack" class="back theme-font-style" @click="$emit('closeView')">返回</div>
       </div>
       <div class="delimiter" />
       <div class="body">
         <div class="detail-info">
           <div class="header-logo">
-            <img src="../header.png" alt="" />
+            <img :src="detailData.logoUrl ? detailData.logoUrl : headerImg" alt="" />
           </div>
           <div class="info">
             <div class="name">
-              <span class="theme-font-style">企业/学校名称可能会很长预留15字</span>
+              <span class="theme-font-style">{{ detailData.name }}</span>
             </div>
             <div class="item-text">
               <div class="white-text">科技创新活跃度:</div>
-              <LabelInfo class="text-num" :num="99.9" :valueSize="33" />
+              <LabelInfo class="text-num" :num="(detailData.innovationIndex || 0) - 0" :valueSize="33" />
             </div>
             <div class="item-text">
-              <div class="white-text wrap">
-                机构文详情字介绍机构文详情字介绍机构文详情字介绍机构文详情字介绍机构
-                文详情字介绍机构文详情字介绍机构文详情字介绍机构文详情字介绍机构文详
-                文详情字介绍机构文详情字介绍机构文详情字介绍机构文详情字介绍
+              <div class="white-text wrap three-line" :title="detailData.detail">
+                {{ detailData.detail }}
               </div>
             </div>
           </div>
         </div>
         <div class="item-text">
           <div class="white-text">参与项目:</div>
-          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
-          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
+          <div
+            v-for="item in detailData.addProjects"
+            :key="item.name"
+            class="blue-text can-click"
+            @click="showProject(item)"
+          >
+            {{ item.name }}
+          </div>
         </div>
         <div class="delimiter" />
         <section class="tow-chart">
@@ -47,30 +51,70 @@
             </div>
           </div>
           <ResearchFieldRank v-if="activeIndex === 0" />
-          <IndChainPosition v-if="activeIndex === 1" />
+          <!--          <IndChainPosition v-if="activeIndex === 1" />-->
         </section>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref } from 'vue';
-import IndChainPosition from './IndChainPosition';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+// import IndChainPosition from './IndChainPosition';
 import ResearchFieldRank from './ResearchFieldRank';
 import { useStore } from 'vuex';
+import { getSchoolInfo } from '@/api/project';
+const headerImg = require('../header2.png');
+const props = defineProps({
+  hideBack: {
+    type: Boolean,
+    default: false,
+  },
+});
 const store = useStore();
 const emit = defineEmits(['closeView']);
-const btns = ['研究领域排名', '研究领域图谱'];
+// const btns = ['研究领域排名', '研究领域图谱'];
+const btns = ['研究领域排名'];
 const activeIndex = ref(0);
+const popId = computed(() => {
+  return store.getters.popId;
+});
+const detailData = ref({});
+watch(
+  () => popId.value,
+  (val) => {
+    if (val) {
+      getData();
+    }
+  },
+);
+function getData() {
+  getSchoolInfo(popId.value).then((res) => {
+    detailData.value = res;
+  });
+}
+getData();
 function show(index) {
   activeIndex.value = index;
 }
-function showProject() {
-  store.commit('projectMap/SET_PROJECT_INFO', { projectId: 1 });
-  emit('closeView');
+function showProject(item) {
+  if (item.id) {
+    store.commit('projectMap/SET_PROJECT_INFO', { projectId: item.id });
+    emit('closeView');
+  }
 }
+onBeforeUnmount(() => {
+  store.commit('projectMap/SET_PROJECT_INFO', { projectId: undefined });
+});
 </script>
 <style lang="scss" scoped>
+.three-line {
+  line-break: anywhere;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
 .can-click {
   cursor: pointer;
 }

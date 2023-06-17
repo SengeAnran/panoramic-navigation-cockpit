@@ -54,6 +54,18 @@ const optionType = ref([
     name: '项目领域',
     eglishName: 'PROJECE AREA',
   },
+  {
+    name: '技术方向',
+    eglishName: 'PROJECE AREA',
+  },
+  {
+    name: '服务内容',
+    eglishName: 'PROJECE AREA',
+  },
+  {
+    name: '应用场景',
+    eglishName: 'PROJECE AREA',
+  },
 ]);
 // 改变导览类型
 function changeType(index) {

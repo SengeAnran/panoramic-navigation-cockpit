@@ -1,8 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
-const AutoImport = require('unplugin-auto-import/webpack');
-const Components = require('unplugin-vue-components/webpack');
-const { ElementPlusResolver } = require('unplugin-vue-components/resolvers');
+// const AutoImport = require('unplugin-auto-import/webpack');
+// const Components = require('unplugin-vue-components/webpack');
+// const { ElementPlusResolver } = require('unplugin-vue-components/resolvers');
 
 module.exports = {
   // publicPath: process.env.NODE_ENV === 'production' ? '/proCockpit/' : '/',
@@ -23,12 +23,12 @@ module.exports = {
       new webpack.ProvidePlugin({
         gs: [path.resolve('./src/global.js'), 'gs'],
       }),
-      AutoImport({
-        resolvers: [ElementPlusResolver()],
-      }),
-      Components({
-        resolvers: [ElementPlusResolver()],
-      }),
+      // AutoImport({
+      //   resolvers: [ElementPlusResolver({ importStyle: false })],
+      // }),
+      // Components({
+      //   resolvers: [ElementPlusResolver({ importStyle: false })],
+      // }),
     ],
   },
   devServer: {
@@ -37,6 +37,7 @@ module.exports = {
     proxy: {
       '/apiProxy': {
         // target: 'http://192.168.8.116:8088/', // 八方城
+        // target: 'http://10.21.235.148:8088', // 湖州云 不走代理
         target: 'http://172.16.24.1:8088', // 公司服务器
         changeOrigin: true,
         pathRewrite: { '^/apiProxy': '' },

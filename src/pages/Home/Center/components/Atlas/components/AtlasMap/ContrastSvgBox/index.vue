@@ -54,6 +54,7 @@ const nodeInfo = computed(() => {
 const viewNodeUrl = computed(() => {
   return state.getters.viewNodeUrl;
 });
+let timer = null; // 节流阀
 const nodes = reactive({
   left: '',
   right: '',
@@ -479,6 +480,9 @@ function render(option) {
       // if (d.data.node_id.every((i) => i === '-1')) {
       //   return;
       // }
+      if (timer) {
+        return;
+      }
       if (props.canClick) {
         let info = [];
         // console.log(d.data.counterpart);
@@ -506,7 +510,10 @@ function render(option) {
         const { url, video_url, scriptCollectName, scriptName } = d.data.meta || {};
         const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'TWIN' };
         // console.log(data);
-        changeToggle(data);
+        timer = setTimeout(() => {
+          changeToggle(data);
+          timer = null;
+        }, 500);
         return;
       }
       let nodeNames = [];

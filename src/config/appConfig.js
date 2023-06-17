@@ -4,8 +4,8 @@ if (baseUrl.length && baseUrl[baseUrl.length - 1] === '/') {
 }
 const prodConfig = {
   prodOrDev: 'prod', // 正式环境
-  // apiHost: 'http://10.21.235.148:8088', // 湖州云 不走代理
-  apiHost: '/apiProxy', // 八方城 接口代理
+  apiHost: 'http://10.21.235.148:8088', // 湖州云 不走代理
+  // apiHost: '/apiProxy', // 八方城 接口代理
   // apiHost: '', // 公司服务器接口代理
   voiceApiHost: '/apiVoice', // 语音接口代理
   mapHost: 'https://xfsqxcx.deqing.gov.cn/arcgis',

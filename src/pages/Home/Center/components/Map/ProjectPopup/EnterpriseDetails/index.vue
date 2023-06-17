@@ -3,36 +3,42 @@
     <div class="content">
       <div class="title">
         <h3 class="project-name theme-font-style">企业详情</h3>
-        <div class="back theme-font-style" @click="$emit('closeView')">返回</div>
+        <div v-if="!props.hideBack" class="back theme-font-style" @click="$emit('closeView')">返回</div>
       </div>
       <div class="delimiter" />
       <div class="body">
         <div class="detail-info">
           <div class="header-logo">
-            <img src="../header.png" alt="" />
+            <img :src="detailData.logoUrl ? detailData.logoUrl : headerImg" alt="" />
           </div>
           <div class="info">
             <div class="name">
-              <span class="theme-font-style">企业/学校名称可能会很长预留15字</span>
+              <span class="theme-font-style">{{ detailData.name }}</span>
             </div>
             <div class="item-text">
               <div class="white-text">科技创新活跃度:</div>
-              <LabelInfo class="text-num" :num="99.9" :valueSize="33" />
+              <LabelInfo class="text-num" :num="(detailData.innovationIndex || 0) - 0" :valueSize="33" />
             </div>
-            <div class="flex tips">
-              <div v-for="(item, index) in tipList" :key="index" class="tip blue-text">{{ item }}</div>
-            </div>
+            <!--            <div class="flex tips">-->
+            <!--              <div v-for="(item, index) in tipList" :key="index" class="tip blue-text">{{ item }}</div>-->
+            <!--            </div>-->
           </div>
         </div>
         <div class="item-text">
           <div class="white-text">参与项目:</div>
-          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
-          <div class="blue-text can-click" @click="showProject">项目名称可能会很长最起码预留20字</div>
+          <div
+            v-for="item in detailData.addProjects"
+            :key="item.name"
+            class="blue-text can-click"
+            @click="showProject(item)"
+          >
+            {{ item.name }}
+          </div>
         </div>
         <div class="delimiter" />
         <section class="industry-sec">
-          <IndustryRanking />
-          <IndustrialDistribution />
+          <IndustryRanking :dataList="rankData" />
+          <IndustrialDistribution :dataObj="distributionData" />
         </section>
         <div class="delimiter" />
         <section class="tow-chart">
@@ -47,31 +53,156 @@
               {{ item }}
             </div>
           </div>
-          <IndChainPosition v-if="activeIndex === 0" />
-          <TechLayout v-if="activeIndex === 1" />
+          <IndChainPosition v-if="activeIndex === 0" :dataObj="positionData" />
+          <!--          <TechLayout v-if="activeIndex === 1" />-->
         </section>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import IndustryRanking from './IndustryRanking';
 import IndustrialDistribution from './IndustrialDistribution';
 import IndChainPosition from './IndChainPosition';
-import TechLayout from './TechLayout';
 import { useStore } from 'vuex';
+import { getEnterprise, getTndustryInfo } from '@/api/project';
+import * as d3 from 'd3';
+const headerImg = require('../header2.png');
+const props = defineProps({
+  hideBack: {
+    type: Boolean,
+    default: false,
+  },
+});
 const store = useStore();
 const emit = defineEmits(['closeView']);
-const tipList = ref(['高新技术企业', '高新技术企业', '高新技术企业', '高新技术企业']);
-const btns = ['产业链定位', '技术创新布局'];
+const popId = computed(() => {
+  return store.getters.popId;
+});
+const detailData = ref({});
+const rankData = ref([]);
+const distributionData = ref([]);
+const positionData = ref({});
+watch(
+  () => popId.value,
+  (val) => {
+    if (val) {
+      getData();
+    }
+  },
+);
+
+function getData() {
+  getEnterprise(popId.value).then((res) => {
+    detailData.value = res;
+  });
+  getTndustryInfo(popId.value).then((res) => {
+    rankData.value = res.industryRank.map((i) => {
+      return {
+        name: i.chanye,
+        value: i.quanguo,
+      };
+    });
+    distributionData.value.dataname = res.industryRadarChart.map((i) => i.chanye);
+    distributionData.value.value = res.industryRadarChart.map((i) => i.count);
+    positionData.value = initForceData(res.industrialChain);
+    console.log(positionData.value);
+    // detailData.value = res;
+  });
+}
+
+/**
+ * 初始化力导图数据
+ * @param data
+ * return {data, categories, links}
+ */
+
+function initForceData(data) {
+  const obj = {
+    name: '产业',
+    trueName: '产业',
+    category: '产业',
+    id: '99999',
+    children: [],
+    symbolSize: 100, //图形大小
+  };
+  obj.children = data || [];
+  // obj.children.forEach((i) => {
+  //   i.children = [];
+  // });
+  const categories = data.map((i) => {
+    return {
+      name: i.name,
+    };
+  });
+  data.forEach((i) => treeAddType(i, i.name));
+  const root = d3.hierarchy(obj);
+  const nodesData = root.descendants().map((i) => {
+    return {
+      // id: i.data.id - 0,'
+      draggable: true, // 是否可以拖拽，默认false
+      name: i.data.id,
+      trueName: i.data.name,
+      category: i.data.category,
+      number: i.data.id,
+      symbolSize: 50, //图形大小
+    };
+  });
+  // 节点去重根据id（name属性）
+  const sameArr = [];
+  nodesData.forEach((i, index) => {
+    const indexNum = nodesData.findIndex((j, jndex) => {
+      return j.name === i.name && jndex > index;
+    });
+    if (indexNum !== -1) {
+      // console.log(nodesData[indexNum], nodesData[index], indexNum, index);
+      sameArr.unshift(indexNum);
+    }
+  });
+  // console.log(' sameArr', sameArr);
+  sameArr.forEach((i) => {
+    nodesData.splice(i, 1);
+  });
+  const links = root.links().map((i) => {
+    return {
+      source: i.source.data.id,
+      target: i.target.data.id,
+    };
+    // return {
+    //   source: i.source.data.name,
+    //   target: i.target.data.name,
+    // };
+  });
+  return { data: nodesData, categories, links };
+}
+
+/**
+ * 给树节点加类型
+ * @param node
+ * @param type
+ */
+function treeAddType(node, type) {
+  node.category = type;
+  if (node.children && node.children.length > 0) {
+    node.children.forEach((i) => {
+      treeAddType(i, type);
+    });
+  }
+}
+getData();
+// const tipList = ref(['高新技术企业', '高新技术企业', '高新技术企业', '高新技术企业']);
+// const btns = ['产业链定位', '技术创新布局'];
+const btns = ['产业链定位'];
 const activeIndex = ref(0);
 function show(index) {
   activeIndex.value = index;
 }
-function showProject() {
-  store.commit('projectMap/SET_PROJECT_INFO', { projectId: 1 });
-  emit('closeView');
+function showProject(item) {
+  if (item.id) {
+    store.commit('projectMap/SET_PROJECT_INFO', { projectId: item.id });
+    emit('closeView');
+  }
 }
 </script>
 <style lang="scss" scoped>

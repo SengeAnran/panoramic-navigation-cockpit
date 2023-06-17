@@ -47,7 +47,7 @@ import OdLine from '@/MMap/ThreeLayer/OdLine';
 import CompanyIcon, { offset as companyOffset } from './Icon/Company';
 import ProjectIcon, { offset as projectOffset } from './Icon/Project';
 import Legend from './Legend';
-import ProjectPopup from './ProjectPopup';
+import ProjectPopup from '@/views/ProjectPopup';
 import { getProjectList } from '@/api/project';
 import DemoAreas from './DemoAreas';
 import OutPolygon from './OutPolygon';
@@ -92,6 +92,9 @@ watchEffect(async () => {
   demoArea.value = undefined;
   const query = store.getters.query;
   const projectTypes = query.filter((d) => d.type === '项目类型').map((d) => d.value);
+  const TechnicalDirects = query.filter((d) => d.type === '技术方向').map((d) => d.value);
+  const ServiceContents = query.filter((d) => d.type === '服务内容').map((d) => d.value);
+  const ApplicationScenarios = query.filter((d) => d.type === '应用场景').map((d) => d.value);
   const keys = query.filter((d) => d.type === 'search').map((d) => d.value);
   const queryDims = [];
   query
@@ -115,6 +118,9 @@ watchEffect(async () => {
     projectTypes,
     keys,
     queryDims,
+    TechnicalDirects,
+    ServiceContents,
+    ApplicationScenarios,
   }).catch((err) => {
     // console.log(err.message);
     ElMessage.error({
@@ -155,10 +161,11 @@ watchEffect(async () => {
     .filter((d) => d.companies?.length > 1)
     .map((d) => d.companies)
     .flat()
-    .map((d, i) => ({
+    .map((d) => ({
       lng: +d.longitude,
       lat: +d.latitude,
-      projectId: i,
+      projectId: d.id,
+      type: d.type,
     }));
   odLines.value = res
     .filter((d) => d.areas?.length > 1)

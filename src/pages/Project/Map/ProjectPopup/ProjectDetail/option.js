@@ -8,8 +8,8 @@ function roundDatas(num) {
   return datas;
 }
 export function getOption(data) {
-  const { FirstLevelData = [], SecondLevelData = [], ThirdLevelData = [], FourthLevelData = [] } = data;
-  // console.log(SecondLevelData,ThirdLevelData, FourthLevelData )
+  const { firstLevelData = [], secondLevelData = [], thirdLevelData = [], fourthLevelData = [] } = data;
+  // console.log(secondLevelData, thirdLevelData, fourthLevelData);
   const option = {
     animationDurationUpdate: 1500,
     roam: true, //鼠标缩放及平移
@@ -44,7 +44,7 @@ export function getOption(data) {
           },
           emphasis: {},
         },
-        data: FirstLevelData,
+        data: firstLevelData,
       },
       {
         type: 'graph',
@@ -100,7 +100,7 @@ export function getOption(data) {
             value: 25,
           },
         },
-        data: SecondLevelData,
+        data: secondLevelData,
       },
       {
         type: 'graph',
@@ -155,7 +155,7 @@ export function getOption(data) {
             value: 25,
           },
         },
-        data: ThirdLevelData,
+        data: thirdLevelData,
       },
       {
         type: 'graph',
@@ -207,14 +207,15 @@ export function getOption(data) {
             color: '#E16975',
           },
         },
-        data: FourthLevelData,
+        data: fourthLevelData,
       },
     ],
   };
+  console.log('option', option);
   return option;
 }
 export function getOption2(data) {
-  const { FirstLevelData = [], SecondLevelData = [], ThirdLevelData = [], FourthLevelData = [], links = [] } = data;
+  const { firstLevelData = [], secondLevelData = [], thirdLevelData = [], fourthLevelData = [], links = [] } = data;
   const option = {
     //使用直角坐标需要xAxis和yAxis
     xAxis: {
@@ -288,6 +289,10 @@ export function getOption2(data) {
           normal: {
             label: {
               show: true,
+              formatter: (params) => {
+                // 兼容第4层节点重名情况
+                return params.data.trueName || params.data.name;
+              },
               position: 'inside',
               opacity: 1,
               color: '#fff',
@@ -301,10 +306,10 @@ export function getOption2(data) {
         },
         label: {
           //图形上的文本标签
-          show: true, //是否显示图形上的文本标签
+          show: false, //是否显示图形上的文本标签
         },
         //节点集合（节点的name不能重复）
-        data: [...FirstLevelData, ...SecondLevelData, ...ThirdLevelData, ...FourthLevelData],
+        data: [...firstLevelData, ...secondLevelData, ...thirdLevelData, ...fourthLevelData],
         //线集合
         links: links,
       },
@@ -396,5 +401,6 @@ export function getOption2(data) {
       },
     ],
   };
+  console.log('option', option);
   return option;
 }
