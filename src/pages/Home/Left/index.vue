@@ -22,8 +22,8 @@
         :class="{ active: item.checked }"
         @click="selectKey(item)"
       >
-        <img v-if="item.checked" :src="item.activeImgUrl" alt="" />
-        <img v-else :src="item.imgUrl" alt="" />
+        <!--        <img v-if="item.checked" :src="item.activeImgUrl" alt="" />-->
+        <!--        <img v-else :src="item.imgUrl" alt="" />-->
         <div class="name">
           <div class="name-text">{{ item.name }}</div>
           <div class="name-eglish" v-text="item.eglishName.toUpperCase()"></div>

@@ -22,8 +22,8 @@
         :class="{ active: item.checked }"
         @click="selectKey(item)"
       >
-        <img v-if="item.checked" :src="item.activeImgUrl" alt="" />
-        <img v-else :src="item.imgUrl" alt="" />
+        <!--        <img v-if="item.checked" :src="item.activeImgUrl" alt="" />-->
+        <!--        <img v-else :src="item.imgUrl" alt="" />-->
         <div class="name">
           <div class="name-text">{{ item.name }}</div>
           <div class="name-eglish" v-text="item.eglishName.toUpperCase()"></div>
@@ -37,7 +37,7 @@
 // import * as d3 from 'd3';
 import { ref, reactive, onMounted, nextTick, watch } from 'vue';
 import { useStore } from 'vuex';
-// import { getTechnicalDirectory } from '@/api/search';
+import { getDirectoryList, getTechnicalDirectory } from '@/api/search';
 import { getProjectTypeList } from '@/api/project';
 const state = useStore();
 const seletType = reactive({
@@ -56,15 +56,15 @@ const optionType = ref([
   },
   {
     name: '技术方向',
-    eglishName: 'PROJECE AREA',
+    eglishName: '',
   },
   {
     name: '服务内容',
-    eglishName: 'PROJECE AREA',
+    eglishName: '',
   },
   {
     name: '应用场景',
-    eglishName: 'PROJECE AREA',
+    eglishName: '',
   },
 ]);
 // 改变导览类型
@@ -163,9 +163,30 @@ async function getDataList() {
     case '项目类型':
       res = await getProjectTypeList();
       break;
-    // case '项目领域':
-    //   res = await getTechnicalDirectory();
-    //   break;
+    case '项目领域':
+      res = await getTechnicalDirectory();
+      break;
+    case '技术方向': {
+      const data = {
+        dimNames: [seletType.name],
+      };
+      res = await getDirectoryList(data);
+      break;
+    }
+    case '服务内容': {
+      const data = {
+        dimNames: [seletType.name],
+      };
+      res = await getDirectoryList(data);
+      break;
+    }
+    case '应用场景': {
+      const data = {
+        dimNames: [seletType.name],
+      };
+      res = await getDirectoryList(data);
+      break;
+    }
     default:
       res = [];
   }

@@ -166,7 +166,11 @@ watch(
   { immediate: true, deep: true },
 );
 const nodeIdList = computed(() => {
-  return nodeInfo.value.map((i) => i.node_id);
+  let ids = nodeInfo.value.map((i) => i.node_id);
+  if (Array.isArray(ids[0])) {
+    ids = [ids[0], ...ids[0]];
+  }
+  return ids;
 });
 watch(
   () => nodeIdList.value,
@@ -175,6 +179,9 @@ watch(
       addActive(val);
     }
   },
+  // {
+  //   immediate: true,
+  // },
 );
 function showMain() {
   for (let i = 0; i < showData.value.children.length; i++) {
@@ -323,6 +330,9 @@ function init() {
   }
 
   // addActive(nodeInfo.value.node_id); // 加当前节点效果
+  nextTick(() => {
+    addActive(nodeIdList.value);
+  });
 }
 const gSvg = reactive({
   left: '',

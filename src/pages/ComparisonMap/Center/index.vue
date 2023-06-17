@@ -33,7 +33,6 @@ const showSvgBox = ref(false);
 const compereNodeInfo = computed(() => {
   return state.getters.compereNodeInfo;
 });
-console.log(route.query.data);
 const query = JSON.parse(route.query.data || '');
 console.log(query);
 const comparisonMapInfo = ref(query.comparisonMapInfo);
@@ -50,6 +49,9 @@ onBeforeMount(() => {
   init();
   state.commit('atlasMap/SET_COMPERE_NODE_INFO', comparisonMapInfo.value);
 });
+// 为兼容点击非相同节点
+let nodeNameLeftLast = '';
+let nodeNameRightLast = '';
 // 左节点树展示节点的节点名称
 const nodeNameLeft = computed(() => {
   let leftNode = '';
@@ -68,7 +70,10 @@ const nodeNameLeft = computed(() => {
     // 相同图谱树相同节点
     leftNode = compereNodeInfo.value[0].node_name[0];
   }
-  return leftNode;
+  if (leftNode) {
+    nodeNameLeftLast = leftNode;
+  }
+  return nodeNameLeftLast;
 });
 // 右节点树展示节点的节点名称
 const nodeNameRight = computed(() => {
@@ -88,7 +93,10 @@ const nodeNameRight = computed(() => {
     // 相同图谱树相同节点
     rightNode = compereNodeInfo.value[0].node_name[1];
   }
-  return rightNode;
+  if (rightNode) {
+    nodeNameRightLast = rightNode;
+  }
+  return nodeNameRightLast;
 });
 async function init() {
   state.commit('atlasMap/SET_SHOW_FIRST_TIME', true);
@@ -172,7 +180,7 @@ function close() {
   left: 1634px;
 }
 .right-node-name {
-  left: 6292px;
+  left: 4803px;
 }
 
 .content {
