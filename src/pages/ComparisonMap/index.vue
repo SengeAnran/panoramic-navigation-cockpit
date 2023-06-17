@@ -69,7 +69,7 @@ function initStocket() {
   position: relative;
   //display: flex;
   //justify-content: space-around;
-  background: url('./img/bg_05.png') no-repeat;
+  background: url('./img/bg_04.png') no-repeat;
   background-size: 100% 100%;
   .center {
     //overflow: hidden;

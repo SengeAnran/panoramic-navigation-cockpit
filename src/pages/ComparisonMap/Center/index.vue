@@ -180,7 +180,7 @@ function close() {
   left: 1634px;
 }
 .right-node-name {
-  left: 4803px;
+  left: 4810px;
 }
 
 .content {
