@@ -3,14 +3,14 @@
 </template>
 <script>
 export default {};
-export const offset = [0, -30];
+export const offset = [0, -15];
 </script>
 <script setup></script>
 <style lang="scss" scoped>
 .project-icon {
   background-image: url('./icon.png');
   background-size: 100% 100%;
-  width: 58px;
-  height: 112px;
+  width: 29px;
+  height: 56px;
 }
 </style>

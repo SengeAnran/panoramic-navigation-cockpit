@@ -3,6 +3,7 @@
     <RaterLayer :tiles="tiles" :tileSize="256" :maxzoom="16" />
     <OutPolygon :key="currentArea" :code="currentArea" @dblclick="handleClick" />
     <DemoAreas v-if="showArea" :codes="demoArea" />
+    <OdLine :data="testLines" v-if="false" />
     <OdLine :data="odLines" v-if="showCompany && showProject" />
     <template v-if="showCompany">
       <Marker
@@ -84,6 +85,12 @@ onBeforeUnmount(async () => {
 const projectList = shallowRef();
 const companyList = shallowRef();
 const odLines = shallowRef();
+const testLines = [
+  [
+    [123.89, 44.11],
+    [88.74, 34.33],
+  ],
+];
 const demoArea = shallowRef();
 watchEffect(async () => {
   projectList.value = undefined;
@@ -114,7 +121,7 @@ watchEffect(async () => {
   // const key = '物联网智能感知终端平台系统与应用验证';
   // const key = undefined;
   const res = await getProjectList({
-    areaCodes: ['' + currentArea.value],
+    areaCodes: currentArea.value == 100000 ? ['' + currentArea.value] : [],
     projectTypes,
     keys,
     queryDims,
@@ -157,7 +164,10 @@ watchEffect(async () => {
     .map((d) => d.areas)
     .flat()
     .map((d) => d.areaId);
-  demoArea.value = Array.from(new Set(areas));
+  const areaSet = new Set(areas);
+  areaSet.delete(100000); // 过滤中国
+  areaSet.delete('100000');
+  demoArea.value = Array.from(areaSet);
   companyList.value = res
     .filter((d) => d.companies?.length > 0)
     .map((d) => d.companies)

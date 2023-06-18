@@ -40,12 +40,19 @@ export default class OdLine extends BaseLayer {
       return;
     }
     this.material = this.material || this.createMaterial();
-    this.geometry = this.createGeometry(this.data);
+    this.geometry = this.createGeometry(this.data, this.parent.map.transform.scale);
     this.mesh = new Mesh(this.geometry, this.material);
     this.parent.scene.add(this.mesh);
+    this.parent.map.on('zoom', this.onZoom);
   }
 
-  createGeometry(data) {
+  onZoom = () => {
+    const scale = this.parent.map.transform.scale;
+    const geometry = this.createGeometry(this.data, scale);
+    this.mesh.geometry = geometry;
+  };
+
+  createGeometry(data, radius = 1) {
     const positions = [];
     const normals = [];
     const uvs = [];
@@ -59,7 +66,7 @@ export default class OdLine extends BaseLayer {
       const center = new Vector3().addVectors(start, end).divideScalar(2);
       center.z = new Vector3().subVectors(start, end).length() / 2;
       const curve = new QuadraticBezierCurve3(start, center, end);
-      const geometry = new TubeBufferGeometry(curve, 50, 2e-4, 16, false);
+      const geometry = new TubeBufferGeometry(curve, 50, 5e-3 / radius, 6, false);
       const count = geometry.attributes.position.count;
       const delay = Math.random();
       for (let i = 0; i < count; i++) {
@@ -89,7 +96,7 @@ export default class OdLine extends BaseLayer {
           value: new Vector3(70 / 255, 233 / 255, 254 / 255),
         },
         uTrailLength: {
-          value: 0.3,
+          value: 1,
         },
         uTimeCounter: {
           value: 0,
@@ -121,6 +128,7 @@ export default class OdLine extends BaseLayer {
         this.material = null;
       }
       this.parent?.scene.remove(this.mesh);
+      this.parent?.map.on('zoom', this.onZoom);
       this.mesh = null;
     }
   }
