@@ -105,7 +105,14 @@ watchEffect(async () => {
   const keys = query.filter((d) => d.type === 'search').map((d) => d.value);
   const queryDims = [];
   query
-    .filter((d) => d.type !== 'search' && d.type !== '项目类型')
+    .filter(
+      (d) =>
+        d.type !== 'search' &&
+        d.type !== '项目类型' &&
+        d.type !== '技术方向' &&
+        d.type !== '服务内容' &&
+        d.type !== '应用场景',
+    )
     .forEach((d) => {
       const index = queryDims.findIndex((j) => j.top === d.type);
       if (index === -1) {

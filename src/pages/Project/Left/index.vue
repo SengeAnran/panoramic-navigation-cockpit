@@ -37,8 +37,8 @@
 // import * as d3 from 'd3';
 import { ref, reactive, onMounted, nextTick, watch } from 'vue';
 import { useStore } from 'vuex';
-import { getDirectoryList, getTechnicalDirectory } from '@/api/search';
-import { getProjectTypeList } from '@/api/project';
+import { getDirectoryList } from '@/api/search';
+// import { getProjectTypeList } from '@/api/project';
 const state = useStore();
 const seletType = reactive({
   name: '项目类型',
@@ -46,26 +46,26 @@ const seletType = reactive({
 });
 const showOption = ref(false);
 const optionType = ref([
-  {
-    name: '项目类型',
-    eglishName: 'PROJECE TYPE',
-  },
-  {
-    name: '项目领域',
-    eglishName: 'PROJECE AREA',
-  },
-  {
-    name: '技术方向',
-    eglishName: '',
-  },
-  {
-    name: '服务内容',
-    eglishName: '',
-  },
-  {
-    name: '应用场景',
-    eglishName: '',
-  },
+  // {
+  //   name: '项目类型',
+  //   eglishName: 'PROJECE TYPE',
+  // },
+  // {
+  //   name: '技术领域',
+  //   eglishName: '',
+  // },
+  // {
+  //   name: '技术方向',
+  //   eglishName: '',
+  // },
+  // {
+  //   name: '服务内容',
+  //   eglishName: '',
+  // },
+  // {
+  //   name: '应用场景',
+  //   eglishName: '',
+  // },
 ]);
 // 改变导览类型
 function changeType(index) {
@@ -80,7 +80,22 @@ onMounted(() => {
     setPosition();
   });
 });
-
+function getType() {
+  getDirectoryList({}).then((res) => {
+    if (res && res.length > 0) {
+      optionType.value = res.map((i) => {
+        return {
+          name: i.name,
+          eglishName: '',
+        };
+      });
+      seletType.name = optionType.value[0].name;
+      seletType.eglishName = optionType.value[0].eglishName;
+      getDataList();
+    }
+  });
+}
+getType();
 // const activeIndex = ref(-2);
 const dataList = ref([
   // {
@@ -159,45 +174,13 @@ const dataList = ref([
 // 获取列表数据
 async function getDataList() {
   let res;
-  switch (seletType.name) {
-    case '项目类型':
-      res = await getProjectTypeList();
-      break;
-    case '项目领域':
-      res = await getTechnicalDirectory();
-      break;
-    case '技术方向': {
-      const data = {
-        dimNames: [seletType.name],
-      };
-      res = await getDirectoryList(data);
-      res = res[0];
-      break;
-    }
-    case '服务内容': {
-      const data = {
-        dimNames: [seletType.name],
-      };
-      res = await getDirectoryList(data);
-      res = res[0];
-      break;
-    }
-    case '应用场景': {
-      const data = {
-        dimNames: [seletType.name],
-      };
-      res = await getDirectoryList(data);
-      res = res[0];
-      break;
-    }
-    default:
-      res = [];
-  }
-
-  dataList.value = res.map((i) => {
+  const data = {
+    dimNames: [seletType.name],
+  };
+  res = await getDirectoryList(data);
+  dataList.value = res[0].map((i) => {
     return {
-      name: i.text || i.name || i,
-      value: i.value || '',
+      name: i.name,
       checked: false,
       position: 'left',
       type: seletType.name,

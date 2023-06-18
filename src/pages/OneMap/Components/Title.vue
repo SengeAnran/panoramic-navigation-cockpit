@@ -9,6 +9,7 @@ import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 const route = useRoute();
+console.log(route.query.data);
 const query = JSON.parse(route.query.data);
 const state = useStore();
 state.commit('atlasMap/SET_DIALOG_INFO', query);
