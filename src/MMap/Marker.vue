@@ -41,7 +41,7 @@ watchEffect(() => {
 });
 onMounted(async () => {
   const map = await mapPromise;
-  console.log(props.position);
+  // console.log(props.position);
   marker.addTo(map);
   // new mapboxgl.Marker().setLngLat(props.position).addTo(map);
 });

@@ -6,7 +6,7 @@
       :maxzoom="16"
     />
     <OutPolygon :key="currentArea" :code="currentArea" @dblclick="handleClick" />
-    <OdLine :data="odLines" v-if="showArea && showSystem" />
+    <OdLine :data="testLines" />
     <template v-if="showArea">
       <Marker
         v-for="(item, index) in areaPoints"
@@ -60,7 +60,6 @@ import SystemPopup from './SystemPopup';
 import { getSystemList } from '@/api/atlas';
 import areaProps from './flat.json';
 
-// console.log(odLines);
 const store = useStore();
 const mapRef = ref();
 const currentArea = ref(100000);
@@ -97,9 +96,8 @@ const showSystem = computed(() => selected.value?.includes('system'));
 const showArea = computed(() => selected.value?.includes('area'));
 const systemPoints = shallowRef();
 const areaPoints = shallowRef();
-const odLines = shallowRef();
 function handleOpen(item) {
-  odLines.value = [];
+  console.log(item);
   const detail = item._;
   const area = detail.areas[0];
   if (!area) {
@@ -109,11 +107,11 @@ function handleOpen(item) {
   const lines = detail.companies.map((company) => {
     return [start, [+company.longitude, +company.latitude]];
   });
-  odLines.value = lines;
+  console.log(lines);
 }
 function handleClose() {
-  odLines.value = undefined;
 }
+const testLines = shallowRef();
 async function openSingleDetail(detail) {
   // const mock = {
   //   node_id: '3a0a0169-6b2b-a154-209a-b1821ef25eed',
@@ -157,7 +155,39 @@ async function openSingleDetail(detail) {
 watchEffect(async () => {
   systemPoints.value = undefined;
   areaPoints.value = undefined;
-  odLines.value = undefined;
+  // setTimeout(() => {
+  //   testLines.value = [
+  //     [
+  //       [109.108591, 19.042818],
+  //       [109.632685, 20.052917],
+  //     ],
+  //     [
+  //       [109.108591, 19.042818],
+  //       [110.331086, 19.179245],
+  //     ],
+  //     [
+  //       [120.035052, 31.001604],
+  //       [118.892953, 32.276309],
+  //     ],
+  //     [
+  //       [120.035052, 31.001604],
+  //       [112.728902, 34.921584],
+  //     ],
+  //     [
+  //       [120.035052, 31.001604],
+  //       [112.47177, 27.715747],
+  //     ],
+  //     [
+  //       [120.035052, 31.001604],
+  //       [120.569413, 31.609899],
+  //     ],
+  //     [
+  //       [120.035052, 31.001604],
+  //       [116.920578, 40.376613],
+  //     ],
+  //   ];
+  // }, 2000);
+
   const query = store.getters.query?.length ? store.getters.query : [];
   const hotWords = query.filter((d) => d.type === 'heightWord').map((d) => d.name);
   const keyWords = query.filter((d) => d.type === 'search').map((d) => d.name);
@@ -204,10 +234,11 @@ watchEffect(async () => {
       }));
     })
     .flat();
-  odLines.value = data
+
+  testLines.value = data
     .filter((d) => d.areas?.length > 1)
     .map((d) => {
-      const [from, ...target] = d.areas.slice(1);
+      const [from, ...target] = d.areas;
       const fromPoint = [+from.longitude, +from.latitude];
       return target.map((d) => {
         return [fromPoint, [+d.longitude, +d.latitude]];
