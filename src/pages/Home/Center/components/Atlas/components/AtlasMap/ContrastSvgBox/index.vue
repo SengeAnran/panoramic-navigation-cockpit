@@ -226,13 +226,22 @@ function init() {
     heightMultiple = 1, // 屏高系数
     widthMultiple = 1; // 屏宽系数
   treeHeight = d3.hierarchy(showData.value).height;
+  console.log('treeHeight', treeHeight);
   const treeWidth = getTreeMax(showData.value.children);
   // if (treeHeight > 3) {
   //   heightMultiple = treeHeight / 2 + 2 / 2;
   // }
-  if (treeHeight > 4) {
-    heightMultiple = treeHeight / 3 + 2 / 2;
+  if (showData.value.children.length === 1) {
+    // 单树展示
+    if (treeHeight > 3) {
+      heightMultiple = treeHeight / 2 + 2 / 2;
+    }
+  } else {
+    if (treeHeight > 4) {
+      heightMultiple = treeHeight / 3 + 2 / 2;
+    }
   }
+
   if (treeWidth > 10) {
     widthMultiple = treeWidth / 11;
   }
@@ -330,9 +339,9 @@ function init() {
   }
 
   // addActive(nodeInfo.value.node_id); // 加当前节点效果
-  // nextTick(() => {
-  //   addActive(nodeIdList.value);
-  // });
+  nextTick(() => {
+    addActive(nodeIdList.value);
+  });
 }
 const gSvg = reactive({
   left: '',
@@ -786,7 +795,15 @@ function addActive(data) {
     const allRect = gSvg[i].selectAll('.rect-box');
     let activeIndex = [];
     allRect.nodes().forEach((i, index) => {
-      if (data instanceof Array && data.findIndex((value) => value === i.__data__.data.node_id) !== -1) {
+      if (
+        data instanceof Array &&
+        data.findIndex((value) => {
+          return (
+            value === i.__data__.data.node_id ||
+            (Array.isArray(i.__data__.data.node_id) ? value === i.__data__.data.node_id[0] : false)
+          );
+        }) !== -1
+      ) {
         activeIndex.push(index);
       }
     });

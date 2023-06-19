@@ -41,11 +41,13 @@ function showAllTree() {
 }
 // 点击节点
 async function clickOne(node) {
-  // console.log(node);
+  console.log(node);
+  let nodeIds = [];
   if (node.depth && !node.data.counterpart && node.position !== 'center') {
     // 单系统结果展示
     console.log('需要单展示啦！', node.data.meta);
     let { url, video_url, scriptCollectName = '', scriptName = '' } = node.data.meta || {};
+    nodeIds[0] = node.data.node_id;
     // 兼容字符串格式数据
     url = Array.isArray(url) ? url : [url];
     video_url = Array.isArray(video_url) ? video_url : [video_url];
@@ -77,9 +79,16 @@ async function clickOne(node) {
     await changeToggle(data);
 
     // // 打开新页面方式
-    const nodeData = node.data;
-    nodeData.children = [];
-    const query = { ...nodeData, children: [] };
+    let nodeData = _.cloneDeep(node.data);
+    nodeData = {
+      node_id: nodeData.node_id,
+      node_name: nodeData.node_name,
+      system: nodeData.system,
+      sys_id: nodeData.sys_id,
+      name: nodeData.name,
+    };
+    const query = { ...nodeData };
+    // console.log(query);
     const openUrl = '/one-map?data=' + JSON.stringify(query);
     window.open(openUrl, '_blank');
     // console.log(res);
@@ -100,12 +109,36 @@ async function clickOne(node) {
     // 对比系统结果展示
     console.log('需要对比展示啦！');
     const { url, video_url, scriptCollectName = [], scriptName = [] } = node.data.meta || {};
+    if (Array.isArray(node.data.node_id)) {
+      nodeIds = node.data.node_id;
+    } else {
+      nodeIds.push(node.data.node_id);
+      nodeIds.push(String(node.data.counterpart));
+    }
+
     const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'TWIN' };
     // console.log(data);
     await changeToggle(data);
     const compareSystrm = _.cloneDeep(state.getters.comparisonMapInfo);
     compareSystrm[0].children = [];
     compareSystrm[1].children = [];
+    compareSystrm[0].node_id = nodeIds[0];
+    compareSystrm[1].node_id = nodeIds[1];
+
+    compareSystrm[0] = {
+      node_id: compareSystrm[0].node_id,
+      node_name: compareSystrm[0].node_name,
+      system: compareSystrm[0].system,
+      sys_id: compareSystrm[0].sys_id,
+      name: compareSystrm[0].name,
+    };
+    compareSystrm[1] = {
+      node_id: compareSystrm[1].node_id,
+      node_name: compareSystrm[1].node_name,
+      system: compareSystrm[1].system,
+      sys_id: compareSystrm[1].sys_id,
+      name: compareSystrm[1].name,
+    };
 
     const params = { comparisonMapInfo: compareSystrm, nodeNames: node.nodeNames };
     // console.log(params);

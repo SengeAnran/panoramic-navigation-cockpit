@@ -149,7 +149,8 @@ async function openSingleDetail(detail) {
   // store.commit('SET_SHOW_ONE_DIALOG', true);
   // store.commit('SET_MAIN_TITLE', query.system);
   // console.log(detail);
-  const openUrl = '/one-map?data=' + JSON.stringify(query);
+  const pathQuery = { ...query, meta: '' };
+  const openUrl = '/one-map?data=' + JSON.stringify(pathQuery);
   window.open(openUrl, '_blank');
 }
 
