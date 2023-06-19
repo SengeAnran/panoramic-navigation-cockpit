@@ -4,7 +4,7 @@
 </template>
 <script setup>
 import mapboxgl from 'mapbox-gl';
-import { inject, onMounted, onUnmounted, useSlots, ref } from 'vue';
+import { inject, onMounted, onUnmounted, watchEffect, useSlots, ref } from 'vue';
 
 const props = defineProps({
   position: Array,
@@ -36,11 +36,13 @@ if (slots.popup) {
   });
   marker.setPopup(popup);
 }
+watchEffect(() => {
+  marker.setLngLat(props.position);
+});
 onMounted(async () => {
   const map = await mapPromise;
-  marker
-    .setLngLat(props.position) // ab
-    .addTo(map);
+  console.log(props.position);
+  marker.addTo(map);
   // new mapboxgl.Marker().setLngLat(props.position).addTo(map);
 });
 onUnmounted(() => {

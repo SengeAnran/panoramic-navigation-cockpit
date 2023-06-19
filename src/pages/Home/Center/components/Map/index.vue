@@ -6,19 +6,16 @@
       :maxzoom="16"
     />
     <OutPolygon :key="currentArea" :code="currentArea" @dblclick="handleClick" />
-    <OdLine :data="odLines" v-if="showCompany && showSystem" />
-    <template v-if="showCompany">
+    <OdLine :data="odLines" v-if="showArea && showSystem" />
+    <template v-if="showArea">
       <Marker
-        v-for="(item, index) in companyPoints"
+        v-for="(item, index) in areaPoints"
         :key="index"
         :position="[item.lng, item.lat]"
         :markerOptions="{ offset: [0, -27] }"
       >
         <template #icon>
           <MarkerIcon type="company" />
-        </template>
-        <template #popup>
-          <ProjectPopup :point="item" showCompany />
         </template>
       </Marker>
     </template>
@@ -62,7 +59,6 @@ import MarkerIcon from './MarkerIcon';
 import SystemPopup from './SystemPopup';
 import { getSystemList } from '@/api/atlas';
 import areaProps from './flat.json';
-import ProjectPopup from '@/views/ProjectPopup';
 
 // console.log(odLines);
 const store = useStore();
@@ -94,13 +90,13 @@ onBeforeUnmount(async () => {
 });
 const options = [
   { label: '系统点位', value: 'system' },
-  { label: '公司点位', value: 'company' },
+  { label: '示范地区', value: 'area' },
 ];
-const selected = ref(['system', 'company']);
+const selected = ref(['system', 'area']);
 const showSystem = computed(() => selected.value?.includes('system'));
-const showCompany = computed(() => selected.value?.includes('company'));
+const showArea = computed(() => selected.value?.includes('area'));
 const systemPoints = shallowRef();
-const companyPoints = shallowRef();
+const areaPoints = shallowRef();
 const odLines = shallowRef();
 function handleOpen(item) {
   odLines.value = [];
@@ -159,10 +155,9 @@ async function openSingleDetail(detail) {
 
 watchEffect(async () => {
   systemPoints.value = undefined;
-  companyPoints.value = undefined;
+  areaPoints.value = undefined;
   odLines.value = undefined;
   const query = store.getters.query?.length ? store.getters.query : [];
-  // console.log('query', query);
   const hotWords = query.filter((d) => d.type === 'heightWord').map((d) => d.name);
   const keyWords = query.filter((d) => d.type === 'search').map((d) => d.name);
   const queryDims = [];
@@ -187,7 +182,6 @@ watchEffect(async () => {
   };
   // console.log(params);
   const data = await getSystemList(params);
-  console.log('alterman', data);
   systemPoints.value = data
     .filter((d) => d.areas?.length)
     .map((d) => {
@@ -195,19 +189,29 @@ watchEffect(async () => {
       return {
         lng: +system.longitude,
         lat: +system.latitude,
+        areas: d.areas.map((d) => d.areaId),
         _: d,
       };
     });
-  companyPoints.value = data
-    .map((d) => d.companies)
-    .flat()
-    .map((d) => ({
-      ...d,
-      lng: +d.longitude,
-      lat: +d.latitude,
-      projectId: d.organizationId,
-      type: d.organizationType,
-    }));
-  console.log('companyPoints.value', companyPoints.value);
+  areaPoints.value = data
+    .filter((d) => d.areas?.length > 1)
+    .map((d) => {
+      const areas = d.areas.slice(1);
+      return areas.map((d) => ({
+        lng: +d.longitude,
+        lat: +d.latitude,
+      }));
+    })
+    .flat();
+  odLines.value = data
+    .filter((d) => d.areas?.length > 1)
+    .map((d) => {
+      const [from, ...target] = d.areas.slice(1);
+      const fromPoint = [+from.longitude, +from.latitude];
+      return target.map((d) => {
+        return [fromPoint, [+d.longitude, +d.latitude]];
+      });
+    })
+    .flat();
 });
 </script>

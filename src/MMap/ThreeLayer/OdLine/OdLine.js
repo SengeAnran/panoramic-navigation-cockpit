@@ -128,7 +128,7 @@ export default class OdLine extends BaseLayer {
         this.material = null;
       }
       this.parent?.scene.remove(this.mesh);
-      this.parent?.map.on('zoom', this.onZoom);
+      this.parent?.map.off('zoom', this.onZoom);
       this.mesh = null;
     }
   }
