@@ -98,20 +98,20 @@ watchEffect(async () => {
   odLines.value = undefined;
   demoArea.value = undefined;
   const query = store.getters.query;
-  const projectTypes = query.filter((d) => d.type === '项目类型').map((d) => d.value);
-  const TechnicalDirects = query.filter((d) => d.type === '技术方向').map((d) => d.value);
-  const ServiceContents = query.filter((d) => d.type === '服务内容').map((d) => d.value);
-  const ApplicationScenarios = query.filter((d) => d.type === '应用场景').map((d) => d.value);
-  const keys = query.filter((d) => d.type === 'search').map((d) => d.value);
+  const ProjectTypes = query.filter((d) => d.type === '技术类型').map((d) => d.name);
+  const TechnicalDirects = query.filter((d) => d.type === '技术方向').map((d) => d.name);
+  const ServiceContents = query.filter((d) => d.type === '服务内容').map((d) => d.name);
+  const ApplicationScenarios = query.filter((d) => d.type === '应用场景').map((d) => d.name);
+  const keys = query.filter((d) => d.type === 'search').map((d) => d.name);
   const queryDims = [];
   query
     .filter(
       (d) =>
         d.type !== 'search' &&
-        d.type !== '项目类型' &&
         d.type !== '技术方向' &&
         d.type !== '服务内容' &&
-        d.type !== '应用场景',
+        d.type !== '应用场景' &&
+        d.type !== '技术类型',
     )
     .forEach((d) => {
       const index = queryDims.findIndex((j) => j.top === d.type);
@@ -124,12 +124,12 @@ watchEffect(async () => {
         queryDims[index].seconds.push(d.name);
       }
     });
-  console.log(projectTypes, keys);
+  // console.log(projectTypes, keys);
   // const key = '物联网智能感知终端平台系统与应用验证';
   // const key = undefined;
   const res = await getProjectList({
     areaCodes: currentArea.value == 100000 ? ['' + currentArea.value] : [],
-    projectTypes,
+    ProjectTypes,
     keys,
     queryDims,
     TechnicalDirects,
