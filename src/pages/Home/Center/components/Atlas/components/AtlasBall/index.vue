@@ -51,7 +51,13 @@ async function handleClick(node) {
   });
   const data = { url, video_url, scriptCollectName, scriptName, topicPattern: 'SINGLE' };
   await changeToggle(data);
-  const query = { ...node, children: [] };
+  const query = {
+    node_id: node.node_id,
+    node_name: node.node_name,
+    system: node.system,
+    sys_id: node.sys_id,
+    name: node.name,
+  };
   const openUrl = '/one-map?data=' + JSON.stringify(query);
   window.open(openUrl, '_blank');
 }
