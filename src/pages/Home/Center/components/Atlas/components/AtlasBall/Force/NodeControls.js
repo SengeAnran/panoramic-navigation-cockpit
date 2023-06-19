@@ -3,7 +3,9 @@ import { Plane, Raycaster, EventDispatcher } from 'three';
 
 const raycaster = new Raycaster();
 const CLICK_THRESHOLD = 5;
-
+function isDefined(o) {
+  return typeof o !== 'undefined';
+}
 export default class NodeControls extends EventDispatcher {
   enabled = true;
   clickThreshold = 0;
@@ -107,20 +109,21 @@ export default class NodeControls extends EventDispatcher {
 
   hoverCheck = (ev) => {
     const hoverObject = this.getIntersectObject(ev);
+    // console.log('hoverObject', hoverObject);
     if (this.hoverObject == hoverObject) {
       return;
     }
-    if (!this.hoverObject && hoverObject) {
+    if (!isDefined(this.hoverObject) && isDefined(hoverObject)) {
       this.hoverObject = hoverObject;
       this.dispatchEvent({ type: 'mouseover', object: this.hoverObject });
       return;
     }
-    if (this.hoverObject && !hoverObject) {
+    if (isDefined(this.hoverObject) && !isDefined(hoverObject)) {
       this.dispatchEvent({ type: 'mouseout', object: this.hoverObject });
       this.hoverObject = undefined;
       return;
     }
-    if (this.hoverObject && hoverObject) {
+    if (isDefined(this.hoverObject) && isDefined(hoverObject)) {
       this.dispatchEvent({ type: 'mouseout', object: this.hoverObject });
       this.hoverObject = hoverObject;
       this.dispatchEvent({ type: 'mouseover', object: this.hoverObject });

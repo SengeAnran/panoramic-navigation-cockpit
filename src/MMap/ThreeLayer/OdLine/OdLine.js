@@ -66,7 +66,7 @@ export default class OdLine extends BaseLayer {
       const center = new Vector3().addVectors(start, end).divideScalar(2);
       center.z = new Vector3().subVectors(start, end).length() / 2;
       const curve = new QuadraticBezierCurve3(start, center, end);
-      const geometry = new TubeBufferGeometry(curve, 50, 2.5e-3 / radius, 6, false);
+      const geometry = new TubeBufferGeometry(curve, 50, 1.5e-3 / radius, 6, false);
       const count = geometry.attributes.position.count;
       const delay = Math.random();
       for (let i = 0; i < count; i++) {
