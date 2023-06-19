@@ -7,6 +7,7 @@
     />
     <OutPolygon :key="currentArea" :code="currentArea" @dblclick="handleClick" />
     <OdLine :data="testLines" />
+    <DemoAreas :codes="demoAreaCodes" />
     <template v-if="showArea">
       <Marker
         v-for="(item, index) in areaPoints"
@@ -58,10 +59,12 @@ import OutPolygon from './OutPolygon';
 import MarkerIcon from './MarkerIcon';
 import SystemPopup from './SystemPopup';
 import { getSystemList } from '@/api/atlas';
+import DemoAreas from './DemoAreas';
 import areaProps from './flat.json';
 
 const store = useStore();
 const mapRef = ref();
+const demoAreaCodes = shallowRef();
 const currentArea = ref(100000);
 // const currentAreaDetail = computed(() => {
 //   return areaProps[currentArea.value];
@@ -97,19 +100,14 @@ const showArea = computed(() => selected.value?.includes('area'));
 const systemPoints = shallowRef();
 const areaPoints = shallowRef();
 function handleOpen(item) {
-  console.log(item);
-  const detail = item._;
-  const area = detail.areas[0];
-  if (!area) {
-    return;
-  }
-  const start = [+area.longitude, +area.latitude];
-  const lines = detail.companies.map((company) => {
-    return [start, [+company.longitude, +company.latitude]];
-  });
-  console.log(lines);
+  // console.log(item);
+  const areaSet = new Set(item.areas);
+  areaSet.delete(100000);
+  areaSet.delete('100000');
+  demoAreaCodes.value = Array.from(areaSet);
 }
 function handleClose() {
+  demoAreaCodes.value = undefined;
 }
 const testLines = shallowRef();
 async function openSingleDetail(detail) {
@@ -155,39 +153,6 @@ async function openSingleDetail(detail) {
 watchEffect(async () => {
   systemPoints.value = undefined;
   areaPoints.value = undefined;
-  // setTimeout(() => {
-  //   testLines.value = [
-  //     [
-  //       [109.108591, 19.042818],
-  //       [109.632685, 20.052917],
-  //     ],
-  //     [
-  //       [109.108591, 19.042818],
-  //       [110.331086, 19.179245],
-  //     ],
-  //     [
-  //       [120.035052, 31.001604],
-  //       [118.892953, 32.276309],
-  //     ],
-  //     [
-  //       [120.035052, 31.001604],
-  //       [112.728902, 34.921584],
-  //     ],
-  //     [
-  //       [120.035052, 31.001604],
-  //       [112.47177, 27.715747],
-  //     ],
-  //     [
-  //       [120.035052, 31.001604],
-  //       [120.569413, 31.609899],
-  //     ],
-  //     [
-  //       [120.035052, 31.001604],
-  //       [116.920578, 40.376613],
-  //     ],
-  //   ];
-  // }, 2000);
-
   const query = store.getters.query?.length ? store.getters.query : [];
   const hotWords = query.filter((d) => d.type === 'heightWord').map((d) => d.name);
   const keyWords = query.filter((d) => d.type === 'search').map((d) => d.name);
