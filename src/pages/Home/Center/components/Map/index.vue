@@ -6,19 +6,17 @@
       :maxzoom="16"
     />
     <OutPolygon :key="currentArea" :code="currentArea" @dblclick="handleClick" />
-    <OdLine :data="odLines" v-if="showCompany && showSystem" />
-    <template v-if="showCompany">
+    <OdLine :data="testLines" />
+    <DemoAreas :codes="demoAreaCodes" />
+    <template v-if="showArea">
       <Marker
-        v-for="(item, index) in companyPoints"
+        v-for="(item, index) in areaPoints"
         :key="index"
         :position="[item.lng, item.lat]"
         :markerOptions="{ offset: [0, -27] }"
       >
         <template #icon>
           <MarkerIcon type="company" />
-        </template>
-        <template #popup>
-          <ProjectPopup :point="item" showCompany />
         </template>
       </Marker>
     </template>
@@ -61,12 +59,12 @@ import OutPolygon from './OutPolygon';
 import MarkerIcon from './MarkerIcon';
 import SystemPopup from './SystemPopup';
 import { getSystemList } from '@/api/atlas';
+import DemoAreas from './DemoAreas';
 import areaProps from './flat.json';
-import ProjectPopup from '@/views/ProjectPopup';
 
-// console.log(odLines);
 const store = useStore();
 const mapRef = ref();
+const demoAreaCodes = shallowRef();
 const currentArea = ref(100000);
 // const currentAreaDetail = computed(() => {
 //   return areaProps[currentArea.value];
@@ -94,30 +92,24 @@ onBeforeUnmount(async () => {
 });
 const options = [
   { label: '系统点位', value: 'system' },
-  { label: '公司点位', value: 'company' },
+  { label: '示范地区', value: 'area' },
 ];
-const selected = ref(['system', 'company']);
+const selected = ref(['system', 'area']);
 const showSystem = computed(() => selected.value?.includes('system'));
-const showCompany = computed(() => selected.value?.includes('company'));
+const showArea = computed(() => selected.value?.includes('area'));
 const systemPoints = shallowRef();
-const companyPoints = shallowRef();
-const odLines = shallowRef();
+const areaPoints = shallowRef();
 function handleOpen(item) {
-  odLines.value = [];
-  const detail = item._;
-  const area = detail.areas[0];
-  if (!area) {
-    return;
-  }
-  const start = [+area.longitude, +area.latitude];
-  const lines = detail.companies.map((company) => {
-    return [start, [+company.longitude, +company.latitude]];
-  });
-  odLines.value = lines;
+  // console.log(item);
+  const areaSet = new Set(item.areas);
+  areaSet.delete(100000);
+  areaSet.delete('100000');
+  demoAreaCodes.value = Array.from(areaSet);
 }
 function handleClose() {
-  odLines.value = undefined;
+  demoAreaCodes.value = undefined;
 }
+const testLines = shallowRef();
 async function openSingleDetail(detail) {
   // const mock = {
   //   node_id: '3a0a0169-6b2b-a154-209a-b1821ef25eed',
@@ -160,10 +152,8 @@ async function openSingleDetail(detail) {
 
 watchEffect(async () => {
   systemPoints.value = undefined;
-  companyPoints.value = undefined;
-  odLines.value = undefined;
+  areaPoints.value = undefined;
   const query = store.getters.query?.length ? store.getters.query : [];
-  // console.log('query', query);
   const hotWords = query.filter((d) => d.type === 'heightWord').map((d) => d.name);
   const keyWords = query.filter((d) => d.type === 'search').map((d) => d.name);
   const queryDims = [];
@@ -188,7 +178,6 @@ watchEffect(async () => {
   };
   // console.log(params);
   const data = await getSystemList(params);
-  console.log('alterman', data);
   systemPoints.value = data
     .filter((d) => d.areas?.length)
     .map((d) => {
@@ -196,19 +185,30 @@ watchEffect(async () => {
       return {
         lng: +system.longitude,
         lat: +system.latitude,
+        areas: d.areas.map((d) => d.areaId),
         _: d,
       };
     });
-  companyPoints.value = data
-    .map((d) => d.companies)
-    .flat()
-    .map((d) => ({
-      ...d,
-      lng: +d.longitude,
-      lat: +d.latitude,
-      projectId: d.organizationId,
-      type: d.organizationType,
-    }));
-  console.log('companyPoints.value', companyPoints.value);
+  areaPoints.value = data
+    .filter((d) => d.areas?.length > 1)
+    .map((d) => {
+      const areas = d.areas.slice(1);
+      return areas.map((d) => ({
+        lng: +d.longitude,
+        lat: +d.latitude,
+      }));
+    })
+    .flat();
+
+  testLines.value = data
+    .filter((d) => d.areas?.length > 1)
+    .map((d) => {
+      const [from, ...target] = d.areas;
+      const fromPoint = [+from.longitude, +from.latitude];
+      return target.map((d) => {
+        return [fromPoint, [+d.longitude, +d.latitude]];
+      });
+    })
+    .flat();
 });
 </script>
