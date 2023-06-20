@@ -87,6 +87,32 @@ export default class extends Event {
     }));
     const nodes = getNodes(data);
     this.data = { links, nodes };
+    // this.data = {
+    //   links: [
+    //     { source: '1', target: '2' },
+    //     { source: '1', target: '3' },
+    //   ],
+    //   nodes: [
+    //     {
+    //       node_id: '1',
+    //       node_name: '1',
+    //       type: 0,
+    //       level: 0,
+    //     },
+    //     {
+    //       node_id: '2',
+    //       node_name: '2',
+    //       type: 0,
+    //       level: 0,
+    //     },
+    //     {
+    //       node_id: '3',
+    //       node_name: '3',
+    //       type: 0,
+    //       level: 0,
+    //     },
+    //   ],
+    // };
   }
   createForce() {
     this.nodes = this.createNodes(this.data.nodes);

@@ -54,7 +54,11 @@ export default class NodeControls extends EventDispatcher {
   getIntersectObject(ev) {
     this.resetRaycaster(ev);
     const intersects = raycaster.intersectObject(this.nodes);
-    return intersects[0]?.instanceId;
+    const id = intersects[0]?.instanceId;
+    if (typeof id !== 'undefined') {
+      // console.log(id);
+      return String(id);
+    }
   }
 
   onPointerDown = (ev) => {
