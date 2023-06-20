@@ -98,6 +98,9 @@ const inHeiVal = ref(0);
 let innerWidth, // 内宽
   innerHeight, // 内高
   svg,
+  svgDom,
+  heightMultiple = 1, // 屏高系数
+  widthMultiple = 1,
   treeHeight, // 树高
   defaultWidth = 1735, // 默认展示宽度
   defaultHeight = 508; // 默认展示高度
@@ -168,9 +171,7 @@ const gSvg = ref('');
 const nodes = ref({});
 // 初始化
 function init() {
-  let multiple = 1,
-    heightMultiple = 1, // 屏高系数
-    widthMultiple = 1; // 屏宽系数
+  let multiple = 1; // 屏宽系数
   treeHeight = d3.hierarchy(props.data).height;
   const treeWidth = getTreeMax(props.data);
   if (treeHeight > 4) {
@@ -210,6 +211,9 @@ function init() {
       console.dir(document.querySelector('.svg-show-box-dialog'));
     }
     state.commit('atlasMap/SET_DIALOG_SHOW_FIRST_TIME', false);
+    svgDom = document.querySelector(`.${svgClass.value}`);
+    initSvgShow();
+    addScale();
   }
   const optionSame = {
     data: props.data,
@@ -542,6 +546,46 @@ function addActive(data) {
     nodes[activeIndex].setAttribute('filter', 'url(#dropShadow)');
     nodes[activeIndex].setAttribute('stroke', 'white');
     // nodes[activeIndex].setAttribute('stroke', 'white');
+  }
+}
+
+// 初始化设置画布缩放比例
+function initSvgShow() {
+  // svgDom.style.transformOrigin = 'top center';
+  svgDom.style.transform = `scale(${1 / heightMultiple})`;
+}
+// 给画布添加缩放功能
+function addScale() {
+  bind(svgDom, 'mousewheel', function (event) {
+    event.preventDefault && event.preventDefault();
+    event.stopPropagation();
+    const offsetX = event.offsetX + 'px';
+    const offsetY = event.offsetY + 'px';
+    svgDom.style.transformOrigin = `${offsetX} ${offsetY}`;
+    if (event.wheelDelta > 0 || event.detail < 0) {
+      // 向上滚的时候
+      const value = svgDom.style.transform.slice(6, -1) * 1;
+      // console.log(event.wheelDelta, value, 0.0001 * event.wheelDelta);
+      svgDom.style.transform = `scale(${value + 0.0001 * event.wheelDelta})`;
+    } else {
+      const value = svgDom.style.transform.slice(6, -1) * 1;
+      // console.log(event.wheelDelta, value, 0.0001 * event.wheelDelta);
+      const scaleValue = value + 0.0001 * event.wheelDelta;
+      if (scaleValue < 0 || scaleValue < 1 / heightMultiple) {
+        return;
+      }
+      svgDom.style.transform = `scale(${scaleValue})`;
+    }
+  });
+}
+function bind(obj, eventStr, callback) {
+  if (obj.addEventListener) {
+    obj.addEventListener(eventStr, callback, false);
+  } else {
+    obj.attchEvent('on' + eventStr, function () {
+      //在匿名函数中调用回调函数,通过call方法来改变this的指向
+      callback.call(obj);
+    });
   }
 }
 </script>

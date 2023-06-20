@@ -96,6 +96,7 @@ let innerWidth, // 内宽
   // timer2 = null,
   svg,
   svgDom,
+  lastScaleValue, // 上一次的缩放大小
   treeHeight,
   heightMultiple = 1, // 屏高系数
   widthMultiple = 1; // 屏宽系数; // 树高
@@ -849,35 +850,41 @@ function findNodeById(position, id) {
 }
 // 初始化设置画布缩放比例
 function initSvgShow() {
+  // if (props.canClick) {
+  //   svgDom.style.transformOrigin = 'center';
+  // } else {
+  //   svgDom.style.transformOrigin = 'top center';
+  // }
+  lastScaleValue = 1 / heightMultiple;
   svgDom.style.transform = `scale(${1 / heightMultiple})`;
 }
 // 给画布添加缩放功能
 function addScale() {
   bind(svgDom, 'mousewheel', function (event) {
-    // 截流
-    // timer2 = setTimeout(() => {
-    //   if (timer2) {
-    //     return;
-    //   }
-    //
-    //   timer2 = null;
-    // }, 200);
-    console.log(event);
-    if (event.wheelDelta > 0 || event.detail < 0) {
-      // 向上滚的时候
-      const value = svgDom.style.transform.slice(6, -1) * 1;
-      console.log(event.wheelDelta, value, 0.01 * event.wheelDelta);
-      svgDom.style.transform = `scale(${value + 0.0001 * event.wheelDelta})`;
-    } else {
-      const value = svgDom.style.transform.slice(6, -1) * 1;
-      console.log(event.wheelDelta, value, 0.1 * event.wheelDelta);
-      const scaleValue = value + 0.0001 * event.wheelDelta;
-      if (scaleValue < 0) {
-        return;
-      }
-      svgDom.style.transform = `scale(${scaleValue})`;
-    }
     event.preventDefault && event.preventDefault();
+    event.stopPropagation();
+    //MouseEvent.clientX 只读
+    //鼠标指针在点击元素（DOM）中的 X 坐标。
+    // offsetX 鼠标指针相对于目标节点内边位置的 X 坐标
+    const offsetX = event.offsetX + 'px';
+    const offsetY = event.offsetY + 'px';
+    // 向上滚的时候
+    const value = svgDom.style.transform.slice(6, -1) * 1;
+    const scaleValue = value + 0.0001 * event.wheelDelta;
+
+    if (scaleValue < 0 || scaleValue < 1 / heightMultiple) {
+      return;
+    }
+    svgDom.style.transformOrigin = `${offsetX} ${offsetY}`;
+    svgDom.style.transform = `scale(${scaleValue})`;
+    // console.log(
+    //   event,
+    //   event.wheelDelta,
+    //   value,
+    //   0.0001 * event.wheelDelta,
+    //   'offsetX:' + offsetX,
+    //   'offsetY:' + offsetY,
+    // );
   });
 }
 function bind(obj, eventStr, callback) {
