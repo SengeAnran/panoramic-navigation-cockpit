@@ -60,23 +60,6 @@ const nodes = reactive({
   right: '',
   center: '',
 });
-watch(
-  () => viewNodeUrl.value,
-  (val) => {
-    if (val) {
-      nextTick(() => {
-        const nodeList = [];
-        Object.keys(nodes).map((i) => {
-          const node = lookViewNode(nodes[i], val);
-          if (node) {
-            nodeList.push(node);
-          }
-        });
-        state.commit('atlasMap/SET_COMPERE_NODE_INFO', nodeList);
-      });
-    }
-  },
-);
 const props = defineProps({
   data: {
     type: Object,
@@ -110,15 +93,38 @@ const inWidVal = ref(0);
 const inHeiVal = ref(0);
 let innerWidth, // 内宽
   innerHeight, // 内高
+  // timer2 = null,
   svg,
-  treeHeight; // 树高
+  svgDom,
+  treeHeight,
+  heightMultiple = 1, // 屏高系数
+  widthMultiple = 1; // 屏宽系数; // 树高
 // props.defaultWidth = 1999, // 默认展示宽度
 // props.defaultHeight = 750; // 默认展示高度
 const svgClass = ref('');
+watch(
+  () => viewNodeUrl.value,
+  (val) => {
+    if (val) {
+      nextTick(() => {
+        const nodeList = [];
+        Object.keys(nodes).map((i) => {
+          const node = lookViewNode(nodes[i], val);
+          if (node) {
+            nodeList.push(node);
+          }
+        });
+        state.commit('atlasMap/SET_COMPERE_NODE_INFO', nodeList);
+      });
+    }
+  },
+);
+
 onMounted(() => {
   svgClass.value = `svg-${props.index}`;
   mouseMove();
 });
+// 鼠标点击移动画布
 function mouseMove() {
   const showBox = document.querySelector('.svg-show-box');
   showBox.addEventListener('mousedown', (e) => {
@@ -199,6 +205,7 @@ const nodeOption = {
   },
   width: 32,
 };
+// 节点高宽设置
 const nodeOption2 = {
   width: (name) => {
     // 动态设置文本框宽度（用于横向树设置）
@@ -206,25 +213,24 @@ const nodeOption2 = {
   },
   height: 32,
 };
+// 画布边距设置
 const margin = {
   top: 70,
-  right: 30,
+  right: 10,
   bottom: 33,
-  left: 30,
+  left: 10,
 };
 const midValue = 300; // left 和right 相距距离
 let sameData = {
   name: '相同节点',
   children: [],
 };
-// let multiple = 1,
+// let multiple = 1;
 //   heightMultiple = 1, // 屏高系数
 //   widthMultiple = 1; // 屏宽系数
 // 初始化
 function init() {
-  let multiple = 1,
-    heightMultiple = 1, // 屏高系数
-    widthMultiple = 1; // 屏宽系数
+  let multiple = 1;
   treeHeight = d3.hierarchy(showData.value).height;
   console.log('treeHeight', treeHeight);
   const treeWidth = getTreeMax(showData.value.children);
@@ -277,6 +283,9 @@ function init() {
       document.querySelector('.svg-show-box').scrollLeft = left; //通过scrollTop设置滚动到200位置
     }
     state.commit('atlasMap/SET_SHOW_FIRST_TIME', false);
+    svgDom = document.querySelector(`.${svgClass.value}`);
+    initSvgShow();
+    addScale();
   }
   if (showData.value.children[0]) {
     const option = {
@@ -340,7 +349,9 @@ function init() {
 
   // addActive(nodeInfo.value.node_id); // 加当前节点效果
   nextTick(() => {
-    addActive(nodeIdList.value);
+    if (nodeIdList.value > 0) {
+      addActive(nodeIdList.value);
+    }
   });
 }
 const gSvg = reactive({
@@ -835,6 +846,49 @@ function findNodeById(position, id) {
     return;
   }
   return nodes[position][index].data;
+}
+// 初始化设置画布缩放比例
+function initSvgShow() {
+  svgDom.style.transform = `scale(${1 / heightMultiple})`;
+}
+// 给画布添加缩放功能
+function addScale() {
+  bind(svgDom, 'mousewheel', function (event) {
+    // 截流
+    // timer2 = setTimeout(() => {
+    //   if (timer2) {
+    //     return;
+    //   }
+    //
+    //   timer2 = null;
+    // }, 200);
+    console.log(event);
+    if (event.wheelDelta > 0 || event.detail < 0) {
+      // 向上滚的时候
+      const value = svgDom.style.transform.slice(6, -1) * 1;
+      console.log(event.wheelDelta, value, 0.01 * event.wheelDelta);
+      svgDom.style.transform = `scale(${value + 0.0001 * event.wheelDelta})`;
+    } else {
+      const value = svgDom.style.transform.slice(6, -1) * 1;
+      console.log(event.wheelDelta, value, 0.1 * event.wheelDelta);
+      const scaleValue = value + 0.0001 * event.wheelDelta;
+      if (scaleValue < 0) {
+        return;
+      }
+      svgDom.style.transform = `scale(${scaleValue})`;
+    }
+    event.preventDefault && event.preventDefault();
+  });
+}
+function bind(obj, eventStr, callback) {
+  if (obj.addEventListener) {
+    obj.addEventListener(eventStr, callback, false);
+  } else {
+    obj.attchEvent('on' + eventStr, function () {
+      //在匿名函数中调用回调函数,通过call方法来改变this的指向
+      callback.call(obj);
+    });
+  }
 }
 </script>
 
