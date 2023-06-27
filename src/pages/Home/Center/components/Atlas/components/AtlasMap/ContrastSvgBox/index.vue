@@ -96,7 +96,7 @@ let innerWidth, // 内宽
   // timer2 = null,
   svg,
   svgDom,
-  lastScaleValue, // 上一次的缩放大小
+  // lastScaleValue, // 上一次的缩放大小
   treeHeight,
   heightMultiple = 1, // 屏高系数
   widthMultiple = 1; // 屏宽系数; // 树高
@@ -855,7 +855,7 @@ function initSvgShow() {
   // } else {
   //   svgDom.style.transformOrigin = 'top center';
   // }
-  lastScaleValue = 1 / heightMultiple;
+  // lastScaleValue = 1 / heightMultiple;
   svgDom.style.transform = `scale(${1 / heightMultiple})`;
 }
 // 给画布添加缩放功能
